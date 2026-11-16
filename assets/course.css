@@ -93,12 +93,16 @@ a{color:var(--accent)}
 .sheet div{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:12px 14px;font-size:15px;overflow-x:auto}
 .sheet h4{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:500}
 mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+/* Inline equations need a box for max-width and horizontal scrolling. */
+mjx-container:not([display="true"]){display:inline-block;vertical-align:middle}
 @media (max-width:860px){
   .shell{grid-template-columns:1fr}
   nav.rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--rule);padding:18px 16px}
   main{padding:24px 16px 72px}
   header.top h1{font-size:34px}
   .lab canvas{height:260px}
+  .controls label{max-width:100%;flex-wrap:wrap}
+  .controls select{max-width:100%}
 }
 
 /* ---- additions for Module 1 ---- */
