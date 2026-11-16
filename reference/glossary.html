@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossary</title>
+<link rel="stylesheet" href="../assets/course.css">
+<style>
+main{max-width:860px;margin:0 auto;padding:40px 24px 80px}
+dl{display:grid;grid-template-columns:minmax(150px,230px) 1fr;gap:10px 24px;margin:8px 0 28px}
+dt{font-weight:600}
+dd{margin:0;max-width:62ch}
+dd small{color:var(--muted)}
+h2{font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-family:var(--body);font-weight:500;margin:36px 0 8px;border-bottom:1px solid var(--rule);padding-bottom:6px}
+@media (max-width:640px){dl{grid-template-columns:1fr;gap:2px 0}dd{margin-bottom:10px}}
+@media print{body{background:#fff}main{padding:0}}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Reference</p>
+<h1 style="font-family:var(--display);font-size:38px;margin:4px 0 6px">Glossary</h1>
+<p class="win">Every term the course has introduced so far, in the words the lessons use. Each entry names the lesson where it is taught. <a href="../index.html">Course home</a></p>
+
+<h2>Module 0 · Review and Toolkit</h2>
+<dl>
+  <dt>Function</dt><dd>A rule that gives exactly one output for each allowed input. <small>0.3</small></dd>
+  <dt>Domain, range</dt><dd>The allowed inputs of a function, and the outputs it can actually produce. <small>0.3</small></dd>
+  <dt>Slope</dt><dd>How much the output changes when the input increases by 1. For a line, change in y divided by change in x. <small>0.4</small></dd>
+  <dt>Residual</dt><dd>True value minus predicted value for one data point. <small>0.4</small></dd>
+  <dt>MSE (mean squared error)</dt><dd>The average of the squared residuals. <small>0.4</small></dd>
+  <dt>Vertex</dt><dd>The lowest or highest point of a parabola. <small>0.5</small></dd>
+  <dt>Discriminant</dt><dd>b² − 4ac. Its sign tells how many real roots a quadratic has. <small>0.5</small></dd>
+  <dt>Sigmoid</dt><dd>σ(z) = 1 / (1 + e^(−z)). Turns any number into a value between 0 and 1. <small>0.6</small></dd>
+  <dt>Decision boundary</dt><dd>The input value where a classifier switches sides; for the sigmoid, where the score z is 0. <small>0.6</small></dd>
+  <dt>Convergent sum</dt><dd>A sum of infinitely many terms whose total settles at a finite number. <small>0.7</small></dd>
+  <dt>Derivative</dt><dd>The slope of a curve at a point: how fast the output changes per unit change of input there. <small>0.8</small></dd>
+  <dt>Chain rule</dt><dd>Derivative of a function inside a function: derivative of the outside, times derivative of the inside. <small>0.8</small></dd>
+  <dt>Partial derivative</dt><dd>The derivative with respect to one variable while the others are held fixed. <small>0.9</small></dd>
+  <dt>Gradient descent</dt><dd>Repeatedly stepping a weight against the derivative of the loss: w ← w − η · L′(w). <small>0.9</small></dd>
+  <dt>Learning rate</dt><dd>The step size η in gradient descent. <small>0.9</small></dd>
+</dl>
+
+<h2>Module 1 · Part A · Vectors and the Matrix-Vector Product</h2>
+<dl>
+  <dt>Vector</dt><dd>An ordered list of numbers. Drawn as an arrow from the origin; read as one row of data. <small>1.1</small></dd>
+  <dt>Component</dt><dd>One of the numbers in a vector. v₁ is the first, v₂ the second. <small>1.1</small></dd>
+  <dt>Rⁿ</dt><dd>The space of all vectors with n components. <small>1.1</small></dd>
+  <dt>Zero vector</dt><dd>The vector whose components are all 0. <small>1.1</small></dd>
+  <dt>Scalar</dt><dd>An ordinary number, when it is used to scale a vector. <small>1.2</small></dd>
+  <dt>Norm</dt><dd>The length of a vector: the square root of the sum of its squared components. Written ‖v‖. <small>1.3</small></dd>
+  <dt>Distance</dt><dd>Between two points a and b: the norm of a − b. <small>1.3</small></dd>
+  <dt>Unit vector</dt><dd>A vector of length 1. Normalising means dividing a vector by its norm to get one. <small>1.3</small></dd>
+  <dt>Dot product</dt><dd>Multiply matching components and add. Returns one number. <small>1.4</small></dd>
+  <dt>Orthogonal</dt><dd>Perpendicular. Two vectors are orthogonal exactly when their dot product is 0. <small>1.5</small></dd>
+  <dt>Cosine similarity</dt><dd>The cosine of the angle between two vectors: dot product divided by the product of the norms. Ignores length. <small>1.5</small></dd>
+  <dt>Projection</dt><dd>The part of a that lies along b: c·b with c = (a·b)/(b·b). The closest point to a on the line of b. <small>1.6</small></dd>
+  <dt>Linear combination</dt><dd>Scale some vectors and add the results: c₁v + c₂w. <small>1.7</small></dd>
+  <dt>Coefficient</dt><dd>One of the numbers c₁, c₂ that scale the vectors in a linear combination. <small>1.7</small></dd>
+  <dt>Span</dt><dd>All the vectors you can reach with linear combinations of a given set. <small>1.7</small></dd>
+  <dt>Linearly dependent</dt><dd>For two vectors: lying on the same line, so one is a multiple of the other and adds no new direction. <small>1.7</small></dd>
+  <dt>Linearly independent</dt><dd>For two vectors: not on the same line, so each adds a direction the other cannot. <small>1.7</small></dd>
+  <dt>Standard basis vectors</dt><dd>(1, 0) and (0, 1) in the plane. Every vector is a combination of them with its own components as coefficients. <small>1.7</small></dd>
+  <dt>Matrix</dt><dd>A rectangular table of numbers. As data: one row per example, one column per feature. <small>1.8</small></dd>
+  <dt>Shape</dt><dd>Rows × columns of a matrix, in that order. <small>1.8</small></dd>
+  <dt>Matrix-vector product</dt><dd>Row view: the dot product of each row with the vector. Column view: a linear combination of the columns. <small>1.8, 1.9</small></dd>
+  <dt>Identity matrix</dt><dd>The matrix with 1s on the diagonal and 0s elsewhere. Multiplying by it leaves a vector unchanged. <small>1.8</small></dd>
+  <dt>Column space</dt><dd>The span of the columns of a matrix: every output Ax can produce. <small>1.9</small></dd>
+</dl>
+<h2>Module 1 · Part B · Transformations, Systems and the Inverse</h2>
+<dl>
+  <dt>Transformation</dt><dd>A function that takes vectors to vectors. A matrix A gives the transformation x → Ax. <small>1.11</small></dd>
+  <dt>Linear transformation</dt><dd>One that respects adding and scaling: A(u + v) = Au + Av and A(cu) = c(Au). Grid lines stay straight and the origin stays fixed. <small>1.11</small></dd>
+  <dt>Diagonal matrix</dt><dd>A matrix with non-zero numbers only on the main diagonal. It stretches each axis separately. <small>1.12</small></dd>
+  <dt>Shear</dt><dd>A move that slides points sideways in proportion to their height. <small>1.12</small></dd>
+  <dt>Matrix product AB</dt><dd>The single matrix that does B first and then A. Slot (i, j) is row i of A dotted with column j of B. <small>1.13</small></dd>
+  <dt>Transpose</dt><dd>Aᵀ: the matrix with the rows of A written as columns. <small>1.14</small></dd>
+  <dt>Symmetric matrix</dt><dd>A square matrix equal to its own transpose. <small>1.14</small></dd>
+  <dt>System of linear equations</dt><dd>Several linear equations in the same unknowns, written together as Ax = b. <small>1.15</small></dd>
+  <dt>Augmented matrix</dt><dd>The coefficient matrix A with the right-hand side b attached as an extra column. <small>1.16</small></dd>
+  <dt>Elimination</dt><dd>Using row operations to create zeros below the diagonal so the system can be solved from the bottom up. <small>1.16</small></dd>
+  <dt>Back-substitution</dt><dd>Solving a triangular system from the last equation upward. <small>1.16</small></dd>
+  <dt>Pivot</dt><dd>The first non-zero number in a row during elimination; the one used to clear the entries below it. <small>1.16</small></dd>
+  <dt>Inverse matrix</dt><dd>A⁻¹: the matrix that undoes A, so that A⁻¹A = I. <small>1.17</small></dd>
+  <dt>Invertible, singular</dt><dd>Invertible: has an inverse. Singular: has none, because it collapses space. <small>1.17</small></dd>
+  <dt>Determinant (2 × 2)</dt><dd>The number ad − bc. Zero exactly when the matrix is singular. Studied fully in Part C. <small>1.17</small></dd>
+  <dt>Rank</dt><dd>The number of linearly independent columns; the number of dimensions the outputs Ax fill. <small>1.18</small></dd>
+  <dt>Full rank</dt><dd>Rank as large as the shape allows. For a square matrix, the same as invertible. <small>1.18</small></dd>
+  <dt>Null space</dt><dd>All vectors x that the matrix sends to zero: Ax = 0. <small>1.18</small></dd>
+  <dt>Collinearity</dt><dd>Feature columns that are multiples or combinations of each other, so the data matrix loses rank. <small>1.18</small></dd>
+  <dt>Residual vector</dt><dd>r = y − Xw: truth minus prediction for every data point at once. <small>1.19</small></dd>
+  <dt>Least squares</dt><dd>Choosing w to make the squared length of the residual as small as possible. <small>1.19</small></dd>
+  <dt>Normal equations</dt><dd>XᵀX w = Xᵀy: the condition that the residual is perpendicular to every column of X. <small>1.19</small></dd>
+</dl>
+<h2>Module 1 · Part C · Determinants and Eigenvectors</h2>
+<dl>
+  <dt>Determinant</dt><dd>For a 2 × 2 matrix, ad − bc. Its size is the factor by which the matrix scales areas (volumes for 3 × 3); a negative sign means a flip; zero means singular. <small>1.21, 1.22</small></dd>
+  <dt>Minor</dt><dd>The smaller determinant left after crossing out one row and one column; used to expand a 3 × 3 determinant. <small>1.22</small></dd>
+  <dt>Triangular matrix</dt><dd>A matrix with zeros below (or above) the diagonal. Its determinant and its eigenvalues come straight from the diagonal. <small>1.22, 1.26</small></dd>
+  <dt>Basis</dt><dd>A set of linearly independent vectors that can reach every vector in the space. A basis of Rⁿ has exactly n vectors. <small>1.23</small></dd>
+  <dt>Coordinates in a basis</dt><dd>The coefficients that build a vector from the basis vectors. Written [v]_B. <small>1.23</small></dd>
+  <dt>Change-of-basis matrix</dt><dd>The matrix B whose columns are the basis vectors: v = B[v]_B and [v]_B = B⁻¹v. <small>1.23</small></dd>
+  <dt>Similar matrices</dt><dd>A and B⁻¹AB: the same move described in two different bases. <small>1.24</small></dd>
+  <dt>Eigenvector</dt><dd>A non-zero vector v that the matrix does not turn: Av = λv. <small>1.25</small></dd>
+  <dt>Eigenvalue</dt><dd>The number λ in Av = λv: the stretch factor along an eigenvector. <small>1.25</small></dd>
+  <dt>Characteristic equation</dt><dd>det(A − λI) = 0. Its solutions are the eigenvalues. For 2 × 2: λ² − (trace)λ + det = 0. <small>1.26</small></dd>
+  <dt>Trace</dt><dd>The sum of the diagonal entries of a square matrix. It equals the sum of the eigenvalues. <small>1.26</small></dd>
+  <dt>Eigenpair</dt><dd>An eigenvalue together with one of its eigenvectors. <small>1.27</small></dd>
+  <dt>Steady state</dt><dd>A vector left unchanged by a repeated process: an eigenvector with eigenvalue 1. <small>1.29</small></dd>
+  <dt>Dominant eigenvector</dt><dd>The eigenvector whose eigenvalue has the largest size; repeated application pulls vectors toward it. <small>1.29</small></dd>
+</dl>
+<h2 id="part-d">Module 1 · Part D · Diagonalization, SVD and PCA</h2>
+<dl>
+  <dt>Diagonalization</dt><dd>A = PDP⁻¹. The columns of P are an eigenvector basis and D holds the matching eigenvalues. <small><a href="../modules/01d-diagonalization-svd-and-pca.html#l1">1.31</a></small></dd>
+  <dt>Orthonormal</dt><dd>Perpendicular to one another and each of length 1. If Q is square with orthonormal columns, Q⁻¹ = Qᵀ. <small><a href="../modules/01d-diagonalization-svd-and-pca.html#l2">1.32</a></small></dd>
+  <dt>Spectral theorem</dt><dd>Every real symmetric matrix has real eigenvalues and an orthonormal eigenvector basis. <small><a href="../modules/01d-diagonalization-svd-and-pca.html#l2">1.32</a></small></dd>
+  <dt>Singular value decomposition (SVD)</dt><dd>A = UΣVᵀ. Read input coordinates along the columns of V, stretch by the diagonal of Σ, and rebuild along the columns of U. <small><a href="../modules/01d-diagonalization-svd-and-pca.html#l3">1.33</a></small></dd>
+  <dt>Singular value</dt><dd>Nonnegative stretch σᵢ. Its square is an eigenvalue of AᵀA, and Avᵢ = σᵢuᵢ for a paired set of axes. <small><a href="../modules/01d-diagonalization-svd-and-pca.html#l4">1.34</a></small></dd>
+  <dt>Outer product</dt><dd>A column times a row. Each row of the resulting matrix is the original row scaled by one entry of the column. <small><a href="../modules/01d-diagonalization-svd-and-pca.html#l5">1.35</a></small></dd>
+  <dt>Truncated SVD</dt><dd>The approximation that keeps the k largest singular-value pieces. Its squared Frobenius error is the sum of squares of the omitted singular values. <small><a href="../modules/01d-diagonalization-svd-and-pca.html#l5">1.35</a></small></dd>
+  <dt>Centering</dt><dd>Subtracting each feature’s mean from every value in its column. <small><a href="../modules/01d-diagonalization-svd-and-pca.html#l6">1.36</a></small></dd>
+  <dt>Sample variance and covariance</dt><dd>Divide the sum of squared deviations, or of paired deviations multiplied together, by n − 1. <small><a href="../modules/01d-diagonalization-svd-and-pca.html#l6">1.36</a></small></dd>
+  <dt>Covariance matrix</dt><dd>C = X<sub>c</sub>ᵀX<sub>c</sub>/(n − 1) for centered data. Diagonal entries are the feature variances. The other entries are their paired covariances. <small><a href="../modules/01d-diagonalization-svd-and-pca.html#l6">1.36</a></small></dd>
+  <dt>Principal component analysis (PCA)</dt><dd>Projecting centered rows onto perpendicular unit directions of greatest variance, chosen in order. Each direction is a covariance eigenvector. A score is the row’s dot product with the direction. <small><a href="../modules/01d-diagonalization-svd-and-pca.html#l7">1.37</a></small></dd>
+  <dt>Explained variance ratio</dt><dd>The variance along a principal direction divided by the total variance, when the total is positive. <small><a href="../modules/01d-diagonalization-svd-and-pca.html#l7">1.37</a></small></dd>
+</dl>
+</main>
+</body>
+</html>

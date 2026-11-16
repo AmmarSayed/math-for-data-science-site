@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Slope as a signed rate | Mathematics Teach Workspace</title>
+  <link rel="stylesheet" href="../../assets/style.css">
+  <link rel="stylesheet" href="../../assets/lesson.css">
+  <script src="../../assets/practice.js" defer></script>
+</head>
+<body>
+<main class="frame panel lesson">
+  <header>
+    <p class="lesson-kicker">Mathematics · Lesson 1 · 4 minutes</p>
+    <h1>Slope as a signed rate</h1>
+    <p class="lead">Find how much an output changes for each extra unit of input. The same idea helps you read a regression coefficient or interpret a derivative.</p>
+  </header>
+
+  <section aria-labelledby="example">
+    <h2 id="example">Trace the change</h2>
+    <div class="lesson-example">
+      <figure>
+        <svg class="lesson-plot" viewBox="0 0 335 252" role="img" aria-labelledby="plot-title plot-description">
+          <title id="plot-title">A line descending from (0, 3) to (2, −1)</title>
+          <desc id="plot-description">From (0, 3), move right two units and down four units to reach (2, −1).</desc>
+          <path d="M43 16V232 M79 16V232 M151 16V232 M187 16V232 M223 16V232 M259 16V232 M295 16V232
+                   M43 16H295 M43 52H295 M43 88H295 M43 124H295 M43 196H295 M43 232H295"
+                stroke="var(--plot-grid)" fill="none"/>
+          <path d="M43 160H305 M115 234V14" stroke="#526b80" stroke-width="1.5" fill="none"/>
+          <path d="M97 16L205 232" stroke="var(--ink)" stroke-width="2.5" fill="none"/>
+          <path d="M115 52H183 M177 46L183 52L177 58" stroke="var(--accent)" stroke-width="3" fill="none"/>
+          <path d="M187 52V190 M181 184L187 190L193 184" stroke="var(--plot-drop)" stroke-width="3" fill="none"/>
+          <g fill="var(--ink)" font-size="14">
+            <circle cx="115" cy="52" r="5"/>
+            <circle cx="187" cy="196" r="5"/>
+            <text x="62" y="50">(0, 3)</text>
+            <text x="200" y="218">(2, −1)</text>
+            <text x="310" y="165">x</text>
+            <text x="124" y="23">y</text>
+            <text x="132" y="42" fill="var(--accent)" font-weight="700">+2 right</text>
+            <text x="201" y="112" fill="var(--plot-drop)" font-weight="700">−4 down</text>
+          </g>
+        </svg>
+        <figcaption>The line falls as you move to the right.</figcaption>
+      </figure>
+      <div>
+        <p>Use the same right-triangle sketch you used for distance in the diagnostic. For slope, keep the direction of each change.</p>
+        <p>On <strong>y = 3 − 2x</strong>, when x goes from 0 to 2, y goes from 3 to −1. Subtract start from finish in both coordinates.</p>
+        <p class="formula">Slope = change in y ÷ change in x<br>(−1 − 3) ÷ (2 − 0) = −4 ÷ 2 = −2</p>
+        <p>For every 1 unit to the right, y falls by 2 units. That explains the coefficient −2 in the equation.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="practice">
+    <h2 id="practice">Find the rate</h2>
+    <form data-practice>
+      <fieldset>
+        <legend>1. A line passes through (1, 8) and (5, 2). What is its slope?</legend>
+        <div class="answer-options">
+          <label><input type="radio" name="slope" required data-feedback="Keep the sign of the vertical change. From 8 to 2, y falls by 6.">+3/2</label>
+          <label><input type="radio" name="slope" required data-feedback="Correct. The vertical change is −6 and the horizontal change is +4, so the slope is −6/4 = −3/2." data-correct>−3/2</label>
+          <label><input type="radio" name="slope" required data-feedback="Put the vertical change in the numerator and keep its sign. Here y goes down and x goes up.">+2/3</label>
+          <label><input type="radio" name="slope" required data-feedback="The negative sign fits. Divide the change in y by the change in x to get output change per unit of input.">−2/3</label>
+        </div>
+      </fieldset>
+      <button class="btn secondary" type="submit">Check answer</button>
+      <p data-feedback-output role="status"></p>
+    </form>
+    <hr class="divider">
+    <form data-practice>
+      <fieldset>
+        <legend>2. A queue falls from 50 tickets at hour 2 to 35 tickets at hour 7. What is its average change in tickets per hour?</legend>
+        <div class="answer-options">
+          <label><input type="radio" name="rate" required data-feedback="Start with 35 − 50. A decrease gives a negative change in tickets.">+3</label>
+          <label><input type="radio" name="rate" required data-feedback="Keep your units in mind. The question asks for tickets divided by hours.">+⅓</label>
+          <label><input type="radio" name="rate" required data-feedback="You kept the sign. For tickets per hour, put the change in tickets above the change in hours.">−⅓</label>
+          <label><input type="radio" name="rate" required data-feedback="Correct. The queue changed by −15 tickets over 5 hours, an average change of −3 tickets per hour." data-correct>−3</label>
+        </div>
+      </fieldset>
+      <button class="btn secondary" type="submit">Check answer</button>
+      <p data-feedback-output role="status"></p>
+    </form>
+  </section>
+
+  <footer>
+    <p><a href="0002-joint-probability.html">Next lesson</a> · <a href="../../reference/slope.html">Slope reference</a> · <a href="https://www.khanacademy.org/math/algebra-basics/alg-basics-graphing-lines-and-slope/alg-basics-slope/a/slope-review">Khan Academy slope review</a></p>
+    <p class="muted">Tomorrow, try another pair of points from memory. Ask me about any step that felt unclear, or send me your reasoning for feedback.</p>
+  </footer>
+</main>
+</body>
+</html>

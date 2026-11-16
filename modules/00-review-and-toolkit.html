@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Math for Data Science Module 0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: fixed lesson rail on the left, one reading column (~68ch) with full-width "lab benches" for the interactive graphs. */
+:root{
+  --paper:#f4f6f8; --surface:#ffffff; --ink:#18222d; --muted:#5b6876; --rule:#d5dbe2;
+  --accent:#0b6e8f; --accent-soft:#e1f0f5; --warm:#c2571a; --good:#1f7a4d; --bad:#b3362c;
+  --grid:#e3e8ed; --code-bg:#eef1f4;
+  --display:"Newsreader",Georgia,"Times New Roman",serif;
+  --body:"IBM Plex Sans","Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",Consolas,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#11171d; --surface:#18212a; --ink:#e6ecf1; --muted:#9aa7b4; --rule:#2c3844;
+    --accent:#5fc0de; --accent-soft:#16323c; --warm:#f0935a; --good:#5ecb95; --bad:#f08379;
+    --grid:#24303a; --code-bg:#1e2933; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#11171d; --surface:#18212a; --ink:#e6ecf1; --muted:#9aa7b4; --rule:#2c3844;
+  --accent:#5fc0de; --accent-soft:#16323c; --warm:#f0935a; --good:#5ecb95; --bad:#f08379;
+  --grid:#24303a; --code-bg:#1e2933; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.62}
+.shell{display:grid;grid-template-columns:260px minmax(0,1fr);max-width:1240px;margin:0 auto}
+nav.rail{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:28px 18px 28px 24px;border-right:1px solid var(--rule)}
+nav.rail .course{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.rail .mod{font-family:var(--display);font-size:22px;line-height:1.2;margin:4px 0 18px}
+nav.rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+nav.rail a{display:flex;gap:10px;align-items:baseline;padding:6px 8px;border-radius:6px;color:var(--ink);text-decoration:none;font-size:14.5px}
+nav.rail a:hover{background:var(--accent-soft)}
+nav.rail a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+nav.rail .num{font-family:var(--mono);font-size:12px;color:var(--muted);min-width:26px}
+nav.rail a.done .num{color:var(--good)}
+nav.rail a.done .num::after{content:" ✓"}
+.progress{margin-top:18px;font-size:13px;color:var(--muted)}
+.bar{height:6px;background:var(--rule);border-radius:3px;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent)}
+main{padding:36px 40px 96px;min-width:0}
+header.top h1{font-family:var(--display);font-weight:600;font-size:44px;line-height:1.08;margin:0 0 10px;text-wrap:balance}
+header.top p{max-width:68ch;color:var(--muted);margin:0 0 8px}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:22px 0 8px;max-width:900px}
+.howto div{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:12px 14px;font-size:14.5px}
+.howto b{display:block;font-family:var(--mono);font-size:12px;color:var(--accent);margin-bottom:2px}
+section.lesson{border-top:1px solid var(--rule);margin-top:56px;padding-top:28px}
+.eyebrow{font-family:var(--mono);font-size:13px;color:var(--accent)}
+h2{font-family:var(--display);font-weight:600;font-size:32px;line-height:1.15;margin:4px 0 6px;text-wrap:balance}
+h3{font-size:18px;font-weight:600;margin:30px 0 6px}
+p,li{max-width:68ch}
+.win{color:var(--muted);margin-top:0}
+.why{background:var(--accent-soft);border-left:3px solid var(--accent);padding:10px 14px;border-radius:0 6px 6px 0;max-width:68ch;font-size:15.5px}
+.slip{border-left:3px solid var(--warm);padding:8px 14px;max-width:68ch;font-size:15.5px;background:var(--surface)}
+.slip b{color:var(--warm)}
+.lab{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:16px;margin:16px 0;max-width:900px}
+.lab .cap{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.lab canvas{display:block;width:100%;height:330px;border-radius:6px;background:var(--surface)}
+.controls{display:flex;flex-wrap:wrap;gap:14px 22px;margin-top:12px;align-items:center}
+.controls label{font-size:14px;display:flex;align-items:center;gap:8px}
+.controls input[type=range]{width:170px;accent-color:var(--accent)}
+.controls output{font-family:var(--mono);font-size:13.5px;min-width:44px;font-variant-numeric:tabular-nums}
+select,button{font:inherit;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:6px 10px}
+button{cursor:pointer}
+button:hover{border-color:var(--accent)}
+.readout{font-family:var(--mono);font-size:14px;margin-top:10px;padding:8px 10px;background:var(--code-bg);border-radius:6px;font-variant-numeric:tabular-nums;overflow-x:auto;white-space:pre-wrap}
+.try{font-size:15px;margin:10px 0 0;padding-left:20px}
+.try li{margin:2px 0}
+table{border-collapse:collapse;margin:10px 0;font-size:15.5px}
+.tablewrap{overflow-x:auto;max-width:900px}
+th,td{border-bottom:1px solid var(--rule);padding:7px 14px 7px 0;text-align:left;vertical-align:top}
+th{font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:500}
+pre{background:var(--code-bg);padding:14px 16px;border-radius:8px;overflow-x:auto;font-family:var(--mono);font-size:14px;line-height:1.5;max-width:900px}
+code{font-family:var(--mono);font-size:.92em;background:var(--code-bg);padding:1px 5px;border-radius:4px}
+pre code{background:none;padding:0}
+details{max-width:68ch;border:1px solid var(--rule);border-radius:8px;background:var(--surface);margin:8px 0}
+summary{cursor:pointer;padding:9px 14px;font-weight:500;font-size:15.5px}
+details>div{padding:2px 14px 12px}
+ol.ex{padding-left:22px}
+ol.ex li{margin:6px 0}
+.quiz{max-width:68ch;border:1px solid var(--rule);border-radius:10px;background:var(--surface);padding:14px 16px;margin:14px 0}
+.quiz .q{margin:0 0 10px;font-weight:500}
+.quiz .opts{display:flex;flex-direction:column;gap:8px}
+.quiz button{text-align:left;padding:9px 12px}
+.quiz button.right{border-color:var(--good);box-shadow:inset 3px 0 0 var(--good)}
+.quiz button.wrong{border-color:var(--bad);box-shadow:inset 3px 0 0 var(--bad)}
+.quiz .fb{margin:10px 0 0;font-size:15px;min-height:1.2em}
+.quiz .fb.ok{color:var(--good)} .quiz .fb.no{color:var(--bad)}
+.donebox{margin-top:22px;font-size:15px;display:flex;gap:8px;align-items:center}
+.donebox input{width:18px;height:18px;accent-color:var(--good)}
+.watch{font-size:15px;color:var(--muted)}
+a{color:var(--accent)}
+.sheet{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;max-width:900px}
+.sheet div{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:12px 14px;font-size:15px;overflow-x:auto}
+.sheet h4{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+@media (max-width:860px){
+  .shell{grid-template-columns:1fr}
+  nav.rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--rule);padding:18px 16px}
+  main{padding:24px 16px 72px}
+  header.top h1{font-size:34px}
+  .lab canvas{height:260px}
+}
+</style>
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" defer></script>
+</head>
+<body>
+<div class="shell">
+<nav class="rail" aria-label="Lessons">
+  <div class="course">Math for Data Science</div>
+  <div class="mod">Module 0<br>Review and Toolkit</div>
+  <ol id="toc">
+    <li><a href="#l1"><span class="num">0.1</span>Reading math notation</a></li>
+    <li><a href="#l2"><span class="num">0.2</span>Exponents, roots, logs</a></li>
+    <li><a href="#l3"><span class="num">0.3</span>Functions</a></li>
+    <li><a href="#l4"><span class="num">0.4</span>Lines and your first model</a></li>
+    <li><a href="#l5"><span class="num">0.5</span>Quadratics and the bowl</a></li>
+    <li><a href="#l6"><span class="num">0.6</span>Exponential, log, sigmoid</a></li>
+    <li><a href="#l7"><span class="num">0.7</span>Sigma notation</a></li>
+    <li><a href="#l8"><span class="num">0.8</span>The derivative</a></li>
+    <li><a href="#l9"><span class="num">0.9</span>Gradient descent preview</a></li>
+    <li><a href="#l10"><span class="num">0.10</span>Checkpoint and cheat sheet</a></li>
+  </ol>
+  <div class="progress"><span id="ptext">0 of 10 lessons done</span><div class="bar"><i id="pbar"></i></div></div>
+</nav>
+
+<main>
+<header class="top">
+  <h1>Review and Toolkit</h1>
+  <p>Ten short lessons that rebuild the algebra and calculus you will lean on in every later module. Each one has a single goal, a graph you can move, problems for paper, and a few lines of Python.</p>
+  <p>If a lesson feels easy, do its quick check and move on. Module 1 (Linear Algebra) starts from here.</p>
+  <div class="howto">
+    <div><b>1 · EXPERIMENT</b>Move the sliders before reading the formulas. Guess first.</div>
+    <div><b>2 · READ</b>The idea, then one worked example.</div>
+    <div><b>3 · PAPER</b>Solve the practice set by hand, then open the solutions.</div>
+    <div><b>4 · PYTHON</b>Run the snippet in a notebook and change one thing.</div>
+  </div>
+</header>
+
+<!-- ================= 0.1 ================= -->
+<section class="lesson" id="l1">
+  <div class="eyebrow">Lesson 0.1</div>
+  <h2>Reading math notation</h2>
+  <p class="win">Goal: read a line of ML math aloud without stalling on the symbols.</p>
+  <p class="why">Most of the difficulty in ML papers and textbooks is vocabulary. The formula \(\hat{y}_i = w x_i + b\) says "the prediction for example number i is the weight times that example's input, plus the bias". Nothing more.</p>
+
+  <h3>The symbols you will meet most</h3>
+  <div class="tablewrap"><table>
+    <tr><th>Symbol</th><th>Read it as</th><th>Example</th></tr>
+    <tr><td>\(\mathbb{R}\)</td><td>the real numbers</td><td>\(x \in \mathbb{R}\): x is a real number</td></tr>
+    <tr><td>\(\mathbb{R}^n\)</td><td>lists of n real numbers</td><td>\((3, -1, 0.5) \in \mathbb{R}^3\)</td></tr>
+    <tr><td>\(\in\)</td><td>is in, belongs to</td><td>\(2 \in \{1,2,3\}\)</td></tr>
+    <tr><td>\(x_i\)</td><td>x sub i: the i-th item</td><td>\(x_3\) is the third data point</td></tr>
+    <tr><td>\(\hat{y}\)</td><td>y hat: a predicted value</td><td>\(y\) is the truth, \(\hat{y}\) is the model's guess</td></tr>
+    <tr><td>\(\bar{x}\)</td><td>x bar: the mean of x</td><td>\(\bar{x} = 4.2\)</td></tr>
+    <tr><td>\(\sum\)</td><td>sum of</td><td>\(\sum_{i=1}^{3} x_i = x_1+x_2+x_3\)</td></tr>
+    <tr><td>\(\prod\)</td><td>product of</td><td>\(\prod_{i=1}^{3} x_i = x_1 x_2 x_3\)</td></tr>
+    <tr><td>\(f: A \to B\)</td><td>f takes inputs from A, gives outputs in B</td><td>\(f:\mathbb{R}\to\mathbb{R}\)</td></tr>
+    <tr><td>\(\approx\), \(\propto\)</td><td>approximately, proportional to</td><td>\(\pi \approx 3.14\)</td></tr>
+    <tr><td>\(|x|\)</td><td>absolute value (size without sign)</td><td>\(|-3| = 3\)</td></tr>
+    <tr><td>\(\Delta x\)</td><td>delta x: a change in x</td><td>\(\Delta x = x_2 - x_1\)</td></tr>
+    <tr><td>\(\forall\), \(\exists\)</td><td>for all, there exists</td><td>\(\forall x \in \mathbb{R},\ x^2 \ge 0\)</td></tr>
+  </table></div>
+
+  <h3>Greek letters by their usual job</h3>
+  <div class="tablewrap"><table>
+    <tr><th>Letter</th><th>Name</th><th>Usually means</th></tr>
+    <tr><td>\(\alpha,\ \eta\)</td><td>alpha, eta</td><td>learning rate</td></tr>
+    <tr><td>\(\theta,\ \beta,\ w\)</td><td>theta, beta</td><td>model parameters (weights)</td></tr>
+    <tr><td>\(\mu,\ \sigma\)</td><td>mu, sigma</td><td>mean, standard deviation</td></tr>
+    <tr><td>\(\lambda\)</td><td>lambda</td><td>eigenvalue, or regularization strength</td></tr>
+    <tr><td>\(\epsilon\)</td><td>epsilon</td><td>a tiny number, or random noise</td></tr>
+    <tr><td>\(\Sigma\)</td><td>capital sigma</td><td>a sum, or a covariance matrix</td></tr>
+  </table></div>
+
+  <h3>Worked example</h3>
+  <p>Read this aloud: $$\text{MSE} = \frac{1}{n}\sum_{i=1}^{n}\,(y_i - \hat{y}_i)^2$$</p>
+  <p>"For each of the n examples, take the true value minus the predicted value and square it. Add all of those up and divide by n." That is mean squared error, the loss you will minimise in Lesson 0.4.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Write in words: \(\ \forall i,\ x_i \in \mathbb{R}^2\).</li>
+    <li>Write in symbols: "the mean of y is the sum of all n values of y, divided by n".</li>
+    <li>If \(x = (4, 7, 1)\), what are \(x_2\) and \(\sum_{i=1}^{3} x_i\)?</li>
+    <li>Compute \(\prod_{i=1}^{4} i\).</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. Every data point \(x_i\) is a pair of real numbers (a point in the plane).</p>
+    <p>2. \(\bar{y} = \frac{1}{n}\sum_{i=1}^{n} y_i\)</p>
+    <p>3. \(x_2 = 7\). The sum is \(4+7+1 = 12\).</p>
+    <p>4. \(1\cdot2\cdot3\cdot4 = 24\) (this is 4 factorial, written \(4!\)).</p>
+  </div></details>
+
+  <div class="quiz" data-answer="b">
+    <p class="q">In \(\hat{y}_i = w x_i + b\), what does the hat tell you?</p>
+    <div class="opts">
+      <button data-o="a">That y is the true label we were given</button>
+      <button data-o="b">That y is a value the model predicted</button>
+      <button data-o="c">That y is the average over all examples</button>
+    </div>
+    <p class="fb" data-ok="Right. A hat marks an estimate or prediction; the plain letter is the true value." data-no="Not this one. The bar means average, the plain letter is the truth, the hat is the model's estimate."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l1" id="done-l1">Mark lesson 0.1 done</label>
+</section>
+
+<!-- ================= 0.2 ================= -->
+<section class="lesson" id="l2">
+  <div class="eyebrow">Lesson 0.2</div>
+  <h2>Exponents, roots, logs</h2>
+  <p class="win">Goal: simplify any expression with powers and logs using six rules.</p>
+  <p class="why">Likelihoods multiply thousands of tiny probabilities together. Taking a log turns that product into a sum, which is why "log-likelihood" and "cross-entropy" appear everywhere in ML.</p>
+
+  <h3>The rules</h3>
+  <div class="tablewrap"><table>
+    <tr><th>Exponents</th><th>Logs (the mirror image)</th></tr>
+    <tr><td>\(a^m \cdot a^n = a^{m+n}\)</td><td>\(\log(xy) = \log x + \log y\)</td></tr>
+    <tr><td>\(\dfrac{a^m}{a^n} = a^{m-n}\)</td><td>\(\log\!\left(\dfrac{x}{y}\right) = \log x - \log y\)</td></tr>
+    <tr><td>\((a^m)^n = a^{mn}\)</td><td>\(\log(x^n) = n\log x\)</td></tr>
+    <tr><td>\(a^0 = 1,\quad a^{-n} = \dfrac{1}{a^n}\)</td><td>\(\log 1 = 0,\quad \log\frac{1}{x} = -\log x\)</td></tr>
+    <tr><td>\(a^{1/2} = \sqrt{a},\quad a^{1/n} = \sqrt[n]{a}\)</td><td>\(\log_b x = \dfrac{\ln x}{\ln b}\)</td></tr>
+  </table></div>
+  <p>The definition that ties them together: \(\log_b x = y\) means \(b^y = x\). A log answers the question "what power do I need?" So \(\log_2 8 = 3\) because \(2^3 = 8\). In ML, \(\log\) with no base almost always means the natural log \(\ln\), base \(e \approx 2.718\).</p>
+
+  <h3>Simplifying roots</h3>
+  <p>A square root simplifies only when the number inside has a perfect-square factor: \(\sqrt{12} = \sqrt{4\cdot 3} = 2\sqrt{3}\). Factor the number into primes and look for pairs.</p>
+  <p class="slip"><b>Common slip.</b> \(\sqrt{14}\) does not simplify. \(14 = 2\cdot 7\) has no repeated prime, so it stays \(\sqrt{14} \approx 3.742\). Also \(\sqrt{a+b} \ne \sqrt{a}+\sqrt{b}\): check with \(\sqrt{9+16} = 5\), not \(3+4\).</p>
+
+  <h3>Worked example</h3>
+  <p>Simplify \(\ln\!\left(\dfrac{e^{3}\,x^2}{\sqrt{y}}\right)\).</p>
+  <p>Split the product and quotient: \(\ln e^3 + \ln x^2 - \ln y^{1/2}\). Bring the powers down: \(3 + 2\ln x - \tfrac12 \ln y\).</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Simplify \(\dfrac{2^5 \cdot 2^{-2}}{2^4}\).</li>
+    <li>Simplify \(\sqrt{72}\) and \(\sqrt{30}\).</li>
+    <li>Evaluate \(\log_{10} 1000\), \(\log_2 \tfrac{1}{8}\), \(\ln e^{-2}\).</li>
+    <li>Write \(\log(p_1 p_2 p_3)\) as a sum.</li>
+    <li>Solve for x: \(e^{2x} = 7\).</li>
+    <li>Solve for x: \(\ln(x) + \ln(x-3) = \ln 10\).</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(2^{5-2-4} = 2^{-1} = \tfrac12\).</p>
+    <p>2. \(\sqrt{72} = \sqrt{36\cdot2} = 6\sqrt2\). \(\sqrt{30}\) stays as it is, since \(30 = 2\cdot3\cdot5\).</p>
+    <p>3. \(3\), \(-3\), \(-2\).</p>
+    <p>4. \(\log p_1 + \log p_2 + \log p_3\). This is exactly how a likelihood becomes a log-likelihood.</p>
+    <p>5. Take ln of both sides: \(2x = \ln 7\), so \(x = \tfrac12\ln 7 \approx 0.973\).</p>
+    <p>6. \(\ln\big(x(x-3)\big) = \ln 10\), so \(x^2 - 3x - 10 = 0\), giving \((x-5)(x+2)=0\). Only \(x = 5\) works, because \(\ln\) needs a positive input.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+p = np.array([0.9, 0.8, 0.95, 0.7])     # four small probabilities
+print(np.prod(p))                        # product: 0.4788
+print(np.sum(np.log(p)))                 # sum of logs: -0.7365
+print(np.exp(np.sum(np.log(p))))         # back to 0.4788
+
+# why logs matter: multiply 2000 probabilities
+many = np.full(2000, 0.5)
+print(np.prod(many))                     # 0.0  (underflow)
+print(np.sum(np.log(many)))              # -1386.29, still usable</code></pre>
+
+  <div class="quiz" data-answer="c">
+    <p class="q">Which expression equals \(\log(a^2 b)\)?</p>
+    <div class="opts">
+      <button data-o="a">\(2\log a \cdot \log b\)</button>
+      <button data-o="b">\(\log 2a + \log b\)</button>
+      <button data-o="c">\(2\log a + \log b\)</button>
+    </div>
+    <p class="fb" data-ok="Right. Product becomes a sum, and the power comes down in front." data-no="Not this one. A log turns the product into a sum (not a product of logs), and the exponent 2 multiplies log a."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l2" id="done-l2">Mark lesson 0.2 done</label>
+</section>
+
+<!-- ================= 0.3 ================= -->
+<section class="lesson" id="l3">
+  <div class="eyebrow">Lesson 0.3</div>
+  <h2>Functions</h2>
+  <p class="win">Goal: see any function as a machine with an allowed input set, and compose two of them.</p>
+  <p class="why">A machine learning model is a function: data goes in, a prediction comes out. A neural network is many simple functions composed one after another.</p>
+
+  <div class="lab">
+    <div class="cap">LAB 0.3 · pick a function, slide the input</div>
+    <canvas id="c3" aria-label="Graph of the selected function with a movable input point"></canvas>
+    <div class="controls">
+      <label for="f3">f(x) = <select id="f3">
+        <option value="sq">x²</option><option value="sqrt">√x</option><option value="inv">1 / x</option><option value="abs">|x|</option><option value="cube">x³ − 3x</option>
+      </select></label>
+      <label for="x3">input x <input type="range" id="x3" min="-4" max="4" step="0.1" value="1.5"><output id="x3o"></output></label>
+    </div>
+    <div class="readout" id="r3"></div>
+    <ul class="try">
+      <li>With √x, drag x below zero. What happens, and why?</li>
+      <li>With 1/x, creep toward x = 0 from both sides.</li>
+      <li>With x², find two different inputs that give the same output. Can you do that with x³ − 3x? With √x?</li>
+    </ul>
+  </div>
+
+  <h3>The idea</h3>
+  <p>A function \(f\) assigns exactly one output to each allowed input. The set of allowed inputs is the <b>domain</b>; the set of outputs it can actually produce is the <b>range</b>.</p>
+  <div class="tablewrap"><table>
+    <tr><th>Function</th><th>Domain</th><th>Range</th></tr>
+    <tr><td>\(x^2\)</td><td>all real x</td><td>\(y \ge 0\)</td></tr>
+    <tr><td>\(\sqrt{x}\)</td><td>\(x \ge 0\)</td><td>\(y \ge 0\)</td></tr>
+    <tr><td>\(1/x\)</td><td>\(x \ne 0\)</td><td>\(y \ne 0\)</td></tr>
+    <tr><td>\(\ln x\)</td><td>\(x \gt 0\)</td><td>all real y</td></tr>
+    <tr><td>\(e^x\)</td><td>all real x</td><td>\(y \gt 0\)</td></tr>
+  </table></div>
+  <p><b>Composition</b> feeds one function's output into another: \((g \circ f)(x) = g(f(x))\). Work from the inside out. <b>Inverse</b> functions undo each other: \(f^{-1}(f(x)) = x\). A function has an inverse only if no two inputs share an output, which is why \(x^2\) needs its domain cut to \(x \ge 0\) before \(\sqrt{\ }\) can undo it.</p>
+
+  <h3>Worked example</h3>
+  <p>Let \(f(x) = 2x + 1\) and \(g(x) = x^2\).</p>
+  <p>\(g(f(3)) = g(7) = 49\), while \(f(g(3)) = f(9) = 19\). Order matters.</p>
+  <p>Inverse of \(f\): write \(y = 2x+1\), solve for x: \(x = \tfrac{y-1}{2}\). So \(f^{-1}(y) = \tfrac{y-1}{2}\). Check: \(f^{-1}(7) = 3\).</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Give the domain of \(h(x) = \dfrac{1}{\sqrt{x-2}}\).</li>
+    <li>With \(f(x) = 3x - 2\) and \(g(x) = e^x\), write \(g(f(x))\) and \(f(g(x))\).</li>
+    <li>Find the inverse of \(f(x) = \dfrac{x+4}{3}\).</li>
+    <li>A layer computes \(z = wx + b\) then \(a = \max(0, z)\). With \(w = 2,\ b = -3\), find a for \(x = 1\) and \(x = 4\).</li>
+    <li>Is \(f(x) = x^3\) invertible on all of \(\mathbb{R}\)? Is \(f(x) = |x|\)?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. Need \(x - 2 \gt 0\) (root needs \(\ge 0\), and the denominator cannot be zero), so \(x \gt 2\).</p>
+    <p>2. \(g(f(x)) = e^{3x-2}\). \(f(g(x)) = 3e^{x} - 2\).</p>
+    <p>3. \(y = \tfrac{x+4}{3} \Rightarrow x = 3y - 4\). So \(f^{-1}(y) = 3y - 4\).</p>
+    <p>4. \(x=1\): \(z = -1\), \(a = 0\). \(x = 4\): \(z = 5\), \(a = 5\). This "max with zero" is the ReLU activation.</p>
+    <p>5. \(x^3\) yes: each output comes from exactly one input. \(|x|\) no: \(|3| = |-3|\).</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+f = lambda x: 2*x + 1
+g = lambda x: x**2
+
+x = np.array([-2, 0, 3])
+print(g(f(x)))     # [ 9  1 49]
+print(f(g(x)))     # [ 9  1 19]
+
+relu = lambda z: np.maximum(0, z)
+print(relu(2*x - 3))   # a one-neuron "network"</code></pre>
+
+  <div class="quiz" data-answer="a">
+    <p class="q">For \(f(x) = x + 1\) and \(g(x) = 2x\), what is \(g(f(x))\)?</p>
+    <div class="opts">
+      <button data-o="a">\(2x + 2\)</button>
+      <button data-o="b">\(2x + 1\)</button>
+      <button data-o="c">\(x + 2\)</button>
+    </div>
+    <p class="fb" data-ok="Right. Inside first: x + 1, then double all of it." data-no="Not this one. Apply f first to get x + 1, then g doubles the whole thing."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l3" id="done-l3">Mark lesson 0.3 done</label>
+</section>
+
+<!-- ================= 0.4 ================= -->
+<section class="lesson" id="l4">
+  <div class="eyebrow">Lesson 0.4</div>
+  <h2>Lines and your first model</h2>
+  <p class="win">Goal: fit a line to data by hand and measure how wrong it is.</p>
+  <p class="why">Linear regression is the line \(\hat{y} = wx + b\). Every later model, up to deep networks, is built from this piece. Learning means choosing w and b so the errors are small.</p>
+
+  <div class="lab">
+    <div class="cap">LAB 0.4 · be the learning algorithm: move w and b to shrink the error</div>
+    <canvas id="c4" aria-label="Six data points with an adjustable line and its residuals"></canvas>
+    <div class="controls">
+      <label for="w4">slope w <input type="range" id="w4" min="-1" max="3" step="0.02" value="0.2"><output id="w4o"></output></label>
+      <label for="b4">intercept b <input type="range" id="b4" min="-3" max="6" step="0.05" value="4"><output id="b4o"></output></label>
+      <button id="best4" type="button">Show the best fit</button>
+    </div>
+    <div class="readout" id="r4"></div>
+    <ul class="try">
+      <li>The orange segments are the errors (residuals). Get the MSE under 0.05 before pressing the button.</li>
+      <li>Change only b. What does the line do? Change only w. What stays fixed?</li>
+    </ul>
+  </div>
+
+  <h3>The idea</h3>
+  <p>In \(y = wx + b\), the <b>slope</b> w is how much y changes when x increases by 1, and the <b>intercept</b> b is the value of y at \(x = 0\). Between two points:</p>
+  <p>$$w = \frac{\Delta y}{\Delta x} = \frac{y_2 - y_1}{x_2 - x_1}$$</p>
+  <p>The <b>residual</b> for a data point is \(y_i - \hat{y}_i\): truth minus prediction. Squaring makes every error positive and punishes large misses more. Averaging the squares gives the mean squared error from Lesson 0.1.</p>
+
+  <h3>Worked example</h3>
+  <p>Line through \((1, 3)\) and \((4, 9)\): slope \(w = \tfrac{9-3}{4-1} = 2\). Then \(3 = 2(1) + b\) gives \(b = 1\). So \(y = 2x + 1\).</p>
+  <p>MSE of that line on the points \((1, 2), (2, 6), (3, 7)\): predictions are 3, 5, 7. Residuals are \(-1, 1, 0\). Squares are \(1, 1, 0\). MSE \(= \tfrac{2}{3} \approx 0.667\).</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Find the line through \((-2, 5)\) and \((2, -3)\).</li>
+    <li>A model predicts salary (thousand EGP) as \(\hat{y} = 1.5x + 8\) where x is years of experience. Interpret 1.5 and 8.</li>
+    <li>For \(\hat{y} = 0.5x + 1\) and data \((2, 3), (4, 2), (6, 5)\), compute the three residuals and the MSE.</li>
+    <li>Two lines \(y = 2x + 1\) and \(y = -x + 7\). Where do they cross?</li>
+    <li>What is the slope of a horizontal line? Why can a vertical line not be written as \(y = wx + b\)?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(w = \tfrac{-3-5}{2-(-2)} = -2\). \(5 = -2(-2) + b \Rightarrow b = 1\). Line: \(y = -2x + 1\).</p>
+    <p>2. Each extra year adds 1.5 thousand to the predicted salary. Someone with zero experience is predicted to earn 8 thousand.</p>
+    <p>3. Predictions 2, 3, 4. Residuals \(1, -1, 1\). MSE \(= \tfrac{1+1+1}{3} = 1\).</p>
+    <p>4. \(2x + 1 = -x + 7 \Rightarrow x = 2,\ y = 5\).</p>
+    <p>5. Zero. A vertical line has \(\Delta x = 0\), so the slope would need division by zero; it also fails the one-output-per-input rule for functions.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.array([1, 2, 3, 4, 5, 6])
+y = np.array([2.1, 2.9, 4.2, 4.8, 6.1, 6.9])
+
+def mse(w, b):
+    return np.mean((y - (w*x + b))**2)
+
+print(mse(0.2, 4.0))          # a bad guess
+w, b = np.polyfit(x, y, 1)    # the best line
+print(w, b, mse(w, b))
+
+plt.scatter(x, y); plt.plot(x, w*x + b); plt.show()</code></pre>
+
+  <div class="quiz" data-answer="c">
+    <p class="q">Why do we square the residuals before averaging them?</p>
+    <div class="opts">
+      <button data-o="a">So the units of the error match the units of y</button>
+      <button data-o="b">So that the best line always passes through zero</button>
+      <button data-o="c">So positive and negative errors cannot cancel out</button>
+    </div>
+    <p class="fb" data-ok="Right. Squaring also weights big misses more heavily. (It changes the units to y squared, which is why RMSE takes a root afterwards.)" data-no="Not this one. Without squaring, a +5 and a −5 error would average to zero and a terrible line would look perfect."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l4" id="done-l4">Mark lesson 0.4 done</label>
+</section>
+
+<!-- ================= 0.5 ================= -->
+<section class="lesson" id="l5">
+  <div class="eyebrow">Lesson 0.5</div>
+  <h2>Quadratics and the bowl</h2>
+  <p class="win">Goal: find the lowest point of a parabola three ways.</p>
+  <p class="why">Plot MSE against the slope w and you get a parabola: a bowl with one lowest point. Training a linear model means finding the bottom of that bowl. In Module 1 the characteristic polynomial for eigenvalues of a 2×2 matrix is also a quadratic.</p>
+
+  <div class="lab">
+    <div class="cap">LAB 0.5 · y = ax² + bx + c</div>
+    <canvas id="c5" aria-label="Parabola with adjustable coefficients, vertex and roots marked"></canvas>
+    <div class="controls">
+      <label for="a5">a <input type="range" id="a5" min="-2" max="2" step="0.05" value="1"><output id="a5o"></output></label>
+      <label for="bb5">b <input type="range" id="bb5" min="-5" max="5" step="0.1" value="-2"><output id="bb5o"></output></label>
+      <label for="cc5">c <input type="range" id="cc5" min="-5" max="5" step="0.1" value="-1"><output id="cc5o"></output></label>
+    </div>
+    <div class="readout" id="r5"></div>
+    <ul class="try">
+      <li>Make a negative. What happens to the bowl?</li>
+      <li>Raise c until the roots disappear. Watch the discriminant change sign.</li>
+      <li>Move only b. Trace the path the vertex follows.</li>
+    </ul>
+  </div>
+
+  <h3>The idea</h3>
+  <p>For \(y = ax^2 + bx + c\):</p>
+  <ul>
+    <li>It opens upward (a bowl, with a minimum) when \(a \gt 0\), downward when \(a \lt 0\).</li>
+    <li>The <b>vertex</b> sits at \(x = -\dfrac{b}{2a}\).</li>
+    <li>The <b>roots</b> (where \(y = 0\)) are \(x = \dfrac{-b \pm \sqrt{b^2 - 4ac}}{2a}\).</li>
+    <li>The <b>discriminant</b> \(D = b^2 - 4ac\) counts real roots: two if \(D \gt 0\), one if \(D = 0\), none if \(D \lt 0\).</li>
+  </ul>
+  <p><b>Completing the square</b> rewrites it as \(a(x - h)^2 + k\), where the vertex \((h, k)\) can be read off directly.</p>
+
+  <h3>Worked example</h3>
+  <p>Minimise \(L(w) = 2w^2 - 12w + 23\).</p>
+  <p>Vertex formula: \(w = -\tfrac{-12}{2\cdot2} = 3\), and \(L(3) = 18 - 36 + 23 = 5\).</p>
+  <p>Completing the square: \(2(w^2 - 6w) + 23 = 2\big((w-3)^2 - 9\big) + 23 = 2(w-3)^2 + 5\). The square is never negative, so the minimum is 5 at \(w = 3\).</p>
+  <p>Third way, with a derivative, comes in Lesson 0.8.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Solve \(x^2 - 5x + 6 = 0\) by factoring.</li>
+    <li>Solve \(2x^2 + 3x - 2 = 0\) with the formula.</li>
+    <li>How many real roots does \(x^2 + 2x + 5\) have?</li>
+    <li>Complete the square for \(x^2 + 8x + 10\) and state the vertex.</li>
+    <li>Find the minimum of \(L(w) = 3w^2 - 6w + 7\).</li>
+    <li>Solve \(\lambda^2 - 7\lambda + 10 = 0\). (You will meet this exact shape when finding eigenvalues.)</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \((x-2)(x-3) = 0\), so \(x = 2\) or \(x = 3\).</p>
+    <p>2. \(D = 9 + 16 = 25\). \(x = \tfrac{-3 \pm 5}{4}\), so \(x = \tfrac12\) or \(x = -2\).</p>
+    <p>3. \(D = 4 - 20 = -16 \lt 0\). None.</p>
+    <p>4. \((x+4)^2 - 16 + 10 = (x+4)^2 - 6\). Vertex \((-4, -6)\).</p>
+    <p>5. \(w = \tfrac{6}{6} = 1\), \(L(1) = 3 - 6 + 7 = 4\).</p>
+    <p>6. \((\lambda - 2)(\lambda - 5) = 0\), so \(\lambda = 2\) or \(\lambda = 5\).</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+print(np.roots([2, 3, -2]))        # roots of 2x^2 + 3x - 2  ->  [-2.   0.5]
+
+L = lambda w: 2*w**2 - 12*w + 23
+w = np.linspace(0, 6, 601)
+print(w[np.argmin(L(w))], L(w).min())   # 3.0  5.0</code></pre>
+
+  <div class="quiz" data-answer="b">
+    <p class="q">A loss \(L(w) = aw^2 + bw + c\) has a single lowest point only when</p>
+    <div class="opts">
+      <button data-o="a">the discriminant is greater than zero</button>
+      <button data-o="b">the coefficient a is greater than zero</button>
+      <button data-o="c">the constant c is greater than zero</button>
+    </div>
+    <p class="fb" data-ok="Right. Positive a means the parabola opens upward, so the vertex is a minimum." data-no="Not this one. The discriminant only tells you about roots, and c only shifts the curve up or down. The sign of a decides bowl or dome."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l5" id="done-l5">Mark lesson 0.5 done</label>
+</section>
+
+<!-- ================= 0.6 ================= -->
+<section class="lesson" id="l6">
+  <div class="eyebrow">Lesson 0.6</div>
+  <h2>Exponential, log, sigmoid</h2>
+  <p class="win">Goal: sketch \(e^x\), \(\ln x\) and the sigmoid from memory, with their key values.</p>
+  <p class="why">The sigmoid squeezes any number into a probability between 0 and 1. That one curve turns a linear model into logistic regression, your first classifier.</p>
+
+  <div class="lab">
+    <div class="cap">LAB 0.6a · b<sup>x</sup> and log<sub>b</sub> x are mirror images across y = x</div>
+    <canvas id="c6" aria-label="Exponential and logarithm with adjustable base"></canvas>
+    <div class="controls">
+      <label for="b6">base b <input type="range" id="b6" min="1.2" max="4" step="0.02" value="2.72"><output id="b6o"></output></label>
+      <label for="t6">probe x <input type="range" id="t6" min="-3" max="3" step="0.1" value="1"><output id="t6o"></output></label>
+    </div>
+    <div class="readout" id="r6"></div>
+    <ul class="try">
+      <li>Every exponential passes through one fixed point, whatever the base. Which? Every log passes through which?</li>
+      <li>Set the probe to 1, 2, 3. How does b<sup>x</sup> grow each step? How does that differ from a line?</li>
+    </ul>
+  </div>
+
+  <div class="lab">
+    <div class="cap">LAB 0.6b · sigmoid σ(k·(x − c))</div>
+    <canvas id="c6b" aria-label="Sigmoid curve with adjustable steepness and centre"></canvas>
+    <div class="controls">
+      <label for="k6">steepness k <input type="range" id="k6" min="0.2" max="6" step="0.1" value="1"><output id="k6o"></output></label>
+      <label for="s6">centre c <input type="range" id="s6" min="-4" max="4" step="0.1" value="0"><output id="s6o"></output></label>
+    </div>
+    <div class="readout" id="r6b"></div>
+    <ul class="try">
+      <li>Push k to its maximum. What does the curve turn into?</li>
+      <li>Whatever k is, what is the output exactly at x = c?</li>
+    </ul>
+  </div>
+
+  <h3>The idea</h3>
+  <p><b>Exponential</b> \(e^x\): always positive, equals 1 at \(x=0\), and multiplies by the same factor for each unit step. <b>Natural log</b> \(\ln x\): defined only for \(x \gt 0\), equals 0 at \(x = 1\), grows without bound but ever more slowly. They undo each other: \(\ln(e^x) = x\) and \(e^{\ln x} = x\).</p>
+  <h3>The sigmoid (new)</h3>
+  <p>This function is probably new to you. Its job: take any number z, however large or negative, and turn it into a number between 0 and 1, so the result can be read as a probability. Its symbol is \(\sigma\) (lowercase sigma), and its formula is $$\sigma(z) = \frac{1}{1 + e^{-z}}$$</p>
+  <p>To compute it, do three small steps: find \(e^{-z}\), add 1, then take 1 divided by that. Here it is for five inputs:</p>
+  <div class="tablewrap"><table>
+    <tr><th>z</th><th>\(e^{-z}\)</th><th>\(1 + e^{-z}\)</th><th>\(\sigma(z)\)</th></tr>
+    <tr><td>−4</td><td>54.6</td><td>55.6</td><td>0.018</td></tr>
+    <tr><td>−2</td><td>7.39</td><td>8.39</td><td>0.119</td></tr>
+    <tr><td>0</td><td>1</td><td>2</td><td>0.500</td></tr>
+    <tr><td>2</td><td>0.135</td><td>1.135</td><td>0.881</td></tr>
+    <tr><td>4</td><td>0.018</td><td>1.018</td><td>0.982</td></tr>
+  </table></div>
+  <p>Three things to read from the table:</p>
+  <ul>
+    <li><b>Large positive z gives an output near 1.</b> \(e^{-z}\) becomes tiny, so the bottom of the fraction is barely more than 1.</li>
+    <li><b>Large negative z gives an output near 0.</b> \(e^{-z}\) becomes huge, so you are dividing 1 by a huge number.</li>
+    <li><b>At z = 0 the output is exactly 0.5.</b> \(e^{0} = 1\), so the fraction is \(\tfrac{1}{2}\).</li>
+  </ul>
+  <p><b>One more pattern: opposite inputs give outputs that add up to 1.</b> Compare the rows for 2 and −2: \(0.881 + 0.119 = 1\). Compare 4 and −4: \(0.982 + 0.018 = 1\). This holds for every pair \(z\) and \(-z\). On the graph in Lab 0.6b it means the curve sits as far above 0.5 on the right as it sits below 0.5 on the left, at the same distance from the centre. Written as a formula: \(\sigma(-z) = 1 - \sigma(z)\). People call this the symmetry of the sigmoid.</p>
+  <p>Why it is useful: if a model says the probability of spam is \(\sigma(z)\), then the probability of not spam is \(1 - \sigma(z)\), and by this pattern that is simply \(\sigma(-z)\). Practice problem 4 below asks you to prove the pattern with algebra; the table is enough to believe it for now.</p>
+
+  <h3>Worked example</h3>
+  <p><b>The situation.</b> We want a program that reads an email and gives the probability that it is spam. It uses one piece of information: x, the number of suspicious words in the email (words such as "free", "winner", "urgent"). More suspicious words should mean a higher probability.</p>
+  <p><b>The model works in two stages.</b></p>
+  <ul>
+    <li><b>Stage 1, a score.</b> A line, as in Lesson 0.4, turns the word count into a score: \(z = 0.8x - 2\). The numbers 0.8 and −2 are the model's weight and bias. Here they are simply given to you; in a real model, training finds them. The score can be any number, negative or positive, so it is not a probability yet.</li>
+    <li><b>Stage 2, a probability.</b> The sigmoid turns that score into a number between 0 and 1: \(p = \sigma(z)\).</li>
+  </ul>
+  <p><b>Question 1. An email has 5 suspicious words. What is the probability that it is spam?</b></p>
+  <ol>
+    <li>Find the score: \(z = 0.8 \times 5 - 2 = 4 - 2 = 2\).</li>
+    <li>Find \(e^{-z}\): \(e^{-2} \approx 0.1353\).</li>
+    <li>Add 1: \(1 + 0.1353 = 1.1353\).</li>
+    <li>Divide: \(p = \dfrac{1}{1.1353} \approx 0.881\).</li>
+  </ol>
+  <p>The model says there is about an 88% chance this email is spam. Steps 2 to 4 are the row z = 2 of the table above.</p>
+  <p><b>Question 2. How many suspicious words leave the model exactly undecided, at 50%?</b></p>
+  <ol>
+    <li>From the table, \(\sigma(z) = 0.5\) happens only when the score is \(z = 0\).</li>
+    <li>So set the score to zero and solve for x: \(0.8x - 2 = 0\).</li>
+    <li>Add 2 to both sides: \(0.8x = 2\).</li>
+    <li>Divide by 0.8: \(x = 2.5\).</li>
+  </ol>
+  <p><b>Reading the answer.</b> Below 2.5 words the score is negative, so the probability is under 50% and the model leans toward "not spam". Above 2.5 words the score is positive, so the probability is over 50% and it leans toward "spam". Word counts are whole numbers, so in practice: 2 or fewer words, not spam; 3 or more, spam. The value where the model switches sides is called the <b>decision boundary</b>.</p>
+  <div class="tablewrap"><table>
+    <tr><th>Suspicious words x</th><th>Score z = 0.8x − 2</th><th>Probability σ(z)</th><th>Model leans</th></tr>
+    <tr><td>0</td><td>−2</td><td>0.119</td><td>not spam</td></tr>
+    <tr><td>2</td><td>−0.4</td><td>0.401</td><td>not spam</td></tr>
+    <tr><td>3</td><td>0.4</td><td>0.599</td><td>spam</td></tr>
+    <tr><td>5</td><td>2</td><td>0.881</td><td>spam</td></tr>
+    <tr><td>8</td><td>4.4</td><td>0.988</td><td>spam</td></tr>
+  </table></div>
+  <p>This two-stage model, a line followed by a sigmoid, is called <b>logistic regression</b>. You will study it properly in Module 7; here it is only an example of what the sigmoid is for.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Without a calculator: \(e^0\), \(\ln 1\), \(\ln e\), \(e^{\ln 5}\), \(\sigma(0)\).</li>
+    <li>A value doubles every 3 years. Write it as \(V(t) = V_0 \cdot 2^{t/3}\) and find the growth factor over 9 years.</li>
+    <li>Solve \(\sigma(z) = 0.9\) for z. (Hint: rearrange to isolate \(e^{-z}\).)</li>
+    <li>Show that \(\sigma(-z) = 1 - \sigma(z)\).</li>
+    <li>Which is larger for \(x = 20\): \(x^3\) or \(2^x\)?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(1,\ 0,\ 1,\ 5,\ \tfrac12\).</p>
+    <p>2. \(2^{9/3} = 2^3 = 8\).</p>
+    <p>3. \(\tfrac{1}{1+e^{-z}} = 0.9 \Rightarrow 1 + e^{-z} = \tfrac{1}{0.9} \Rightarrow e^{-z} = \tfrac19 \Rightarrow z = \ln 9 \approx 2.197\). In general \(z = \ln\tfrac{p}{1-p}\), called the log-odds or logit.</p>
+    <p>4. \(\sigma(-z) = \tfrac{1}{1+e^{z}}\). Multiply top and bottom by \(e^{-z}\): \(\tfrac{e^{-z}}{e^{-z}+1}\). And \(1 - \sigma(z) = \tfrac{1 + e^{-z} - 1}{1+e^{-z}} = \tfrac{e^{-z}}{1+e^{-z}}\). Equal.</p>
+    <p>5. \(20^3 = 8000\); \(2^{20} = 1{,}048{,}576\). The exponential wins, and always does eventually.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+
+sigmoid = lambda z: 1 / (1 + np.exp(-z))
+
+x = np.linspace(0, 8, 200)
+plt.plot(x, sigmoid(0.8*x - 2))
+plt.axhline(0.5, ls="--"); plt.axvline(2.5, ls="--")
+plt.xlabel("suspicious words"); plt.ylabel("P(spam)"); plt.show()
+
+print(sigmoid(2))            # 0.8808
+print(np.log(0.9/0.1))       # logit of 0.9 -> 2.197</code></pre>
+
+  <div class="quiz" data-answer="a">
+    <p class="q">What does the sigmoid output when its input is a very large negative number?</p>
+    <div class="opts">
+      <button data-o="a">A value just above zero</button>
+      <button data-o="b">A value just below zero</button>
+      <button data-o="c">A value near negative one</button>
+    </div>
+    <p class="fb" data-ok="Right. The sigmoid never leaves the interval between 0 and 1, and never reaches either end." data-no="Not this one. The denominator 1 + e^(−z) is always positive, so the output is always positive; for very negative z it is tiny but above zero."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l6" id="done-l6">Mark lesson 0.6 done</label>
+</section>
+
+<!-- ================= 0.7 ================= -->
+<section class="lesson" id="l7">
+  <div class="eyebrow">Lesson 0.7</div>
+  <h2>Sigma notation</h2>
+  <p class="win">Goal: expand any \(\sum\) into its terms and collapse a pattern back into a \(\sum\).</p>
+  <p class="why">A sum over a dataset is a <code>for</code> loop written in math. Loss functions, means, variances, dot products and expected values are all sums.</p>
+
+  <div class="lab">
+    <div class="cap">LAB 0.7 · a sum is a loop: each bar is one term</div>
+    <canvas id="c7" aria-label="Bar chart of the terms of a sum"></canvas>
+    <div class="controls">
+      <label for="term7">term <select id="term7"><option value="i">i</option><option value="sq">i²</option><option value="odd">2i − 1</option><option value="half">(1/2)^i</option></select></label>
+      <label for="n7">upper limit n <input type="range" id="n7" min="1" max="12" step="1" value="5"><output id="n7o"></output></label>
+    </div>
+    <div class="readout" id="r7"></div>
+    <ul class="try">
+      <li><b>Term 2i − 1.</b> The terms are 1, 3, 5, 7, … (the odd numbers). Set n = 1, 2, 3, 4 and write down the total each time. What pattern do the totals make?</li>
+      <li><b>Term (1/2)^i</b>, which means \(\tfrac12, \tfrac14, \tfrac18, \tfrac1{16}, \dots\): each term is half the one before. Move n from 1 up to 12 and write down the total each time. Then answer two things: (a) does the total ever go down? (b) is there a number the total never passes, however large n gets? Compare with the 2i − 1 totals, which pass any number you name.</li>
+    </ul>
+    <details><summary>What you should see</summary><div>
+      <p><b>2i − 1:</b> totals 1, 4, 9, 16. These are the square numbers: \(\sum_{i=1}^{n} (2i-1) = n^2\). They grow without limit.</p>
+      <p><b>(1/2)^i:</b> totals 0.5, 0.75, 0.875, 0.9375, … , about 0.9998 at n = 12. (a) Never down, because every term is positive. (b) It never passes 1: each new term fills exactly half of the gap that is left to 1, like walking half the remaining distance to a wall. So the total rises forever but settles toward 1.</p>
+      <p>The point: adding infinitely many positive numbers does not have to give infinity. If the terms shrink fast enough, the total levels off. That is called a <b>convergent</b> sum, written \(\sum_{i=1}^{\infty} (1/2)^i = 1\). You will meet it again with the discount factor \(\gamma\) in reinforcement learning, where future rewards are weighted by \(\gamma^t\).</p>
+    </div></details>
+  </div>
+
+  <h3>The idea</h3>
+  <p>$$\sum_{i=1}^{n} a_i = a_1 + a_2 + \dots + a_n$$ The letter under the sigma is the loop counter; it starts at the bottom value and stops at the top value. Three rules cover almost everything:</p>
+  <ul>
+    <li>Constants come out: \(\sum c\,a_i = c\sum a_i\)</li>
+    <li>Sums split: \(\sum (a_i + b_i) = \sum a_i + \sum b_i\)</li>
+    <li>Summing a constant: \(\sum_{i=1}^{n} c = nc\)</li>
+  </ul>
+  <p class="slip"><b>Common slip.</b> \(\sum a_i b_i \ne \left(\sum a_i\right)\left(\sum b_i\right)\) and \(\sum a_i^2 \ne \left(\sum a_i\right)^2\). Check with \(a = (1, 2)\): \(1+4 = 5\) but \((1+2)^2 = 9\).</p>
+  <p>Statistics in this language: mean \(\bar{x} = \frac1n\sum x_i\), variance \(s^2 = \frac{1}{n-1}\sum (x_i - \bar{x})^2\). And the dot product you already met: \(a\cdot b = \sum a_i b_i\).</p>
+
+  <h3>Worked example</h3>
+  <p>Data \(x = (2, 4, 9)\). Mean: \(\tfrac{15}{3} = 5\). Deviations: \(-3, -1, 4\) (they always sum to zero). Squares: \(9, 1, 16\). Variance: \(\tfrac{26}{2} = 13\). Standard deviation: \(\sqrt{13} \approx 3.61\).</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Expand and evaluate \(\sum_{k=0}^{3} 2^k\).</li>
+    <li>Write \(3 + 6 + 9 + \dots + 30\) in sigma notation.</li>
+    <li>Use the rules and \(\sum_{i=1}^{n} i = \tfrac{n(n+1)}{2}\) to evaluate \(\sum_{i=1}^{10} (3i + 2)\).</li>
+    <li>For \(a = (1, 3, -2)\) and \(b = (4, 0, 5)\), compute \(\sum a_i b_i\).</li>
+    <li>For data \((1, 5, 6, 8)\) compute the mean and the sample variance.</li>
+    <li>Show that \(\sum_{i=1}^{n} (x_i - \bar{x}) = 0\).</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(1 + 2 + 4 + 8 = 15\).</p>
+    <p>2. \(\sum_{i=1}^{10} 3i\).</p>
+    <p>3. Split the sum first, then use one rule on each piece: \(\sum_{i=1}^{10}(3i+2) = 3\sum_{i=1}^{10} i + \sum_{i=1}^{10} 2\). The first piece is \(3\cdot\tfrac{10\cdot11}{2} = 3\cdot55 = 165\). The second adds the constant 2 ten times: \(10\cdot2 = 20\). Total \(165 + 20 = 185\). Check by listing: \(5 + 8 + 11 + \dots + 32 = 185\).</p>
+    <p>4. \(4 + 0 - 10 = -6\).</p>
+    <p>5. Mean \(= 5\). Deviations \(-4, 0, 1, 3\). Squares sum to \(26\). Variance \(= \tfrac{26}{3} \approx 8.67\).</p>
+    <p>6. \(\sum x_i - \sum \bar{x} = n\bar{x} - n\bar{x} = 0\), using \(\sum x_i = n\bar{x}\) and the constant rule.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+total = 0
+for i in range(1, 11):        # sigma from i=1 to 10
+    total += 3*i + 2
+print(total)                  # 185
+
+x = np.array([1, 5, 6, 8])
+print(x.mean(), x.var(ddof=1))        # 5.0  8.667   (ddof=1 -> divide by n-1)
+print(np.sum((x - x.mean())))         # 0.0</code></pre>
+
+  <div class="quiz" data-answer="b">
+    <p class="q">What is \(\sum_{i=1}^{4} 5\)?</p>
+    <div class="opts">
+      <button data-o="a">5, since nothing depends on i</button>
+      <button data-o="b">20, since 5 is added four times</button>
+      <button data-o="c">10, since i runs from 1 up to 4</button>
+    </div>
+    <p class="fb" data-ok="Right. The loop still runs four times, adding 5 each time." data-no="Not this one. The loop runs once for each i from 1 to 4, adding the constant every time: 5 + 5 + 5 + 5."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l7" id="done-l7">Mark lesson 0.7 done</label>
+</section>
+
+<!-- ================= 0.8 ================= -->
+<section class="lesson" id="l8">
+  <div class="eyebrow">Lesson 0.8</div>
+  <h2>The derivative</h2>
+  <p class="win">Goal: explain a derivative as a slope, and differentiate with four rules.</p>
+  <p class="why">The derivative of the loss tells the model which way to nudge each weight and by how much. Backpropagation is the chain rule applied many times.</p>
+
+  <div class="lab">
+    <div class="cap">LAB 0.8 · shrink h and watch the secant become the tangent</div>
+    <canvas id="c8" aria-label="Curve with secant line through two points that approaches the tangent"></canvas>
+    <div class="controls">
+      <label for="f8">f(x) = <select id="f8"><option value="sq">x²</option><option value="cube">x³ − 3x</option><option value="sin">sin x</option></select></label>
+      <label for="x8">point x <input type="range" id="x8" min="-2.5" max="2.5" step="0.05" value="1"><output id="x8o"></output></label>
+      <label for="h8">gap h <input type="range" id="h8" min="0.01" max="2" step="0.01" value="1.5"><output id="h8o"></output></label>
+    </div>
+    <div class="readout" id="r8"></div>
+    <ul class="try">
+      <li>With x², set x = 1 and shrink h. What number does the secant slope approach? Try x = 2, then x = −1. Guess the rule.</li>
+      <li>With x³ − 3x, find the two x values where the tangent is flat. What is special about the curve there?</li>
+    </ul>
+  </div>
+
+  <h3>The idea</h3>
+  <p>The slope between two points on a curve is \(\frac{f(x+h) - f(x)}{h}\). Let the gap h shrink toward zero and that slope settles on a single number, the <b>derivative</b>:</p>
+  <p>$$f'(x) = \frac{df}{dx} = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}$$</p>
+  <p>It is the slope of the tangent line: how fast the output changes per unit change of input, at that exact point. Positive means rising, negative means falling, zero means flat (a candidate minimum or maximum).</p>
+  <div class="tablewrap"><table>
+    <tr><th>Rule</th><th>Statement</th><th>Example</th></tr>
+    <tr><td>Power</td><td>\(\frac{d}{dx}x^n = n x^{n-1}\)</td><td>\(\frac{d}{dx}x^5 = 5x^4\)</td></tr>
+    <tr><td>Constant, sum</td><td>\((c f)' = c f'\), \((f+g)' = f' + g'\)</td><td>\((3x^2 + 4x)' = 6x + 4\)</td></tr>
+    <tr><td>Exp and log</td><td>\((e^x)' = e^x\), \((\ln x)' = \frac1x\)</td><td></td></tr>
+    <tr><td>Product</td><td>\((fg)' = f'g + fg'\)</td><td>\((x e^x)' = e^x + x e^x\)</td></tr>
+    <tr><td>Chain</td><td>\(\big(g(f(x))\big)' = g'(f(x))\cdot f'(x)\)</td><td>\(\big((3x+1)^2\big)' = 2(3x+1)\cdot 3\)</td></tr>
+    <tr><td>Exp with a multiplier (the chain rule applied to \(e^{kx}\))</td><td>\(\big(e^{kx}\big)' = k\,e^{kx}\)</td><td>\(\big(e^{3x}\big)' = 3e^{3x}\), \(\big(e^{-x}\big)' = -e^{-x}\)</td></tr>
+    <tr><td>Any other base a (with \(a \gt 0\))</td><td>\(\big(a^{x}\big)' = a^{x}\ln a\)<br>\(\big(a^{kx}\big)' = k\,a^{kx}\ln a\)</td><td>\(\big(2^{x}\big)' = 2^{x}\ln 2 \approx 0.693\cdot 2^{x}\)<br>\(\big(10^{3x}\big)' = 3\cdot 10^{3x}\ln 10\)</td></tr>
+  </table></div>
+  <p><b>Where the extra \(\ln a\) comes from.</b> Any positive base can be rewritten with e: since \(a = e^{\ln a}\), we get \(a^{x} = e^{x\ln a}\). That is \(e^{kx}\) with \(k = \ln a\), so the row above gives \(\ln a \cdot e^{x\ln a} = a^{x}\ln a\). The base e is the one case where the extra factor disappears, because \(\ln e = 1\). That is the reason e is the standard base in calculus and ML.</p>
+  <p>Chain rule in words: derivative of the outside (leave the inside alone), times derivative of the inside.</p>
+
+  <h3>Worked examples</h3>
+  <p><b>From the definition.</b> For \(f(x) = x^2\): \(\frac{(x+h)^2 - x^2}{h} = \frac{2xh + h^2}{h} = 2x + h\). As \(h \to 0\) this becomes \(2x\). That is what the lab showed you.</p>
+  <p><b>Minimum of a loss.</b> \(L(w) = 2w^2 - 12w + 23\) from Lesson 0.5. \(L'(w) = 4w - 12\). Set it to zero: \(w = 3\). Same answer as the vertex formula, and this method works for curves that are not parabolas.</p>
+  <p><b>Chain rule on one squared error.</b> \(L(w) = (y - wx)^2\) with x and y fixed numbers. Outside is \((\cdot)^2\), inside is \(y - wx\). So \(\frac{dL}{dw} = 2(y - wx)\cdot(-x) = -2x(y - wx)\).</p>
+  <p><b>Sigmoid, step by step (new material, safe to skip on a first pass).</b> This example uses the sigmoid from Lesson 0.6: \(\sigma(z) = \dfrac{1}{1+e^{-z}}\), the curve that squeezes any number into a value between 0 and 1. If you have not met it before Lesson 0.6, that is expected, and nothing else in this lesson depends on it. We differentiate it because training a classifier needs this slope, and the answer turns out to be unusually simple.</p>
+  <p><b>Step 1. Rewrite as a power.</b> \(\sigma(z) = (1+e^{-z})^{-1}\). The outside function is \((\ \cdot\ )^{-1}\). The inside is \(u = 1+e^{-z}\).</p>
+  <p><b>Step 2. Differentiate the outside</b> with the power rule, leaving the inside alone: \(-u^{-2} = -(1+e^{-z})^{-2}\).</p>
+  <p><b>Step 3. Differentiate the inside,</b> \(1 + e^{-z}\), one piece at a time.</p>
+  <ul>
+    <li>The 1 is a constant, so its derivative is 0.</li>
+    <li>\(e^{-z}\) is not the plain \(e^{z}\) from the rules table, because its exponent is \(-z\) and not just \(z\). It is a function inside a function, so it needs the chain rule. The outside is \(e^{(\ \cdot\ )}\). The inside is \(-z\).
+      <ul>
+        <li>Derivative of the outside, with the inside left alone: \(e^{-z}\). (e to the power of anything differentiates to itself.)</li>
+        <li>Derivative of the inside: \(-z\) is a line with slope \(-1\), so its derivative is \(-1\).</li>
+        <li>Multiply the two: \(e^{-z}\cdot(-1) = -e^{-z}\).</li>
+      </ul>
+    </li>
+  </ul>
+  <p>Adding the pieces, the derivative of the inside is \(0 + (-e^{-z}) = -e^{-z}\). The same reasoning gives a pattern worth remembering, now in the rules table above: \(\big(e^{kx}\big)' = k\,e^{kx}\). Here \(k = -1\).</p>
+  <p><b>Step 4. Multiply them.</b> $$\sigma'(z) = -(1+e^{-z})^{-2}\cdot(-e^{-z}) = \frac{e^{-z}}{(1+e^{-z})^2}$$ The two minus signs cancel. This is already a correct answer.</p>
+  <p><b>Step 5. Tidy it.</b> This step is optional: Step 4 is already the correct derivative. Step 5 only rewrites it in a shorter form.</p>
+  <p><b>5a. Split the fraction in two.</b> The bottom is squared, which means \((1+e^{-z})\) times itself. So the fraction can be written as a product of two fractions: $$\frac{e^{-z}}{(1+e^{-z})^2} = \frac{1}{1+e^{-z}}\cdot\frac{e^{-z}}{1+e^{-z}}$$ Check it by multiplying back: tops give \(1\cdot e^{-z}\), bottoms give \((1+e^{-z})^2\).</p>
+  <p><b>5b. Recognise the first factor.</b> \(\dfrac{1}{1+e^{-z}}\) is the definition of \(\sigma(z)\).</p>
+  <p><b>5c. Find out what the second factor is.</b> Work out \(1 - \sigma(z)\) and see what you get. Start from $$1 - \sigma(z) = 1 - \frac{1}{1+e^{-z}}$$ To subtract, both parts need the same bottom, so write the 1 as \(\dfrac{1+e^{-z}}{1+e^{-z}}\): $$\frac{1+e^{-z}}{1+e^{-z}} - \frac{1}{1+e^{-z}} = \frac{1 + e^{-z} - 1}{1+e^{-z}} = \frac{e^{-z}}{1+e^{-z}}$$ That is exactly the second factor. So the second factor equals \(1 - \sigma(z)\).</p>
+  <p><b>5d. Put the two together.</b> $$\sigma'(z) = \sigma(z)\,\big(1 - \sigma(z)\big)$$</p>
+  <p><b>Check with numbers.</b> Recall the main idea of this lesson: the derivative at a point is the slope of the curve at that point, meaning how fast the output changes when the input changes a little. So \(\sigma'(z)\) is the slope of the sigmoid curve at z. To get it at a particular z, put that z into the formula we just found.</p>
+  <p><b>At z = 0.</b> From Lesson 0.6, \(\sigma(0) = 0.5\). Then $$\sigma'(0) = \sigma(0)\,\big(1 - \sigma(0)\big) = 0.5 \times (1 - 0.5) = 0.5 \times 0.5 = 0.25$$ So the slope of the sigmoid at z = 0 is 0.25.</p>
+  <p><b>What a slope of 0.25 means.</b> Near z = 0, each small step in z raises the output by about a quarter of that step. Move z from 0 to 0.1 and the output should rise by about \(0.25 \times 0.1 = 0.025\), from 0.5 to about 0.525. The true value is \(\sigma(0.1) = 0.52498\). The formula predicts it correctly.</p>
+  <p><b>At z = 2.</b> \(\sigma(2) = 0.881\), so \(\sigma'(2) = 0.881 \times (1 - 0.881) = 0.881 \times 0.119 \approx 0.105\). The slope is smaller here, which matches the picture: the curve is steepest in the middle and flattens out toward the ends. You can see both in Lab 0.6b with k = 1 and c = 0; its readout shows the slope at the centre as k/4 = 0.25.</p>
+  <p><b>Why this result is used so much.</b> The slope is computed from the output alone: once a model has produced \(\sigma(z)\), its derivative costs one subtraction and one multiplication. You will meet this identity again in logistic regression and backpropagation, and it will be derived again there.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Differentiate \(f(x) = 4x^3 - 2x^2 + 7x - 9\).</li>
+    <li>Differentiate \(f(x) = \sqrt{x} + \dfrac{1}{x}\). (Rewrite as powers first.)</li>
+    <li>Differentiate \(f(x) = (2x - 5)^4\).</li>
+    <li>Differentiate \(f(x) = e^{-x^2}\).</li>
+    <li>Differentiate \(f(x) = x^2 \ln x\).</li>
+    <li>Differentiate \(f(x) = \ln(1 + e^{x})\) and simplify. Recognise the answer?</li>
+    <li>Find where \(f(x) = x^3 - 3x\) has a flat tangent, and decide for each point whether it is a minimum or maximum using \(f''\).</li>
+    <li>From the limit definition, show that \(f(x) = 3x + 2\) has derivative 3.</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(12x^2 - 4x + 7\).</p>
+    <p>2. \(x^{1/2} + x^{-1} \to \tfrac12 x^{-1/2} - x^{-2} = \dfrac{1}{2\sqrt{x}} - \dfrac{1}{x^2}\).</p>
+    <p>3. \(4(2x-5)^3\cdot 2 = 8(2x-5)^3\).</p>
+    <p>4. \(e^{-x^2}\cdot(-2x) = -2x\,e^{-x^2}\).</p>
+    <p>5. Product rule: \(2x\ln x + x^2\cdot\tfrac1x = 2x\ln x + x\).</p>
+    <p>6. \(\dfrac{e^x}{1+e^x}\). Divide top and bottom by \(e^x\): \(\dfrac{1}{1+e^{-x}} = \sigma(x)\). This function is called softplus, and its slope is the sigmoid.</p>
+    <p>7. \(f'(x) = 3x^2 - 3 = 0 \Rightarrow x = \pm1\). \(f''(x) = 6x\). At \(x = 1\), \(f'' = 6 \gt 0\): curving upward, a local minimum (\(f = -2\)). At \(x = -1\), \(f'' = -6 \lt 0\): a local maximum (\(f = 2\)).</p>
+    <p>8. \(\dfrac{3(x+h)+2 - (3x+2)}{h} = \dfrac{3h}{h} = 3\) for every h, so the limit is 3. A line has the same slope everywhere.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+f  = lambda x: x**3 - 3*x
+df = lambda x: 3*x**2 - 3            # by hand
+
+def numeric(f, x, h=1e-5):           # the definition, with a tiny h
+    return (f(x + h) - f(x - h)) / (2*h)
+
+for x in [-1, 0, 1, 2]:
+    print(x, df(x), round(numeric(f, x), 6))
+
+# symbolic check
+import sympy as sp
+z = sp.symbols('z')
+print(sp.simplify(sp.diff(sp.log(1 + sp.exp(z)), z)))</code></pre>
+
+  <p class="watch">Watch if the idea still feels slippery: 3Blue1Brown, <a href="https://www.3blue1brown.com/topics/calculus">Essence of Calculus</a>, the chapters on the paradox of the derivative and derivative formulas through geometry. For more drill problems: <a href="https://tutorial.math.lamar.edu/">Paul's Online Notes</a>, Calculus I, Derivatives.</p>
+
+  <div class="quiz" data-answer="c">
+    <p class="q">What is the derivative of \((5x + 1)^3\)?</p>
+    <div class="opts">
+      <button data-o="a">\(3(5x+1)^2\)</button>
+      <button data-o="b">\(5(5x+1)^2\)</button>
+      <button data-o="c">\(15(5x+1)^2\)</button>
+    </div>
+    <p class="fb" data-ok="Right. Outside gives 3(5x+1)², inside gives 5, and they multiply." data-no="Not this one. The chain rule needs both pieces: 3(5x+1)² from the outside, times 5 from the inside."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l8" id="done-l8">Mark lesson 0.8 done</label>
+</section>
+
+<!-- ================= 0.9 ================= -->
+<section class="lesson" id="l9">
+  <div class="eyebrow">Lesson 0.9</div>
+  <h2>Gradient descent preview</h2>
+  <p class="win">Goal: run gradient descent by hand for three steps and say what the learning rate does.</p>
+  <p class="why">Setting the derivative to zero and solving works for a parabola. A neural network has millions of weights and no formula for the bottom, so instead we walk downhill a step at a time. This is how nearly every modern model is trained. Module 3 covers it fully; this is the first taste.</p>
+
+  <div class="lab">
+    <div class="cap">LAB 0.9 · L(w) = (w − 2)² + 1, walking downhill</div>
+    <canvas id="c9" aria-label="Loss curve with gradient descent steps"></canvas>
+    <div class="controls">
+      <label for="lr9">learning rate η <input type="range" id="lr9" min="0.05" max="1.1" step="0.01" value="0.2"><output id="lr9o"></output></label>
+      <label for="s9">start w₀ <input type="range" id="s9" min="-2" max="6" step="0.1" value="5.5"><output id="s9o"></output></label>
+      <button id="step9" type="button">Take one step</button>
+      <button id="run9" type="button">Take 10 steps</button>
+      <button id="reset9" type="button">Reset</button>
+    </div>
+    <div class="readout" id="r9"></div>
+    <ul class="try">
+      <li>η = 0.1: how many steps to get within 0.01 of the minimum?</li>
+      <li>η = 0.5: what happens on the very first step? Can you explain it from the update rule?</li>
+      <li>η = 0.9, then η = 1.05. Describe each behaviour in one word.</li>
+    </ul>
+  </div>
+
+  <h3>The idea</h3>
+  <p>The derivative points uphill: where \(L'(w) \gt 0\), increasing w raises the loss. So step the opposite way:</p>
+  <p>$$w_{\text{new}} = w_{\text{old}} - \eta\, L'(w_{\text{old}})$$</p>
+  <p>\(\eta\) (eta) is the <b>learning rate</b>, the step size. The step is automatically large where the slope is steep and small near the flat bottom. Too small an \(\eta\) is slow; too large overshoots and can diverge.</p>
+  <p>With more than one weight, each weight gets its own derivative, taken while holding the others fixed. That is a <b>partial derivative</b>, written \(\frac{\partial L}{\partial w}\). Collect them into a list and you have the <b>gradient</b> \(\nabla L\), which Module 2 develops in full.</p>
+
+  <h3>Worked example</h3>
+  <p>\(L(w) = (w-2)^2 + 1\), so \(L'(w) = 2(w - 2)\). Start at \(w_0 = 5\) with \(\eta = 0.25\).</p>
+  <div class="tablewrap"><table>
+    <tr><th>Step</th><th>w</th><th>L'(w)</th><th>update</th><th>new w</th></tr>
+    <tr><td>1</td><td>5</td><td>6</td><td>5 − 0.25·6</td><td>3.5</td></tr>
+    <tr><td>2</td><td>3.5</td><td>3</td><td>3.5 − 0.25·3</td><td>2.75</td></tr>
+    <tr><td>3</td><td>2.75</td><td>1.5</td><td>2.75 − 0.25·1.5</td><td>2.375</td></tr>
+  </table></div>
+  <p>The distance to the minimum halves each step: 3, 1.5, 0.75, 0.375.</p>
+  <p><b>Partial derivatives.</b> For \(L(w, b) = (y - wx - b)^2\) with x, y fixed: \(\frac{\partial L}{\partial w} = -2x(y - wx - b)\) and \(\frac{\partial L}{\partial b} = -2(y - wx - b)\). Same chain rule; the only change is which letter you treat as the variable.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>For \(L(w) = w^2 - 6w + 10\), start at \(w_0 = 0\), \(\eta = 0.1\). Do three steps.</li>
+    <li>Same L, same start, \(\eta = 1\). Do three steps. What happens?</li>
+    <li>For \(L(w) = (w-2)^2 + 1\), show that each step multiplies the distance \(w - 2\) by \((1 - 2\eta)\). For which \(\eta\) does it converge?</li>
+    <li>Find \(\frac{\partial f}{\partial x}\) and \(\frac{\partial f}{\partial y}\) for \(f(x, y) = 3x^2 y + y^3 - 5x\).</li>
+    <li>One data point \((x, y) = (2, 7)\), model \(\hat{y} = wx + b\), current \(w = 1, b = 1\), loss \((y - \hat{y})^2\). Compute both partial derivatives and do one update with \(\eta = 0.05\).</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(L' = 2w - 6\). Step 1: \(0 - 0.1(-6) = 0.6\). Step 2: \(0.6 - 0.1(-4.8) = 1.08\). Step 3: \(1.08 - 0.1(-3.84) = 1.464\). Heading toward 3.</p>
+    <p>2. Step 1: \(0 - (-6) = 6\). Step 2: \(6 - 6 = 0\). Step 3: \(6\). It bounces between 0 and 6 forever, never reaching 3.</p>
+    <p>3. \(w_{new} - 2 = w - 2 - 2\eta(w-2) = (1-2\eta)(w-2)\). Converges when \(|1 - 2\eta| \lt 1\), that is \(0 \lt \eta \lt 1\). At \(\eta = 0.5\) the factor is zero: one step lands exactly on the minimum.</p>
+    <p>4. \(\frac{\partial f}{\partial x} = 6xy - 5\). \(\frac{\partial f}{\partial y} = 3x^2 + 3y^2\).</p>
+    <p>5. \(\hat{y} = 3\), residual \(= 4\). \(\frac{\partial L}{\partial w} = -2(2)(4) = -16\). \(\frac{\partial L}{\partial b} = -2(4) = -8\). New \(w = 1 + 0.05\cdot16 = 1.8\). New \(b = 1 + 0.05\cdot 8 = 1.4\). New prediction \(= 5.0\), closer to 7.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+x = np.array([1, 2, 3, 4, 5, 6])
+y = np.array([2.1, 2.9, 4.2, 4.8, 6.1, 6.9])
+
+w, b, eta = 0.0, 0.0, 0.02
+for step in range(2000):
+    resid = y - (w*x + b)
+    dw = -2 * np.mean(x * resid)     # dMSE/dw
+    db = -2 * np.mean(resid)         # dMSE/db
+    w, b = w - eta*dw, b - eta*db
+
+print(w, b)                  # about 0.98  1.08
+print(np.polyfit(x, y, 1))   # the exact answer, for comparison</code></pre>
+  <p>That loop is the whole of linear regression training. Change <code>eta</code> to 0.07 and watch it blow up.</p>
+
+  <div class="quiz" data-answer="a">
+    <p class="q">At the current weight the derivative of the loss is negative. Which way does gradient descent move the weight?</p>
+    <div class="opts">
+      <button data-o="a">It increases the weight slightly</button>
+      <button data-o="b">It decreases the weight slightly</button>
+      <button data-o="c">It leaves the weight unchanged</button>
+    </div>
+    <p class="fb" data-ok="Right. Subtracting a negative number adds: the loss falls to the right, so we move right." data-no="Not this one. The update subtracts η times the derivative. A negative derivative means the loss slopes down to the right, and subtracting a negative moves w up."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l9" id="done-l9">Mark lesson 0.9 done</label>
+</section>
+
+<!-- ================= 0.10 ================= -->
+<section class="lesson" id="l10">
+  <div class="eyebrow">Lesson 0.10</div>
+  <h2>Checkpoint and cheat sheet</h2>
+  <p class="win">Goal: confirm you are ready for Linear Algebra, or find the one lesson to revisit.</p>
+  <p>Do these twelve on paper without looking back. Give yourself about 40 minutes. Then open the solutions; each one names the lesson to revisit if you missed it.</p>
+
+  <ol class="ex">
+    <li>Read aloud and expand: \(\sum_{i=1}^{3} (y_i - \hat{y}_i)^2\).</li>
+    <li>Simplify \(\ln\!\big(e^{2}\sqrt{x}\big)\).</li>
+    <li>Simplify \(\sqrt{50}\). Does \(\sqrt{21}\) simplify?</li>
+    <li>Solve \(3^{x} = 20\).</li>
+    <li>For \(f(x) = x^2 + 1\) and \(g(x) = 3x\), find \(f(g(2))\) and \(g(f(2))\).</li>
+    <li>Find the line through \((0, 4)\) and \((3, -2)\).</li>
+    <li>MSE of \(\hat{y} = 2x\) on the data \((1, 3), (2, 3), (3, 7)\).</li>
+    <li>Solve \(\lambda^2 - 4\lambda - 5 = 0\).</li>
+    <li>Compute \(\sigma(0)\), and say what \(\sigma(10)\) is close to.</li>
+    <li>Mean and sample variance of \((3, 5, 10)\).</li>
+    <li>Differentiate \(f(x) = (1 - 4x)^3 + \ln x\).</li>
+    <li>\(L(w) = (w+1)^2\), \(w_0 = 3\), \(\eta = 0.25\). Two steps of gradient descent.</li>
+  </ol>
+  <details><summary>Solutions and where to look</summary><div>
+    <p>1. \((y_1-\hat{y}_1)^2 + (y_2-\hat{y}_2)^2 + (y_3-\hat{y}_3)^2\): the sum of squared errors over three examples. <i>Lessons 0.1, 0.7</i></p>
+    <p>2. \(2 + \tfrac12\ln x\). <i>0.2</i></p>
+    <p>3. \(5\sqrt2\). No: \(21 = 3\cdot7\). <i>0.2</i></p>
+    <p>4. \(x = \dfrac{\ln 20}{\ln 3} \approx 2.727\). <i>0.2</i></p>
+    <p>5. \(f(6) = 37\); \(g(5) = 15\). <i>0.3</i></p>
+    <p>6. \(w = -2\), \(b = 4\): \(y = -2x + 4\). <i>0.4</i></p>
+    <p>7. Predictions 2, 4, 6; residuals \(1, -1, 1\); MSE \(= 1\). <i>0.4</i></p>
+    <p>8. \((\lambda - 5)(\lambda + 1) = 0\): \(\lambda = 5\) or \(-1\). <i>0.5</i></p>
+    <p>9. \(\tfrac12\); very close to 1 (about 0.99995). <i>0.6</i></p>
+    <p>10. Mean 6. Deviations \(-3, -1, 4\). Variance \(\tfrac{26}{2} = 13\). <i>0.7</i></p>
+    <p>11. \(3(1-4x)^2(-4) + \tfrac1x = -12(1-4x)^2 + \tfrac1x\). <i>0.8</i></p>
+    <p>12. \(L' = 2(w+1)\). Step 1: \(3 - 0.25\cdot8 = 1\). Step 2: \(1 - 0.25\cdot4 = 0\). <i>0.9</i></p>
+    <p><b>Reading your score.</b> 10 or more: go to Module 1. 7 to 9: redo the practice sets of the lessons you missed. Fewer: work through those lessons again with the labs, and bring the questions you are stuck on to a tutoring session in chat.</p>
+  </div></details>
+
+  <h3>Cheat sheet</h3>
+  <div class="sheet">
+    <div><h4>Exponents and logs</h4>\(a^m a^n = a^{m+n}\)<br>\((a^m)^n = a^{mn}\)<br>\(a^{-n} = 1/a^n\)<br>\(\log(xy) = \log x + \log y\)<br>\(\log x^n = n\log x\)<br>\(\log_b x = y \iff b^y = x\)</div>
+    <div><h4>Lines and quadratics</h4>\(w = \dfrac{y_2 - y_1}{x_2 - x_1}\)<br>vertex: \(x = -\dfrac{b}{2a}\)<br>roots: \(\dfrac{-b \pm \sqrt{b^2-4ac}}{2a}\)<br>\(D = b^2 - 4ac\): 2 roots if \(D \gt 0\), 1 if \(D = 0\), none if \(D \lt 0\)<br>completed square: \(a(x-h)^2 + k\), vertex \((h, k)\)<br>\(a \gt 0\): the vertex is the minimum</div>
+    <div><h4>Sums and statistics</h4>\(\sum c\,a_i = c\sum a_i\)<br>\(\sum_{i=1}^n c = nc\)<br>\(\bar{x} = \frac1n \sum x_i\)<br>\(s^2 = \frac{1}{n-1}\sum (x_i - \bar{x})^2\)<br>\(\text{MSE} = \frac1n\sum (y_i - \hat{y}_i)^2\)<br>\(\sum (a_i + b_i) = \sum a_i + \sum b_i\)<br>\(\sum_{i=1}^{n} i = \frac{n(n+1)}{2}\)<br>\(\sum_{i=1}^{\infty} (1/2)^i = 1\) (a convergent sum)</div>
+    <div><h4>Key curves</h4>\(e^0 = 1,\ \ln 1 = 0\)<br>\(\sigma(z) = \dfrac{1}{1+e^{-z}}\)<br>output always between 0 and 1<br>\(\sigma(0) = \tfrac12\); large \(z \to 1\); very negative \(z \to 0\)<br>\(\sigma(-z) = 1 - \sigma(z)\)<br>\(\sigma' = \sigma(1-\sigma)\), largest at \(z=0\): \(0.25\)<br>decision boundary: where the score \(z = 0\)<br>\(\text{ReLU}(z) = \max(0, z)\)</div>
+    <div><h4>Derivatives</h4>\((x^n)' = n x^{n-1}\)<br>\((e^x)' = e^x\), \((\ln x)' = 1/x\)<br>\(\big(e^{kx}\big)' = k\,e^{kx}\), so \(\big(e^{-x}\big)' = -e^{-x}\)<br>\(\big(a^{x}\big)' = a^{x}\ln a\)<br>\((fg)' = f'g + fg'\)<br>\(\big(g(f)\big)' = g'(f)\cdot f'\) (outside, times inside)<br>derivative at a point = slope of the curve there</div>
+    <div><h4>Gradient descent</h4>\(w \leftarrow w - \eta\,\dfrac{\partial L}{\partial w}\)<br>flat point: \(L'(w) = 0\)<br>\(L'' \gt 0\): minimum</div>
+  </div>
+
+  <h3>What comes next</h3>
+  <p>Module 1, Linear Algebra: vectors and projections, matrices as transformations, systems and inverses, determinants, change of basis, eigenvalues and eigenvectors, diagonalization, SVD, and PCA.</p>
+  <label class="donebox"><input type="checkbox" data-done="l10" id="done-l10">Mark lesson 0.10 done</label>
+</section>
+</main>
+</div>
+
+<script>
+(function(){
+"use strict";
+var redraws=[];
+function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function $(id){return document.getElementById(id);}
+function fmt(v,d){if(!isFinite(v))return "undefined";var s=v.toFixed(d===undefined?2:d);if(parseFloat(s)===0)s=(0).toFixed(d===undefined?2:d);return s;}
+
+function Plot(id,xmin,xmax,ymin,ymax,step){
+  this.c=$(id);this.g=this.c.getContext("2d");
+  this.xmin=xmin;this.xmax=xmax;this.ymin=ymin;this.ymax=ymax;this.step=step||1;
+}
+Plot.prototype.X=function(x){return (x-this.xmin)/(this.xmax-this.xmin)*this.w;};
+Plot.prototype.Y=function(y){return this.h-(y-this.ymin)/(this.ymax-this.ymin)*this.h;};
+Plot.prototype.clear=function(){
+  var c=this.c,g=this.g,dpr=window.devicePixelRatio||1;
+  this.w=c.clientWidth;this.h=c.clientHeight;
+  c.width=Math.round(this.w*dpr);c.height=Math.round(this.h*dpr);
+  g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,this.w,this.h);
+  var grid=css("--grid"),muted=css("--muted");
+  g.lineWidth=1;g.strokeStyle=grid;g.fillStyle=muted;g.font="11px 'IBM Plex Mono',monospace";
+  var sx=this.step,sy=this.ystep||this.step,x,y;
+  for(x=Math.ceil(this.xmin/sx)*sx;x<=this.xmax+1e-9;x+=sx){g.beginPath();g.moveTo(this.X(x),0);g.lineTo(this.X(x),this.h);g.stroke();}
+  for(y=Math.ceil(this.ymin/sy)*sy;y<=this.ymax+1e-9;y+=sy){g.beginPath();g.moveTo(0,this.Y(y));g.lineTo(this.w,this.Y(y));g.stroke();}
+  g.strokeStyle=muted;g.lineWidth=1.2;
+  var ax=Math.min(Math.max(0,this.ymin),this.ymax),ay=Math.min(Math.max(0,this.xmin),this.xmax);
+  g.beginPath();g.moveTo(0,this.Y(ax));g.lineTo(this.w,this.Y(ax));g.stroke();
+  g.beginPath();g.moveTo(this.X(ay),0);g.lineTo(this.X(ay),this.h);g.stroke();
+  g.textAlign="center";g.textBaseline="top";
+  for(x=Math.ceil(this.xmin/sx)*sx;x<=this.xmax+1e-9;x+=sx){if(Math.abs(x)<1e-9)continue;var px=this.X(x);if(px<12||px>this.w-12)continue;g.fillText(String(Math.round(x*100)/100),px,Math.min(this.Y(ax)+4,this.h-14));}
+  g.textAlign="right";g.textBaseline="middle";
+  for(y=Math.ceil(this.ymin/sy)*sy;y<=this.ymax+1e-9;y+=sy){if(Math.abs(y)<1e-9)continue;var py=this.Y(y);if(py<8||py>this.h-8)continue;g.fillText(String(Math.round(y*100)/100),Math.max(this.X(ay)-5,26),py);}
+};
+Plot.prototype.fn=function(f,color,width,dash){
+  var g=this.g,pen=false,i,n=Math.max(300,Math.round(this.w)),lastY=null;
+  g.strokeStyle=color;g.lineWidth=width||2.2;g.setLineDash(dash||[]);g.beginPath();
+  for(i=0;i<=n;i++){
+    var x=this.xmin+(this.xmax-this.xmin)*i/n,y=f(x);
+    if(!isFinite(y)||(lastY!==null&&Math.abs(y-lastY)>(this.ymax-this.ymin)*2)){pen=false;lastY=null;continue;}
+    var py=this.Y(y);if(py<-2000)py=-2000;if(py>this.h+2000)py=this.h+2000;
+    if(!pen){g.moveTo(this.X(x),py);pen=true;}else g.lineTo(this.X(x),py);
+    lastY=y;
+  }
+  g.stroke();g.setLineDash([]);
+};
+Plot.prototype.seg=function(x1,y1,x2,y2,color,width,dash){
+  var g=this.g;g.strokeStyle=color;g.lineWidth=width||1.5;g.setLineDash(dash||[]);
+  g.beginPath();g.moveTo(this.X(x1),this.Y(y1));g.lineTo(this.X(x2),this.Y(y2));g.stroke();g.setLineDash([]);
+};
+Plot.prototype.dot=function(x,y,color,r){
+  var g=this.g;g.fillStyle=color;g.beginPath();g.arc(this.X(x),this.Y(y),r||5,0,Math.PI*2);g.fill();
+  g.strokeStyle=css("--surface");g.lineWidth=1.5;g.stroke();
+};
+Plot.prototype.label=function(x,y,t,color,dx,dy){
+  var g=this.g;g.fillStyle=color||css("--ink");g.font="12px 'IBM Plex Mono',monospace";g.textAlign="left";g.textBaseline="middle";
+  var px=this.X(x)+(dx===undefined?8:dx),py=this.Y(y)+(dy===undefined?-10:dy);
+  var tw=g.measureText(t).width;if(px+tw>this.w-4)px=this.w-4-tw;if(px<4)px=4;if(py<10)py=10;if(py>this.h-10)py=this.h-10;
+  g.fillText(t,px,py);
+};
+function bind(ids,draw){ids.forEach(function(id){$(id).addEventListener("input",draw);});redraws.push(draw);draw();}
+function out(id,d){var e=$(id),v=parseFloat(e.value);$(id+"o").textContent=fmt(v,d);return v;}
+
+/* ---- Lab 0.3 ---- */
+(function(){
+  var p=new Plot("c3",-4.5,4.5,-4,8,1);
+  var F={sq:[function(x){return x*x;},"x²","all real x"],sqrt:[function(x){return x<0?NaN:Math.sqrt(x);},"√x","x ≥ 0"],
+    inv:[function(x){return Math.abs(x)<1e-9?NaN:1/x;},"1/x","x ≠ 0"],abs:[function(x){return Math.abs(x);},"|x|","all real x"],
+    cube:[function(x){return x*x*x-3*x;},"x³ − 3x","all real x"]};
+  function draw(){
+    var k=$("f3").value,f=F[k][0],x=out("x3",1),y=f(x);
+    p.clear();p.fn(f,css("--accent"),2.4);
+    if(isFinite(y)){p.seg(x,0,x,y,css("--warm"),1.4,[4,4]);p.seg(0,y,x,y,css("--warm"),1.4,[4,4]);p.dot(x,y,css("--warm"),6);p.label(x,y,"("+fmt(x,1)+", "+fmt(y)+")",css("--ink"));}
+    else{p.dot(x,0,css("--bad"),6);}
+    $("r3").textContent="f(x) = "+F[k][1]+"    domain: "+F[k][2]+"\ninput x = "+fmt(x,1)+"   →   output f(x) = "+(isFinite(y)?fmt(y,3):"undefined: this x is outside the domain");
+  }
+  bind(["f3","x3"],draw);
+})();
+
+/* ---- Lab 0.4 ---- */
+(function(){
+  var p=new Plot("c4",0,7,0,9,1);
+  var xs=[1,2,3,4,5,6],ys=[2.1,2.9,4.2,4.8,6.1,6.9];
+  function draw(){
+    var w=out("w4"),b=out("b4"),i,sse=0,parts=[];
+    p.clear();
+    for(i=0;i<xs.length;i++){var yh=w*xs[i]+b,r=ys[i]-yh;sse+=r*r;parts.push(fmt(r));p.seg(xs[i],ys[i],xs[i],yh,css("--warm"),2.5);}
+    p.fn(function(x){return w*x+b;},css("--accent"),2.4);
+    for(i=0;i<xs.length;i++)p.dot(xs[i],ys[i],css("--ink"),5);
+    var mse=sse/xs.length;
+    $("r4").textContent="ŷ = "+fmt(w)+"·x + "+fmt(b)+"\nresiduals: "+parts.join(", ")+"\nMSE = "+fmt(mse,4)+(mse<0.05?"   ← excellent fit":"");
+  }
+  $("best4").addEventListener("click",function(){$("w4").value=0.98;$("b4").value=1.05;draw();});
+  bind(["w4","b4"],draw);
+})();
+
+/* ---- Lab 0.5 ---- */
+(function(){
+  var p=new Plot("c5",-6,6,-8,8,1);p.ystep=2;
+  function draw(){
+    var a=out("a5"),b=out("bb5",1),c=out("cc5",1),f=function(x){return a*x*x+b*x+c;};
+    p.clear();p.fn(f,css("--accent"),2.4);
+    var txt="y = "+fmt(a)+"x² + "+fmt(b,1)+"x + "+fmt(c,1)+"\n";
+    if(Math.abs(a)<1e-9){txt+="a = 0: this is a line, not a parabola.";}
+    else{
+      var vx=-b/(2*a),vy=f(vx),D=b*b-4*a*c;
+      p.dot(vx,vy,css("--warm"),6);p.label(vx,vy,"vertex",css("--ink"),8,a>0?14:-12);
+      txt+="vertex = ("+fmt(vx)+", "+fmt(vy)+")   "+(a>0?"opens up: minimum":"opens down: maximum")+"\ndiscriminant D = "+fmt(D)+"   ";
+      if(D>1e-9){var r1=(-b-Math.sqrt(D))/(2*a),r2=(-b+Math.sqrt(D))/(2*a);p.dot(r1,0,css("--good"),5);p.dot(r2,0,css("--good"),5);txt+="roots: x = "+fmt(Math.min(r1,r2))+" and x = "+fmt(Math.max(r1,r2));}
+      else if(Math.abs(D)<=1e-9){p.dot(vx,0,css("--good"),5);txt+="one repeated root: x = "+fmt(vx);}
+      else txt+="no real roots";
+    }
+    $("r5").textContent=txt;
+  }
+  bind(["a5","bb5","cc5"],draw);
+})();
+
+/* ---- Lab 0.6a ---- */
+(function(){
+  var p=new Plot("c6",-4,8,-4,8,1);
+  function draw(){
+    var b=out("b6"),t=out("t6",1),lb=Math.log(b);
+    p.clear();
+    p.fn(function(x){return x;},css("--muted"),1.2,[5,5]);
+    p.fn(function(x){return Math.pow(b,x);},css("--accent"),2.4);
+    p.fn(function(x){return x<=0?NaN:Math.log(x)/lb;},css("--warm"),2.4);
+    var y=Math.pow(b,t);
+    p.dot(t,y,css("--accent"),6);p.dot(y,t,css("--warm"),6);
+    p.label(t,y,"b^x",css("--accent"),-40,-12);p.label(y,t,"log_b",css("--warm"),8,14);
+    $("r6").textContent="b = "+fmt(b)+(Math.abs(b-2.72)<0.015?"  (≈ e)":"")+"\nb^"+fmt(t,1)+" = "+fmt(y,3)+"      log_b("+fmt(y,3)+") = "+fmt(t,1)+"\nthe two marked points are mirror images: ("+fmt(t,1)+", "+fmt(y,2)+") and ("+fmt(y,2)+", "+fmt(t,1)+")";
+  }
+  bind(["b6","t6"],draw);
+})();
+
+/* ---- Lab 0.6b ---- */
+(function(){
+  var p=new Plot("c6b",-8,8,-0.2,1.2,2);p.ystep=0.5;
+  function draw(){
+    var k=out("k6",1),c=out("s6",1),f=function(x){return 1/(1+Math.exp(-k*(x-c)));};
+    p.clear();
+    p.seg(-8,1,8,1,css("--muted"),1,[4,4]);p.seg(-8,0.5,8,0.5,css("--muted"),1,[2,5]);
+    p.fn(f,css("--accent"),2.6);p.dot(c,0.5,css("--warm"),6);p.label(c,0.5,"σ = 0.5",css("--ink"),10,12);
+    $("r6b").textContent="σ(k·(x − c)) with k = "+fmt(k,1)+", c = "+fmt(c,1)+"\nat x = c − 2: "+fmt(f(c-2),3)+"     at x = c: 0.500     at x = c + 2: "+fmt(f(c+2),3)+"\nslope at the centre = k/4 = "+fmt(k/4,3);
+  }
+  bind(["k6","s6"],draw);
+})();
+
+/* ---- Lab 0.7 ---- */
+(function(){
+  var T={i:[function(i){return i;},"i"],sq:[function(i){return i*i;},"i²"],odd:[function(i){return 2*i-1;},"2i − 1"],half:[function(i){return Math.pow(0.5,i);},"(1/2)^i"]};
+  function draw(){
+    var k=$("term7").value,f=T[k][0],n=Math.round(out("n7",0)),i,vals=[],tot=0,mx=0;
+    for(i=1;i<=n;i++){var v=f(i);vals.push(v);tot+=v;}
+    for(i=1;i<=12;i++)mx=Math.max(mx,f(i));
+    var p=new Plot("c7",0,13,0,mx*1.12,1);p.ystep=k==="half"?0.1:(mx>60?20:(mx>20?5:2));
+    p.clear();var g=p.g;
+    for(i=1;i<=12;i++){
+      var v2=f(i),on=i<=n;
+      g.fillStyle=on?css("--accent"):css("--grid");
+      var x0=p.X(i-0.35),x1=p.X(i+0.35),y0=p.Y(v2),y1=p.Y(0);
+      g.fillRect(x0,y0,x1-x0,y1-y0);
+    }
+    var show=vals.map(function(v){return k==="half"?fmt(v,4):String(v);});
+    $("r7").textContent="Σ from i = 1 to "+n+" of "+T[k][1]+"\n= "+show.join(" + ")+"\n= "+(k==="half"?fmt(tot,4):String(tot))+
+      (k==="i"?"      closed form n(n+1)/2 = "+(n*(n+1)/2):"")+(k==="odd"?"      which is n² = "+(n*n):"")+(k==="half"?"      approaching 1":"");
+  }
+  bind(["term7","n7"],draw);
+})();
+
+/* ---- Lab 0.8 ---- */
+(function(){
+  var p=new Plot("c8",-3.5,4.5,-4,8,1);
+  var F={sq:[function(x){return x*x;},function(x){return 2*x;},"x²"],cube:[function(x){return x*x*x-3*x;},function(x){return 3*x*x-3;},"x³ − 3x"],sin:[function(x){return Math.sin(x);},function(x){return Math.cos(x);},"sin x"]};
+  function draw(){
+    var k=$("f8").value,f=F[k][0],d=F[k][1],x=out("x8"),h=out("h8"),y=f(x),y2=f(x+h),ms=(y2-y)/h,mt=d(x);
+    p.clear();p.fn(f,css("--accent"),2.4);
+    p.fn(function(t){return y+mt*(t-x);},css("--muted"),1.4,[5,4]);
+    p.fn(function(t){return y+ms*(t-x);},css("--warm"),2);
+    p.seg(x,y,x+h,y,css("--good"),1.5);p.seg(x+h,y,x+h,y2,css("--good"),1.5);
+    p.dot(x,y,css("--ink"),6);p.dot(x+h,y2,css("--warm"),5);
+    $("r8").textContent="f(x) = "+F[k][2]+"   x = "+fmt(x)+"   h = "+fmt(h)+"\nsecant slope  [f(x+h) − f(x)] / h = ("+fmt(y2,3)+" − "+fmt(y,3)+") / "+fmt(h)+" = "+fmt(ms,4)+"\ntangent slope f′(x) = "+fmt(mt,4)+"      gap between them = "+fmt(Math.abs(ms-mt),4);
+  }
+  bind(["f8","x8","h8"],draw);
+})();
+
+/* ---- Lab 0.9 ---- */
+(function(){
+  var p=new Plot("c9",-3,7,0,26,1);p.ystep=5;
+  var L=function(w){return (w-2)*(w-2)+1;},dL=function(w){return 2*(w-2);},path=[];
+  function reset(){path=[parseFloat($("s9").value)];draw();}
+  function step(n){for(var i=0;i<n;i++){var w=path[path.length-1];if(Math.abs(w)>1e6)break;path.push(w-parseFloat($("lr9").value)*dL(w));}draw();}
+  function draw(){
+    var lr=out("lr9");out("s9",1);
+    if(!path.length)path=[parseFloat($("s9").value)];
+    p.clear();p.fn(L,css("--accent"),2.4);
+    for(var i=0;i<path.length;i++){
+      var w=path[i];
+      if(i>0)p.seg(path[i-1],L(path[i-1]),w,L(w),css("--warm"),1.6);
+    }
+    for(i=0;i<path.length;i++)p.dot(path[i],L(path[i]),i===path.length-1?css("--warm"):css("--muted"),i===path.length-1?6:3.5);
+    p.dot(2,1,css("--good"),4);
+    var cur=path[path.length-1],lines="steps taken: "+(path.length-1)+"    η = "+fmt(lr)+"\ncurrent w = "+fmt(cur,4)+"    L(w) = "+fmt(L(cur),4)+"    L′(w) = "+fmt(dL(cur),4)+"\nnext update: w − η·L′(w) = "+fmt(cur,4)+" − "+fmt(lr)+"·("+fmt(dL(cur),4)+") = "+fmt(cur-lr*dL(cur),4);
+    if(Math.abs(cur-2)<0.01&&path.length>1)lines+="\nwithin 0.01 of the minimum at w = 2";
+    if(Math.abs(cur)>50)lines+="\ndiverged: the steps are overshooting further each time";
+    $("r9").textContent=lines;
+  }
+  $("step9").addEventListener("click",function(){step(1);});
+  $("run9").addEventListener("click",function(){step(10);});
+  $("reset9").addEventListener("click",reset);
+  $("s9").addEventListener("input",reset);
+  $("lr9").addEventListener("input",draw);
+  redraws.push(draw);reset();
+})();
+
+/* ---- quizzes ---- */
+Array.prototype.forEach.call(document.querySelectorAll(".quiz"),function(q){
+  var fb=q.querySelector(".fb"),ans=q.getAttribute("data-answer");
+  Array.prototype.forEach.call(q.querySelectorAll("button"),function(b){
+    b.addEventListener("click",function(){
+      Array.prototype.forEach.call(q.querySelectorAll("button"),function(x){x.classList.remove("right","wrong");});
+      var ok=b.getAttribute("data-o")===ans;
+      b.classList.add(ok?"right":"wrong");
+      fb.textContent=fb.getAttribute(ok?"data-ok":"data-no");
+      fb.className="fb "+(ok?"ok":"no");
+    });
+  });
+});
+
+/* ---- progress (kept in this browser only) ---- */
+var KEY="mds-m0-done",done={};
+try{done=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){done={};}
+function paint(){
+  var n=0,boxes=document.querySelectorAll("[data-done]");
+  Array.prototype.forEach.call(boxes,function(b){
+    var id=b.getAttribute("data-done"),on=!!done[id];b.checked=on;if(on)n++;
+    var a=document.querySelector('#toc a[href="#'+id+'"]');if(a)a.classList.toggle("done",on);
+  });
+  $("ptext").textContent=n+" of "+boxes.length+" lessons done";
+  $("pbar").style.width=(n/boxes.length*100)+"%";
+}
+Array.prototype.forEach.call(document.querySelectorAll("[data-done]"),function(b){
+  b.addEventListener("change",function(){done[b.getAttribute("data-done")]=b.checked;try{localStorage.setItem(KEY,JSON.stringify(done));}catch(e){}paint();});
+});
+paint();
+
+/* ---- redraw on resize and theme change ---- */
+function all(){redraws.forEach(function(f){f();});}
+var t;window.addEventListener("resize",function(){clearTimeout(t);t=setTimeout(all,120);});
+if(window.matchMedia){var mq=window.matchMedia("(prefers-color-scheme: dark)");if(mq.addEventListener)mq.addEventListener("change",all);}
+new MutationObserver(all).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(all);
+})();
+</script>
+</body>
+</html>

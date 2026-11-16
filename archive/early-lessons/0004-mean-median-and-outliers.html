@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mean, median, and outliers | Mathematics Teach Workspace</title>
+  <link rel="stylesheet" href="../../assets/style.css">
+  <link rel="stylesheet" href="../../assets/lesson.css">
+  <script src="../../assets/practice.js" defer></script>
+</head>
+<body>
+<main class="frame panel lesson">
+  <header>
+    <p class="lesson-kicker">Mathematics · Lesson 4 · 4 minutes</p>
+    <h1>Mean, median, and outliers</h1>
+    <p class="lead">Change one extreme value and see what happens to each measure of center. Then choose a measure that describes a typical case.</p>
+  </header>
+
+  <section aria-labelledby="example">
+    <h2 id="example">Change one number</h2>
+    <div class="lesson-example">
+      <figure>
+        <table class="course-table outcome-table" aria-describedby="median-caption">
+          <thead>
+            <tr><th scope="col">Position</th><th scope="col">Before</th><th scope="col">After</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">1st</th><td>2</td><td>2</td></tr>
+            <tr><th scope="row">2nd</th><td>3</td><td>3</td></tr>
+            <tr class="outcome-match"><th scope="row">3rd · middle</th><td><strong>3</strong></td><td><strong>3</strong></td></tr>
+            <tr><th scope="row">4th</th><td>4</td><td>4</td></tr>
+            <tr><th scope="row">5th</th><td>8</td><td><strong>18</strong></td></tr>
+          </tbody>
+        </table>
+        <figcaption id="median-caption">The largest value increases by 10. The third value in the sorted list is still 3.</figcaption>
+      </figure>
+      <div>
+        <p>In your diagnostic, you noticed that the 18 could pull the center away from the cluster. That pull applies to the <strong>mean</strong> because it uses the sum of all the values.</p>
+        <p class="formula">Mean = total ÷ number of values<br>Before, 20 ÷ 5 = 4<br>After, 30 ÷ 5 = 6</p>
+        <p>The <strong>median</strong> uses position. Sort the values and find the middle. With five values, that’s the third one. It’s 3 before and after.</p>
+      </div>
+    </div>
+    <p class="callout">For a typical wait or delivery time, the median can better describe the cluster when a few cases take much longer. Use the mean when you want the total spread evenly across all cases.</p>
+  </section>
+
+  <section aria-labelledby="practice">
+    <h2 id="practice">Calculate and interpret</h2>
+    <form data-practice>
+      <fieldset>
+        <legend>1. Five wait times are 3, 4, 5, 6, and 12 minutes. Replace 12 with 22. What are the new mean and median, in that order?</legend>
+        <div class="answer-options">
+          <label><input type="radio" name="centers" required data-feedback="The median is 5. The mean was 6 before the change. Add the new values and divide by 5.">6, 5</label>
+          <label><input type="radio" name="centers" required data-feedback="Those numbers are in reverse order. The mean comes from the total and the median comes from the middle position.">5, 8</label>
+          <label><input type="radio" name="centers" required data-feedback="The mean is 8. Locate the third value in the sorted list to get the median.">8, 6</label>
+          <label><input type="radio" name="centers" required data-feedback="Correct. The new total is 40, so the mean is 8. The third value is still 5, so the median is 5." data-correct>8, 5</label>
+        </div>
+      </fieldset>
+      <button class="btn secondary" type="submit">Check answer</button>
+      <p data-feedback-output role="status"></p>
+    </form>
+    <hr class="divider">
+    <form data-practice>
+      <fieldset>
+        <legend>2. Five deliveries took 4, 5, 6, 7, and 38 days. Which measure and value better describe a typical delivery in this set?</legend>
+        <div class="answer-options">
+          <label><input type="radio" name="typical" required data-feedback="12 is the mean. Compare it with the four delivery times clustered between 4 and 7 days.">Mean, 12</label>
+          <label><input type="radio" name="typical" required data-feedback="Correct. The third value is 6 days. It’s within the cluster of four deliveries that took between 4 and 7 days." data-correct>Median, 6</label>
+          <label><input type="radio" name="typical" required data-feedback="6 is the middle of the sorted list. Which measure is defined by that position?">Mean, 6</label>
+          <label><input type="radio" name="typical" required data-feedback="12 comes from dividing the total, 60, by 5. For the median, use the third value in the list.">Median, 12</label>
+        </div>
+      </fieldset>
+      <button class="btn secondary" type="submit">Check answer</button>
+      <p data-feedback-output role="status"></p>
+    </form>
+  </section>
+
+  <footer>
+    <p><a href="0003-conditional-probability.html">Previous lesson</a> · <a href="0005-matrix-times-vector.html">Next lesson</a> ·<a href="../../reference/mean-and-median.html">Mean and median reference</a> · <a href="https://www.khanacademy.org/math/statistics-probability/summarizing-quantitative-data/mean-median-basics/a/mean-and-median">Khan Academy article</a></p>
+    <p class="muted">Ask me about any step you want to work through. Tomorrow, try a new list from memory and explain which measure moves when the largest value changes.</p>
+  </footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagonalization, SVD and PCA · Math for Data Science reference</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<main class="frame panel lesson">
+  <header>
+    <p class="lesson-kicker">Mathematics reference · Linear algebra</p>
+    <h1>Diagonalization, SVD and PCA</h1>
+    <p class="lead">Find the useful axes, then decide how many coordinates to keep.</p>
+  </header>
+
+  <section aria-labelledby="diagonalization">
+    <h2 id="diagonalization">Diagonalization uses one basis</h2>
+    <p><strong>A = PDP⁻¹.</strong> Put independent eigenvectors in the columns of P and their eigenvalues in the matching diagonal slots of D. Read from the right. P⁻¹ finds the input's coordinates in the eigenvector basis, D scales them and P rebuilds the output. An n × n matrix needs n independent eigenvectors.</p>
+    <p>For a real symmetric matrix, choose an orthonormal eigenvector matrix Q. Then Q⁻¹ = Qᵀ. Each row of Qᵀ gives one coordinate by taking a dot product. <a href="../modules/01d-diagonalization-svd-and-pca.html#l2">Lesson 1.32</a></p>
+  </section>
+
+  <section aria-labelledby="svd">
+    <h2 id="svd">SVD uses input and output axes</h2>
+    <p><strong>A = UΣVᵀ.</strong> The columns of V are the input axes, and the columns of U are the output axes. For A of shape m × n, the full factors U, Σ and Vᵀ have shapes m × m, m × n and n × n.</p>
+    <ol>
+      <li>Find orthonormal eigenvectors vᵢ of AᵀA. Order them by eigenvalue λᵢ from largest to smallest.</li>
+      <li>Put σᵢ = √λᵢ in the min(m, n) diagonal slots of Σ.</li>
+      <li>For σᵢ &gt; 0, compute uᵢ = Avᵢ/σᵢ. For zero values, complete the axes with perpendicular unit vectors.</li>
+    </ol>
+    <p><strong>Rank-k approximation.</strong> Add the first k pieces σᵢuᵢvᵢᵀ. The sum of the squares of the dropped singular values gives the squared Frobenius error, which is the sum of squares of all entries of the residual matrix. <a href="../modules/01d-diagonalization-svd-and-pca.html#l5">Lesson 1.35</a></p>
+  </section>
+
+  <section aria-labelledby="pca">
+    <h2 id="pca">PCA finds where centered data varies most</h2>
+    <ol>
+      <li>With rows as observations and columns as features, subtract each feature mean from its column. Call the centered data X<sub>c</sub>.</li>
+      <li>For n rows, use the sample covariance matrix C = X<sub>c</sub>ᵀX<sub>c</sub>/(n − 1). Its diagonal shows feature variances and its off-diagonal shows paired covariances.</li>
+      <li>Find the unit eigenvectors of C in descending eigenvalue order. For each row, dot its centered values with each retained direction to get its scores.</li>
+      <li>For positive total variance, divide a direction's eigenvalue by the sum across all directions to get its explained variance ratio. To reconstruct a row, add the scored directions and then the original mean.</li>
+    </ol>
+    <p><strong>Using SVD.</strong> The right singular vectors of X<sub>c</sub> are the PCA axes. The variance along axis i is σᵢ²/(n − 1). <a href="../modules/01d-diagonalization-svd-and-pca.html#l7">Lesson 1.37</a></p>
+  </section>
+
+  <footer>
+    <p><a href="../modules/01d-diagonalization-svd-and-pca.html">Part D</a> · <a href="glossary.html#part-d">Glossary</a> · <a href="../index.html">Course home</a></p>
+  </footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Math for Data Science</title>
+<style>
+:root{--paper:#f4f6f8;--surface:#fff;--ink:#18222d;--muted:#5b6876;--rule:#d5dbe2;--accent:#0b6e8f;--accent-soft:#e1f0f5;--good:#1f7a4d;--warm:#c2571a}
+@media (prefers-color-scheme: dark){:root{--paper:#11171d;--surface:#18212a;--ink:#e6ecf1;--muted:#9aa7b4;--rule:#2c3844;--accent:#5fc0de;--accent-soft:#16323c;--good:#5ecb95;--warm:#f0935a;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans","Segoe UI",Helvetica,Arial,sans-serif;font-size:17px;line-height:1.6}
+main{max-width:920px;margin:0 auto;padding:48px 24px 96px}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:42px;line-height:1.1;margin:0 0 8px}
+h2{font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;margin:44px 0 12px}
+p{max-width:66ch}
+.lead{color:var(--muted)}
+a{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+table{border-collapse:collapse;width:100%;background:var(--surface);border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--rule);vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+td.n{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--muted);width:44px}
+td small{display:block;color:var(--muted);font-size:14px}
+.pill{display:inline-block;font-size:12.5px;padding:2px 10px;border-radius:999px;border:1px solid var(--rule);color:var(--muted);white-space:nowrap}
+.pill.ready{border-color:var(--good);color:var(--good)}
+.pill.next{border-color:var(--warm);color:var(--warm)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:14px 16px}
+.card b{display:block;margin-bottom:4px}
+.card ul{margin:6px 0 0;padding-left:18px;font-size:15px}
+.card p{margin:0;font-size:15px;color:var(--muted)}
+.tablewrap{overflow-x:auto}
+</style>
+</head>
+<body>
+<main>
+<h1>Math for Data Science</h1>
+<p class="lead">The course home. Study from the modules in order; everything else on this page supports them.</p>
+
+<h2>Modules</h2>
+<div class="tablewrap">
+<table>
+  <tr><th>#</th><th>Module</th><th>Status</th></tr>
+  <tr><td class="n">0</td><td><a href="modules/00-review-and-toolkit.html">Review and Toolkit</a><small>Notation, exponents and logs, functions, lines, quadratics, sigmoid, sigma notation, derivatives, gradient descent preview</small></td><td><span class="pill ready">Ready</span></td></tr>
+  <tr><td class="n">1A</td><td><a href="modules/01a-vectors-and-matrix-vector.html">Linear Algebra, Part A: Vectors and the Matrix-Vector Product</a><small>Vectors, adding and scaling, length and distance, dot product, angles, projection, linear combinations and span, matrix times vector by rows and by columns</small></td><td><span class="pill ready">Ready</span></td></tr>
+  <tr><td class="n">1B</td><td><a href="modules/01b-transformations-systems-inverse.html">Linear Algebra, Part B: Transformations, Systems and the Inverse</a><small>A matrix as a move of space, common transformations, matrix times matrix, transpose, systems as Ax = b, elimination, the inverse, rank, least squares</small></td><td><span class="pill ready">Ready</span></td></tr>
+  <tr><td class="n">1C</td><td><a href="modules/01c-determinants-and-eigenvectors.html">Linear Algebra, Part C: Determinants and Eigenvectors</a><small>The determinant as an area factor, 3 × 3 determinants, bases and coordinates, change of basis, eigenvectors and eigenvalues, how to find them, repeated application</small></td><td><span class="pill ready">Ready</span></td></tr>
+  <tr><td class="n">1D</td><td><a href="modules/01d-diagonalization-svd-and-pca.html">Linear Algebra, Part D: Diagonalization, SVD and PCA</a><small>Orthonormal axes, singular value decomposition, low-rank approximation, covariance and PCA</small></td><td><span class="pill ready">Ready</span></td></tr>
+  <tr><td class="n">2</td><td>Calculus and Multivariable Calculus<small>Limits, derivatives in depth, partial derivatives, gradient, Jacobian, Hessian, integrals</small></td><td><span class="pill next">Next</span></td></tr>
+  <tr><td class="n">3</td><td>Optimization<small>Gradient descent, convexity, constraints</small></td><td><span class="pill">Planned</span></td></tr>
+  <tr><td class="n">4</td><td>Probability<small>Counting, conditional probability and Bayes, random variables, distributions, central limit theorem</small></td><td><span class="pill">Planned</span></td></tr>
+  <tr><td class="n">5</td><td>Statistics and Inference<small>Estimation, maximum likelihood, confidence intervals, hypothesis testing, regression</small></td><td><span class="pill">Planned</span></td></tr>
+  <tr><td class="n">6</td><td>Discrete Math and Information Theory<small>Logic, sets, combinatorics, graphs, entropy, cross-entropy, KL divergence</small></td><td><span class="pill">Planned</span></td></tr>
+  <tr><td class="n">7</td><td>The Math Behind ML Models<small>Linear and logistic regression, PCA, backpropagation, derived step by step</small></td><td><span class="pill">Planned</span></td></tr>
+</table>
+</div>
+
+<h2>Reference sheets</h2>
+<div class="grid">
+  <div class="card"><b>Quick references</b>
+    <ul>
+      <li><a href="reference/glossary.html">Glossary of all terms so far</a></li>
+      <li><a href="reference/slope.html">Slope</a></li>
+      <li><a href="reference/matrix-vector-product.html">Matrix-vector product</a></li>
+      <li><a href="reference/diagonalization-svd-pca.html">Diagonalization, SVD and PCA</a></li>
+      <li><a href="reference/joint-probability.html">Joint probability</a></li>
+      <li><a href="reference/conditional-probability.html">Conditional probability</a></li>
+      <li><a href="reference/mean-and-median.html">Mean and median</a></li>
+    </ul>
+  </div>
+  <div class="card"><b>Your study progress</b>
+    <p>Study these pages from any device. Lesson completion and diagnostic answers are saved in the current browser; they do not sync between devices. Personal notes and Python notebooks stay in your local workspace.</p>
+  </div>
+</div>
+
+<h2>Source library</h2>
+<div class="grid">
+  <div class="card"><b>Books and course PDFs</b><p>Follow the source links inside each module for further reading and extra problems. Downloaded books in your local library are not included on this website.</p></div>
+  <div class="card"><b>Earlier work</b>
+    <ul>
+      <li><a href="archive/assessment/index.html">Diagnostic assessment</a></li>
+      <li><a href="archive/early-lessons/0001-slope-as-a-signed-rate.html">Early lesson 1: slope</a></li>
+      <li><a href="archive/early-lessons/0002-joint-probability.html">Early lesson 2: joint probability</a></li>
+      <li><a href="archive/early-lessons/0003-conditional-probability.html">Early lesson 3: conditional probability</a></li>
+      <li><a href="archive/early-lessons/0004-mean-median-and-outliers.html">Early lesson 4: mean and median</a></li>
+      <li><a href="archive/early-lessons/0005-matrix-times-vector.html">Early lesson 5: matrix times vector</a></li>
+    </ul>
+  </div>
+</div>
+</main>
+</body>
+</html>

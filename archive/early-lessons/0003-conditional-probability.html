@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Conditional probability | Mathematics Teach Workspace</title>
+  <link rel="stylesheet" href="../../assets/style.css">
+  <link rel="stylesheet" href="../../assets/lesson.css">
+  <script src="../../assets/practice.js" defer></script>
+</head>
+<body>
+<main class="frame panel lesson">
+  <header>
+    <p class="lesson-kicker">Mathematics · Lesson 3 · 4 minutes</p>
+    <h1>Conditional probability</h1>
+    <p class="lead">If you already know which group a case belongs to, calculate the rate within that group. This is how you compare completion rates, error rates, or other outcomes across groups.</p>
+  </header>
+
+  <section aria-labelledby="example">
+    <h2 id="example">Choose the denominator first</h2>
+    <p>In your diagnostic, you found the 30 women who completed the course. The question said <strong>given that the person is a woman</strong>, so the group to divide by was the 60 women. Try the same move with a table.</p>
+    <div class="lesson-example">
+      <figure>
+        <table class="course-table outcome-table" aria-describedby="completion-caption">
+          <thead>
+            <tr><th scope="col">Format</th><th scope="col">Completed</th><th scope="col">Didn’t finish</th><th scope="col">Total</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row" class="outcome-match">Online</th>
+              <td class="outcome-match"><strong>24</strong></td>
+              <td class="outcome-match">16</td>
+              <td class="outcome-match"><strong>40</strong></td>
+            </tr>
+            <tr><th scope="row">In person</th><td>18</td><td>42</td><td>60</td></tr>
+          </tbody>
+          <tfoot>
+            <tr><th scope="row">Total</th><td>42</td><td>58</td><td>100</td></tr>
+          </tfoot>
+        </table>
+        <figcaption id="completion-caption">The highlighted row contains all 40 online learners. Of those, 24 completed the course.</figcaption>
+      </figure>
+      <div>
+        <p>Pick one of the 100 learners at random. If you learn they took the course online, restrict your count to the online row. There are 40 possible learners left, and 24 of them completed it.</p>
+        <p class="formula">P(completed | online) = 24 ÷ 40 = 60%</p>
+        <p>The bar means <strong>given</strong>. The words after it tell you which group to use. If the question asks for the chance a learner was online <em>and</em> completed, all 100 learners are in play, so that probability is 24 ÷ 100 = 24%.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="practice">
+    <h2 id="practice">Same overlap, different denominators</h2>
+    <p>One ticket is chosen at random. Use the table for both questions. Say which group you’re counting before you calculate.</p>
+    <table class="course-table outcome-table" aria-label="Support tickets by channel and urgency">
+      <thead>
+        <tr><th scope="col">Channel</th><th scope="col">Urgent</th><th scope="col">Routine</th><th scope="col">Total</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Chat</th><td>18</td><td>12</td><td>30</td></tr>
+        <tr><th scope="row">Email</th><td>6</td><td>64</td><td>70</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><th scope="row">Total</th><td>24</td><td>76</td><td>100</td></tr>
+      </tfoot>
+    </table>
+    <hr class="divider">
+    <form data-practice>
+      <fieldset>
+        <legend>1. Given that the ticket came through chat, what is the chance it was urgent?</legend>
+        <div class="answer-options">
+          <label><input type="radio" name="urgent" required data-feedback="18% uses all 100 tickets. The given group is the chat row. Find that row’s total.">18%</label>
+          <label><input type="radio" name="urgent" required data-feedback="Correct. Of the 30 chat tickets, 18 were urgent. Divide 18 by 30 to get 60%." data-correct>60%</label>
+          <label><input type="radio" name="urgent" required data-feedback="40% is the share of chat tickets that were routine. Use the urgent count within the same row.">40%</label>
+          <label><input type="radio" name="urgent" required data-feedback="75% uses the total number of urgent tickets. This question tells you the ticket came through chat, so start with that group.">75%</label>
+        </div>
+      </fieldset>
+      <button class="btn secondary" type="submit">Check answer</button>
+      <p data-feedback-output role="status"></p>
+    </form>
+    <hr class="divider">
+    <form data-practice>
+      <fieldset>
+        <legend>2. Given that the ticket was urgent, what is the chance it came through chat?</legend>
+        <div class="answer-options">
+          <label><input type="radio" name="chat" required data-feedback="18% uses all 100 tickets. The given group is the urgent column. Find that column’s total.">18%</label>
+          <label><input type="radio" name="chat" required data-feedback="60% answers the first question. The given group has switched from chat tickets to urgent tickets.">60%</label>
+          <label><input type="radio" name="chat" required data-feedback="25% is the share of urgent tickets that came through email. Use the chat count within the urgent column.">25%</label>
+          <label><input type="radio" name="chat" required data-feedback="Correct. Of the 24 urgent tickets, 18 came through chat. Divide 18 by 24 to get 75%." data-correct>75%</label>
+        </div>
+      </fieldset>
+      <button class="btn secondary" type="submit">Check answer</button>
+      <p data-feedback-output role="status"></p>
+    </form>
+  </section>
+
+  <footer>
+    <p><a href="0002-joint-probability.html">Previous lesson</a> · <a href="0004-mean-median-and-outliers.html">Next lesson</a> · <a href="../../reference/conditional-probability.html">Conditional probability reference</a> · <a href="https://www.khanacademy.org/math/ap-statistics/probability-ap/a/conditional-probability-using-two-way-tables">Khan Academy article</a></p>
+    <p class="muted">Ask me about any step you want to work through. Tomorrow, try a new example and name the given group from memory before dividing.</p>
+  </footer>
+</main>
+</body>
+</html>

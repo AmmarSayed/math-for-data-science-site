@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Matrix–vector product reference | Mathematics Teach Workspace</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<main class="frame panel lesson">
+  <header>
+    <p class="lesson-kicker">Mathematics reference · Linear algebra</p>
+    <h1>Matrix–vector product</h1>
+    <p class="lead">Entry i of Xw is row i of X dotted with w.</p>
+  </header>
+  <section aria-label="How to calculate a matrix-vector product">
+    <p class="formula">(m×n matrix) × (n×1 vector) = (m×1 vector)</p>
+    <p>The inner sizes must match: each row of X needs one entry of w per column. The outer size gives one result per row. If the inner sizes differ, the product is undefined.</p>
+    <p><strong>Example.</strong> X has rows (2, 1), (4, 3) and (1, 5), and w = (3, 2).<br>
+       Row 1: 2·3 + 1·2 = 8 · Row 2: 4·3 + 3·2 = 18 · Row 3: 1·3 + 5·2 = 13 · <strong>Xw = (8, 18, 13)</strong></p>
+    <p><strong>Reading it.</strong> If rows are cases (customers, houses, records) and w holds weights (prices, coefficients), Xw gives one weighted total per case. Linear regression predictions are this product.</p>
+    <table class="course-table">
+      <thead><tr><th scope="col">Tool</th><th scope="col">Row by row</th><th scope="col">All at once</th></tr></thead>
+      <tbody>
+        <tr><td>Excel</td><td><code>=SUMPRODUCT(row, weights)</code>, filled down</td><td><code>=MMULT(X, w)</code></td></tr>
+        <tr><td>NumPy</td><td><code>X[i] @ w</code></td><td><code>X @ w</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+  <footer>
+    <p><a href="../archive/early-lessons/0005-matrix-times-vector.html">Lesson 5</a> · <a href="https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/null-column-space/v/matrix-vector-products">Khan Academy, Matrix vector products</a></p>
+  </footer>
+</main>
+</body>
+</html>

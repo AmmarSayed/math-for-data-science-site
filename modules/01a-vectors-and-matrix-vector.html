@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linear Algebra Part A Vectors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/course.css">
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" defer></script>
+</head>
+<body>
+<div class="shell">
+<nav class="rail" aria-label="Lessons">
+  <div class="course">Math for Data Science</div>
+  <div class="mod">Module 1 · Part A<br>Vectors and the Matrix-Vector Product</div>
+  <ol id="toc">
+    <li><a href="#l1"><span class="num">1.1</span>What a vector is</a></li>
+    <li><a href="#l2"><span class="num">1.2</span>Adding and scaling</a></li>
+    <li><a href="#l3"><span class="num">1.3</span>Length and distance</a></li>
+    <li><a href="#l4"><span class="num">1.4</span>The dot product</a></li>
+    <li><a href="#l5"><span class="num">1.5</span>Angles and perpendicular vectors</a></li>
+    <li><a href="#l6"><span class="num">1.6</span>Projection</a></li>
+    <li><a href="#l7"><span class="num">1.7</span>Linear combinations and span</a></li>
+    <li><a href="#l8"><span class="num">1.8</span>Matrix times vector, row by row</a></li>
+    <li><a href="#l9"><span class="num">1.9</span>Matrix times vector, column view</a></li>
+    <li><a href="#l10"><span class="num">1.10</span>Checkpoint and cheat sheet</a></li>
+  </ol>
+  <div class="progress"><span id="ptext">0 of 10 lessons done</span><div class="bar"><i id="pbar"></i></div></div>
+</nav>
+
+<main>
+<header class="top">
+  <h1>Vectors and the Matrix-Vector Product</h1>
+  <p>Linear algebra is the language data is written in. A row of a spreadsheet is a vector. The whole spreadsheet is a matrix. A model's prediction for every row at once is a matrix times a vector. This part builds those three ideas from the ground up.</p>
+  <p><b>How this part is written.</b> Every technique is shown one step at a time before it is used, with the reason for each step. Anything you have probably not met before carries a <span class="new">New</span> tag. Some topics here (vectors, dot product, projection) you have studied before; they are still taught in full, so nothing depends on memory.</p>
+  <p><b>Stuck on a step?</b> Ask. Select the text and leave a comment, or ask in the chat, and the explanation gets fixed on the page.</p>
+  <div class="howto">
+    <div><b>1 · EXPERIMENT</b>Drag the arrows in each lab before reading the formula.</div>
+    <div><b>2 · READ</b>The idea in steps, then a worked example.</div>
+    <div><b>3 · PAPER</b>Solve the practice set by hand, then open the solutions.</div>
+    <div><b>4 · PYTHON</b>Run the snippet and change one number.</div>
+  </div>
+</header>
+
+<!-- ================= 1.1 ================= -->
+<section class="lesson" id="l1">
+  <div class="eyebrow">Lesson 1.1</div>
+  <h2>What a vector is</h2>
+  <p class="win">Goal: read a vector three ways: as a list of numbers, as an arrow, and as one row of data.</p>
+  <p class="why">Every data point a model sees is a vector. An apartment described by its area and number of rooms is the vector (120, 3). A customer described by 50 measurements is a vector with 50 numbers. Learn what you can do with one vector and you know what a model does with every row of your data.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.1 · drag the circle at the tip of the arrow</div>
+    <canvas id="c11" aria-label="One draggable vector with its horizontal and vertical parts"></canvas>
+    <div class="readout" id="r11"></div>
+    <ul class="try">
+      <li>Put the tip at (4, 1), then at (1, 4). Same two numbers, different arrows. So does the order of the numbers matter?</li>
+      <li>Make the first component negative. Which way does the arrow go?</li>
+      <li>Drag the tip onto the centre. What are the components then?</li>
+    </ul>
+  </div>
+
+  <h3>The idea, in three steps</h3>
+  <ol class="steps">
+    <li><b>A vector is an ordered list of numbers.</b> We write it in brackets: \(v = (3, 2)\). Each number is called a <b>component</b>. The first component is written \(v_1\) and the second \(v_2\). Here \(v_1 = 3\) and \(v_2 = 2\). Order matters: (3, 2) and (2, 3) are different vectors, as the lab shows.</li>
+    <li><b>You can draw it as an arrow.</b> Start at the origin (0, 0). The first component says how far to go sideways (right if positive, left if negative). The second says how far to go vertically (up if positive, down if negative). The arrow runs from the origin to where you land.</li>
+    <li><b>You can read it as one row of data.</b> If the two numbers are "area in hundreds of m²" and "number of rooms", then (1.2, 3) is one apartment. Nothing about the maths changes; only the meaning you attach to the numbers.</li>
+  </ol>
+  <p><b>How many components?</b> A vector with 2 components lives in \(\mathbb{R}^2\) (read "R two"), the flat plane you see in the lab. One with 3 components lives in \(\mathbb{R}^3\), ordinary 3D space. One with n components lives in \(\mathbb{R}^n\). You cannot draw \(\mathbb{R}^{50}\), but every rule in this part works the same way there, which is why we practise in 2D where you can see it.</p>
+  <p><b>Writing conventions you will see.</b> Books write a vector as a bold letter \(\mathbf{v}\) or with an arrow \(\vec{v}\), and often stack the components vertically as a column: \(\begin{pmatrix} 3 \\ 2 \end{pmatrix}\). It is the same object as (3, 2). The vector whose components are all zero is the <b>zero vector</b>.</p>
+
+  <h3>Worked example</h3>
+  <p>Three employees are described by (years of experience, training courses completed):</p>
+  <div class="tablewrap"><table>
+    <tr><th>Employee</th><th>Vector</th><th>Reading</th></tr>
+    <tr><td>A</td><td>(2, 5)</td><td>2 years, 5 courses</td></tr>
+    <tr><td>B</td><td>(8, 1)</td><td>8 years, 1 course</td></tr>
+    <tr><td>C</td><td>(8, 6)</td><td>8 years, 6 courses</td></tr>
+  </table></div>
+  <p>Each is a point in \(\mathbb{R}^2\). B and C share the first component, so on a plot C sits directly above B. Add a third measurement, salary, and each becomes a vector in \(\mathbb{R}^3\).</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Sketch the vector (−2, 3). Describe the walk from the origin in words.</li>
+    <li>Which space does (5, 0, −1, 2) live in?</li>
+    <li>For \(u = (7, -4, 9)\), what are \(u_1\) and \(u_3\)?</li>
+    <li>A student scored 80 in maths, 65 in statistics and 90 in Python. Write this as a vector and name its space.</li>
+    <li>Are (1, 2) and (2, 1) the same vector? Why?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. Go 2 to the left, then 3 up. The arrow points up and to the left.</p>
+    <p>2. It has 4 components, so \(\mathbb{R}^4\).</p>
+    <p>3. \(u_1 = 7\) (first), \(u_3 = 9\) (third).</p>
+    <p>4. (80, 65, 90), in \(\mathbb{R}^3\).</p>
+    <p>5. No. A vector is an ordered list. (1, 2) goes 1 right and 2 up; (2, 1) goes 2 right and 1 up.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+v = np.array([3, 2])
+print(v[0], v[1])      # 3 2   (Python counts from 0, so v[0] is the first component)
+print(v.shape)         # (2,)  -> two components
+
+employee = np.array([8, 6, 42000])   # years, courses, salary
+print(employee.shape)  # (3,)  -> a vector in R^3</code></pre>
+
+  <div class="quiz" data-answer="b">
+    <p class="q">A dataset describes each house with 12 measurements. One house is a vector in which space?</p>
+    <div class="opts">
+      <button data-o="a">In R², because a plot is flat</button>
+      <button data-o="b">In R¹², one axis per feature</button>
+      <button data-o="c">In R¹, as it is a single row</button>
+    </div>
+    <p class="fb" data-ok="Right. The number of components sets the space: 12 measurements, 12 components." data-no="Not this one. Count the components. Each measurement is one component, so 12 measurements make a vector in R¹²."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l1" id="done-l1">Mark lesson 1.1 done</label>
+</section>
+
+<!-- ================= 1.2 ================= -->
+<section class="lesson" id="l2">
+  <div class="eyebrow">Lesson 1.2</div>
+  <h2>Adding and scaling</h2>
+  <p class="win">Goal: add two vectors and multiply a vector by a number, by hand and as a picture.</p>
+  <p class="why">These are the only two operations linear algebra is built from. Averaging two data points, moving a weight during training, mixing two signals: each is an addition, a scaling, or both.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.2a · addition: drag the tips of a and b</div>
+    <canvas id="c12a" aria-label="Two draggable vectors and their sum"></canvas>
+    <div class="readout" id="r12a"></div>
+    <ul class="try">
+      <li>Follow the solid a, then the dashed copy of b. Then follow the solid b, then the dashed copy of a. Do both routes end at the same place?</li>
+      <li>Set b to exactly the opposite of a. What is the sum?</li>
+    </ul>
+  </div>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.2b · scaling: drag v, then move the slider</div>
+    <canvas id="c12b" aria-label="A vector and a scaled copy of it"></canvas>
+    <div class="controls">
+      <label for="k12">number c <input type="range" id="k12" min="-2" max="3" step="0.25" value="2"><output id="k12o"></output></label>
+    </div>
+    <div class="readout" id="r12b"></div>
+    <ul class="try">
+      <li>Move c from 1 to 2 to 3. Does the arrow ever leave its line?</li>
+      <li>Make c negative. Make c equal to 0. What happens each time?</li>
+    </ul>
+  </div>
+
+  <h3>Addition, step by step</h3>
+  <p>To add two vectors, add the components that sit in the same position.</p>
+  <ol class="steps">
+    <li>Write them one above the other: \(a = (2, 1)\) and \(b = (1, 3)\).</li>
+    <li>Add the first components: \(2 + 1 = 3\).</li>
+    <li>Add the second components: \(1 + 3 = 4\).</li>
+    <li>Put the results in the same order: \(a + b = (3, 4)\).</li>
+  </ol>
+  <p>In general: \(a + b = (a_1 + b_1,\ a_2 + b_2)\). As a picture: walk along a, then along b; where you finish is the tip of \(a + b\). The order does not matter, \(a + b = b + a\), which is the two routes in Lab 1.2a.</p>
+  <p class="slip"><b>Rule.</b> You can only add vectors with the same number of components. (2, 1) + (1, 3, 5) has no meaning.</p>
+
+  <h3>Scaling, step by step</h3>
+  <p>To multiply a vector by a number, multiply every component by that number. In this context an ordinary number is called a <b>scalar</b>, because it scales the vector.</p>
+  <ol class="steps">
+    <li>Take \(v = (2, 1)\) and the scalar \(c = 3\).</li>
+    <li>Multiply the first component: \(3 \times 2 = 6\).</li>
+    <li>Multiply the second component: \(3 \times 1 = 3\).</li>
+    <li>Result: \(3v = (6, 3)\). Same direction, three times as long.</li>
+  </ol>
+  <p>A negative scalar flips the direction: \(-1 \cdot (2, 1) = (-2, -1)\). A scalar of 0 gives the zero vector.</p>
+
+  <h3>Subtraction is both together</h3>
+  <p>\(a - b\) means \(a + (-1)\,b\): flip b, then add. In components you simply subtract position by position: \((2, 1) - (1, 3) = (2 - 1,\ 1 - 3) = (1, -2)\).</p>
+  <p>A useful picture: \(a - b\) is the arrow that takes you <b>from the tip of b to the tip of a</b>. Check: start at b = (1, 3), add (1, −2), and you arrive at (2, 1) = a. This is used in the next lesson to measure distance.</p>
+
+  <h3>Worked example</h3>
+  <p>Two customers are described by (visits per month, average basket in hundreds of EGP): \(p = (4, 6)\) and \(q = (10, 2)\). Find the "average customer".</p>
+  <ol class="steps">
+    <li>Add: \(p + q = (4 + 10,\ 6 + 2) = (14, 8)\).</li>
+    <li>Scale by one half: \(\tfrac12 (14, 8) = (7, 4)\).</li>
+  </ol>
+  <p>The average customer makes 7 visits with a basket of 400 EGP. On a plot, (7, 4) is exactly midway between the two points. The mean of a whole dataset is this same operation with more vectors.</p>
+
+  <h3>Practice on paper</h3>
+  <p>Use \(a = (4, -1)\) and \(b = (-2, 5)\).</p>
+  <ol class="ex">
+    <li>\(a + b\)</li>
+    <li>\(a - b\)</li>
+    <li>\(3a\)</li>
+    <li>\(2a - 3b\)</li>
+    <li>\(\tfrac12 (a + b)\). What does this vector represent?</li>
+    <li>Which vector must you add to a to reach b?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \((4 + (-2),\ -1 + 5) = (2, 4)\).</p>
+    <p>2. \((4 - (-2),\ -1 - 5) = (6, -6)\). Careful with the double minus: \(4 - (-2) = 4 + 2\).</p>
+    <p>3. \((3 \times 4,\ 3 \times (-1)) = (12, -3)\).</p>
+    <p>4. First scale each: \(2a = (8, -2)\) and \(3b = (-6, 15)\). Then subtract: \((8 - (-6),\ -2 - 15) = (14, -17)\).</p>
+    <p>5. From problem 1, \(a + b = (2, 4)\), and half of it is \((1, 2)\). It is the midpoint (the average) of a and b.</p>
+    <p>6. You need \(b - a\), the arrow from the tip of a to the tip of b: \((-2 - 4,\ 5 - (-1)) = (-6, 6)\). Check: \(a + (-6, 6) = (-2, 5) = b\).</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+a = np.array([4, -1])
+b = np.array([-2, 5])
+print(a + b)          # [2 4]
+print(a - b)          # [ 6 -6]
+print(3 * a)          # [12 -3]
+print(2*a - 3*b)      # [ 14 -17]
+print((a + b) / 2)    # [1. 2.]   the midpoint</code></pre>
+
+  <div class="quiz" data-answer="c">
+    <p class="q">What is \((1, 4) - (3, 1)\)?</p>
+    <div class="opts">
+      <button data-o="a">\((4, 5)\)</button>
+      <button data-o="b">\((2, -3)\)</button>
+      <button data-o="c">\((-2, 3)\)</button>
+    </div>
+    <p class="fb" data-ok="Right. First components: 1 − 3 = −2. Second components: 4 − 1 = 3." data-no="Not this one. Subtract position by position, in the order written: 1 − 3 = −2 and 4 − 1 = 3."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l2" id="done-l2">Mark lesson 1.2 done</label>
+</section>
+
+<!-- ================= 1.3 ================= -->
+<section class="lesson" id="l3">
+  <div class="eyebrow">Lesson 1.3</div>
+  <h2>Length and distance</h2>
+  <p class="win">Goal: compute the length of a vector and the distance between two data points.</p>
+  <p class="why">"How similar are these two customers?" becomes "how far apart are their vectors?". Nearest-neighbour methods and clustering run entirely on distance. The error of a model is the length of the vector of its mistakes.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.3 · drag a and b</div>
+    <canvas id="c13" aria-label="Two vectors with their lengths and the distance between their tips"></canvas>
+    <div class="readout" id="r13"></div>
+    <ul class="try">
+      <li>Put a at (3, 4). Look at the grey dashed triangle. Which side is the arrow?</li>
+      <li>Find three different positions for a that all have length exactly 5.</li>
+      <li>Put a and b on the same point. What is the distance?</li>
+    </ul>
+  </div>
+
+  <h3>Length, step by step</h3>
+  <p>The arrow for \(v = (3, 4)\), its sideways part and its vertical part form a right-angled triangle. The arrow is the longest side. Pythagoras' theorem says: (longest side)² = (side 1)² + (side 2)².</p>
+  <ol class="steps">
+    <li>Square each component: \(3^2 = 9\) and \(4^2 = 16\).</li>
+    <li>Add the squares: \(9 + 16 = 25\).</li>
+    <li>Take the square root: \(\sqrt{25} = 5\).</li>
+  </ol>
+  <p>The length of a vector is called its <b>norm</b> and is written with double bars: \(\lVert v \rVert = 5\). In general $$\lVert v \rVert = \sqrt{v_1^2 + v_2^2}$$ With more components, keep adding squares: \(\lVert v \rVert = \sqrt{v_1^2 + v_2^2 + \dots + v_n^2}\).</p>
+  <p class="slip"><b>Two things to watch.</b> A negative component still contributes a positive amount, because squaring removes the sign: for (−3, 4), \((-3)^2 = 9\). And the square root often does not simplify: for (1, 2, 3) the sum of squares is \(1 + 4 + 9 = 14\), and \(\sqrt{14} \approx 3.742\) stays as \(\sqrt{14}\), since \(14 = 2 \times 7\) has no repeated factor.</p>
+
+  <h3>Distance, step by step</h3>
+  <p>From Lesson 1.2, \(a - b\) is the arrow from the tip of b to the tip of a. So the distance between the two points is the length of that arrow.</p>
+  <ol class="steps">
+    <li>Take \(a = (4, 6)\) and \(b = (1, 2)\).</li>
+    <li>Subtract: \(a - b = (4 - 1,\ 6 - 2) = (3, 4)\).</li>
+    <li>Find the length of the result: \(\sqrt{3^2 + 4^2} = \sqrt{25} = 5\).</li>
+  </ol>
+  <p>So \(\text{distance}(a, b) = \lVert a - b \rVert\). The order does not matter: \(b - a = (-3, -4)\) has the same length.</p>
+
+  <h3>Unit vectors <span class="new">New name</span></h3>
+  <p>A <b>unit vector</b> is a vector of length exactly 1. It keeps only the direction. To turn any non-zero vector into a unit vector, divide it by its own length.</p>
+  <ol class="steps">
+    <li>Start with \(v = (3, 4)\), whose length is 5.</li>
+    <li>Divide every component by 5: \(\left(\tfrac35, \tfrac45\right) = (0.6, 0.8)\).</li>
+    <li>Check the length: \(\sqrt{0.6^2 + 0.8^2} = \sqrt{0.36 + 0.64} = \sqrt{1} = 1\).</li>
+  </ol>
+  <p>This is called <b>normalising</b> the vector. It is written \(\hat{v} = \dfrac{v}{\lVert v \rVert}\).</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>\(\lVert (6, 8) \rVert\)</li>
+    <li>\(\lVert (1, -2, 2) \rVert\)</li>
+    <li>\(\lVert (2, 3) \rVert\). Leave it as a root, then give a decimal.</li>
+    <li>The distance between (1, 2) and (4, 6).</li>
+    <li>The unit vector in the direction of (0, −5).</li>
+    <li>Take \(a = (3, 0)\) and \(b = (0, 4)\). Is \(\lVert a + b \rVert\) equal to \(\lVert a \rVert + \lVert b \rVert\)?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(36 + 64 = 100\), and \(\sqrt{100} = 10\).</p>
+    <p>2. \(1 + 4 + 4 = 9\), and \(\sqrt9 = 3\). Note \((-2)^2 = 4\), not −4.</p>
+    <p>3. \(4 + 9 = 13\). \(\sqrt{13}\) does not simplify (13 is prime). As a decimal, about 3.606.</p>
+    <p>4. Subtract: \((4 - 1,\ 6 - 2) = (3, 4)\). Length: \(\sqrt{9 + 16} = 5\).</p>
+    <p>5. Length is \(\sqrt{0 + 25} = 5\). Divide: \((0/5,\ -5/5) = (0, -1)\).</p>
+    <p>6. No. \(a + b = (3, 4)\) has length 5, but \(\lVert a \rVert + \lVert b \rVert = 3 + 4 = 7\). Walking straight is shorter than walking the two sides. In general \(\lVert a + b \rVert \le \lVert a \rVert + \lVert b \rVert\), called the triangle inequality.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+v = np.array([3, 4])
+print(np.linalg.norm(v))             # 5.0
+print(np.sqrt(np.sum(v**2)))         # 5.0, the same thing written out
+
+a, b = np.array([4, 6]), np.array([1, 2])
+print(np.linalg.norm(a - b))         # 5.0  distance
+
+unit = v / np.linalg.norm(v)
+print(unit, np.linalg.norm(unit))    # [0.6 0.8] 1.0</code></pre>
+
+  <div class="quiz" data-answer="a">
+    <p class="q">What is the length of \((-5, 12)\)?</p>
+    <div class="opts">
+      <button data-o="a">13, as 25 + 144 = 169</button>
+      <button data-o="b">7, since −5 + 12 is 7</button>
+      <button data-o="c">17, since 5 + 12 is 17</button>
+    </div>
+    <p class="fb" data-ok="Right. Square, add, root: 25 + 144 = 169, and the square root of 169 is 13." data-no="Not this one. Length is not the sum of the components. Square each (25 and 144), add (169), then take the root (13)."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l3" id="done-l3">Mark lesson 1.3 done</label>
+</section>
+
+<!-- ================= 1.4 ================= -->
+<section class="lesson" id="l4">
+  <div class="eyebrow">Lesson 1.4</div>
+  <h2>The dot product</h2>
+  <p class="win">Goal: compute a dot product and say what its sign tells you.</p>
+  <p class="why">The dot product is the single most used operation in machine learning. A linear model's prediction is a dot product of weights and features. Every neuron in a neural network starts by computing one.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.4 · drag a and b and watch the sign</div>
+    <canvas id="c14" aria-label="Two draggable vectors with their dot product"></canvas>
+    <div class="readout" id="r14"></div>
+    <ul class="try">
+      <li>Keep a fixed. Swing b around in a full circle. Where is the dot product positive, where negative?</li>
+      <li>Find a position of b where the dot product is exactly 0. What do you notice about the two arrows?</li>
+      <li>Put b on top of a. Compare the result with the length of a from Lesson 1.3.</li>
+    </ul>
+  </div>
+
+  <h3>How to compute it, step by step</h3>
+  <p>The dot product takes two vectors of the same size and returns <b>one number</b>.</p>
+  <ol class="steps">
+    <li>Take \(a = (2, 3)\) and \(b = (4, 1)\).</li>
+    <li>Multiply the first components: \(2 \times 4 = 8\).</li>
+    <li>Multiply the second components: \(3 \times 1 = 3\).</li>
+    <li>Add the products: \(8 + 3 = 11\).</li>
+  </ol>
+  <p>So \(a \cdot b = 11\). In general, for vectors with n components: $$a \cdot b = a_1 b_1 + a_2 b_2 + \dots + a_n b_n = \sum_{i=1}^{n} a_i b_i$$ The last form is the sigma notation from Module 0, Lesson 0.7: pair up, multiply, add.</p>
+  <p class="slip"><b>Do not confuse it with addition.</b> \(a + b\) gives a vector, (6, 4). \(a \cdot b\) gives a single number, 11.</p>
+
+  <h3>First meaning: a weighted total</h3>
+  <p>A shop sells 3 notebooks and 2 pens. A notebook costs 20, a pen costs 5. Quantities are \(q = (3, 2)\), prices are \(p = (20, 5)\).</p>
+  <p>\(q \cdot p = 3 \times 20 + 2 \times 5 = 60 + 10 = 70\). That is the bill. Whenever you multiply matching items and add up, you are computing a dot product.</p>
+  <p>A linear model does exactly this. With weights \(w\), features \(x\) and a bias \(b\), the prediction is \(\hat{y} = w \cdot x + b\). The line \(\hat{y} = wx + b\) from Module 0 is the case with a single feature.</p>
+
+  <h3>Second meaning: do the arrows agree?</h3>
+  <p>The lab shows the pattern:</p>
+  <div class="tablewrap"><table>
+    <tr><th>Dot product</th><th>The arrows</th></tr>
+    <tr><td>positive</td><td>point broadly the same way (angle less than 90°)</td></tr>
+    <tr><td>zero</td><td>are perpendicular (angle exactly 90°)</td></tr>
+    <tr><td>negative</td><td>point broadly opposite ways (angle more than 90°)</td></tr>
+  </table></div>
+  <p>Lesson 1.5 explains why. For now, treat it as an observation from the lab.</p>
+
+  <h3>Three properties worth knowing</h3>
+  <ul>
+    <li><b>Order does not matter:</b> \(a \cdot b = b \cdot a\), because \(2 \times 4 = 4 \times 2\).</li>
+    <li><b>A vector dotted with itself gives its length squared:</b> \(a \cdot a = a_1^2 + a_2^2 = \lVert a \rVert^2\). For (3, 4): \(9 + 16 = 25 = 5^2\).</li>
+    <li><b>It distributes over addition:</b> \((a + b) \cdot c = a \cdot c + b \cdot c\).</li>
+  </ul>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>\((1, 2, 3) \cdot (4, -5, 6)\)</li>
+    <li>\((2, -1) \cdot (1, 2)\). What does the answer tell you about the two arrows?</li>
+    <li>\(a \cdot a\) for \(a = (3, 4)\). Compare with \(\lVert a \rVert\).</li>
+    <li>A model has weights \(w = (0.5, 2)\) and bias 1. Predict for the input \(x = (10, 3)\).</li>
+    <li>Check the third property with \(a = (1, 2)\), \(b = (3, 0)\), \(c = (2, 1)\).</li>
+    <li>Can you compute \((1, 2) \cdot (3, 4, 5)\)?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(1 \times 4 + 2 \times (-5) + 3 \times 6 = 4 - 10 + 18 = 12\).</p>
+    <p>2. \(2 \times 1 + (-1) \times 2 = 2 - 2 = 0\). The arrows are perpendicular.</p>
+    <p>3. \(9 + 16 = 25\). The length is 5, and \(5^2 = 25\).</p>
+    <p>4. \(w \cdot x = 0.5 \times 10 + 2 \times 3 = 5 + 6 = 11\). Add the bias: \(11 + 1 = 12\).</p>
+    <p>5. Left side: \(a + b = (4, 2)\), and \((4, 2) \cdot (2, 1) = 8 + 2 = 10\). Right side: \(a \cdot c = 2 + 2 = 4\) and \(b \cdot c = 6 + 0 = 6\), total 10. Equal.</p>
+    <p>6. No. The vectors have different numbers of components, so the pairs do not match up.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+a, b = np.array([2, 3]), np.array([4, 1])
+print(np.dot(a, b))     # 11
+print(a @ b)            # 11   (@ is the same operation)
+print(np.sum(a * b))    # 11   multiply matching entries, then add
+
+w, x, bias = np.array([0.5, 2]), np.array([10, 3]), 1
+print(w @ x + bias)     # 12.0  a linear model's prediction</code></pre>
+
+  <div class="quiz" data-answer="b">
+    <p class="q">What kind of object is \((1, 5) \cdot (2, 3)\)?</p>
+    <div class="opts">
+      <button data-o="a">The vector (2, 15)</button>
+      <button data-o="b">The number 17 only</button>
+      <button data-o="c">The vector (3, 8)</button>
+    </div>
+    <p class="fb" data-ok="Right. 1·2 + 5·3 = 2 + 15 = 17. A dot product always returns a single number." data-no="Not this one. Multiply matching components (2 and 15) and then add them: 17. The result is one number, not a vector."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l4" id="done-l4">Mark lesson 1.4 done</label>
+</section>
+
+<!-- ================= 1.5 ================= -->
+<section class="lesson" id="l5">
+  <div class="eyebrow">Lesson 1.5</div>
+  <h2>Angles and perpendicular vectors</h2>
+  <p class="win">Goal: find the angle between two vectors, and explain why a dot product of zero means a right angle.</p>
+  <p class="why">Two documents, two customers or two word meanings are "similar" when their vectors point the same way, whatever their lengths. That measure is called cosine similarity and it is how search engines and language models compare things.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.5 · drag a and b; the green arc is the angle θ</div>
+    <canvas id="c15" aria-label="Two draggable vectors with the angle between them"></canvas>
+    <div class="readout" id="r15"></div>
+    <ul class="try">
+      <li>Make the angle 90°. What is cos θ? What is the dot product?</li>
+      <li>Keep the direction of b but make it twice as long. Does cos θ change? Does the dot product?</li>
+      <li>Point b exactly opposite to a. What is cos θ?</li>
+    </ul>
+  </div>
+
+  <h3>A reminder about cosine</h3>
+  <p>You only need one fact about the cosine function here: it turns an angle into a number between −1 and 1 that says how much two directions agree.</p>
+  <div class="tablewrap"><table>
+    <tr><th>Angle θ</th><th>cos θ</th><th>Meaning</th></tr>
+    <tr><td>0°</td><td>1</td><td>exactly the same direction</td></tr>
+    <tr><td>60°</td><td>0.5</td><td>partly the same</td></tr>
+    <tr><td>90°</td><td>0</td><td>perpendicular: no agreement</td></tr>
+    <tr><td>120°</td><td>−0.5</td><td>partly opposite</td></tr>
+    <tr><td>180°</td><td>−1</td><td>exactly opposite</td></tr>
+  </table></div>
+
+  <h3>The formula that links dot product and angle</h3>
+  <p>For any two non-zero vectors, with θ the angle between them: $$a \cdot b = \lVert a \rVert\,\lVert b \rVert \cos\theta$$ In words: the dot product equals the two lengths multiplied together, scaled by how much the directions agree. Rearranged to find the angle: $$\cos\theta = \frac{a \cdot b}{\lVert a \rVert\,\lVert b \rVert}$$ The lab computes both sides for you. A full proof needs the law of cosines from trigonometry; here we prove the one case that matters most, the right angle, further down.</p>
+  <p>This formula explains the sign table from Lesson 1.4. Lengths are always positive, so the sign of \(a \cdot b\) is the sign of \(\cos\theta\): positive under 90°, zero at 90°, negative above 90°.</p>
+
+  <h3>Finding an angle, step by step</h3>
+  <p>Find the angle between \(a = (1, 0)\) and \(b = (1, 1)\).</p>
+  <ol class="steps">
+    <li>Dot product: \(1 \times 1 + 0 \times 1 = 1\).</li>
+    <li>Length of a: \(\sqrt{1 + 0} = 1\).</li>
+    <li>Length of b: \(\sqrt{1 + 1} = \sqrt2 \approx 1.414\).</li>
+    <li>Divide: \(\cos\theta = \dfrac{1}{1 \times 1.414} \approx 0.707\).</li>
+    <li>Turn the cosine back into an angle with the inverse cosine key (\(\cos^{-1}\) or arccos): \(\theta = 45°\).</li>
+  </ol>
+  <p>That matches the picture: (1, 1) runs along the diagonal, halfway between the two axes.</p>
+
+  <h3>Why a dot product of zero means perpendicular</h3>
+  <p>Two vectors that meet at a right angle are called <b>perpendicular</b> or <b>orthogonal</b>. The claim: a and b are orthogonal exactly when \(a \cdot b = 0\). Here is the reason, using only Pythagoras.</p>
+  <ol class="steps">
+    <li>Draw a and b from the origin. The third side of the triangle they make runs between their tips. From Lesson 1.2, that side is \(a - b\).</li>
+    <li>Compute the squared length of that third side. In components, \(a - b = (a_1 - b_1,\ a_2 - b_2)\), so $$\lVert a - b \rVert^2 = (a_1 - b_1)^2 + (a_2 - b_2)^2$$</li>
+    <li>Expand each bracket with \((p - q)^2 = p^2 - 2pq + q^2\): $$= a_1^2 - 2a_1b_1 + b_1^2 + a_2^2 - 2a_2b_2 + b_2^2$$</li>
+    <li>Group the terms: \((a_1^2 + a_2^2) + (b_1^2 + b_2^2) - 2(a_1b_1 + a_2b_2)\). Each group is something you know: $$\lVert a - b \rVert^2 = \lVert a \rVert^2 + \lVert b \rVert^2 - 2\,(a \cdot b)$$</li>
+    <li>Pythagoras says a triangle has a right angle between sides a and b exactly when (third side)² = (side a)² + (side b)², that is when \(\lVert a - b \rVert^2 = \lVert a \rVert^2 + \lVert b \rVert^2\).</li>
+    <li>Compare steps 4 and 5. They agree exactly when the extra term \(-2\,(a \cdot b)\) is zero, which means \(a \cdot b = 0\).</li>
+  </ol>
+  <p>So the dot product measures how far a triangle is from being right-angled. Zero means it is right-angled.</p>
+
+  <h3>Cosine similarity <span class="new">New</span></h3>
+  <p>When you only care about direction, use \(\cos\theta\) itself as the measure of similarity. It ignores length.</p>
+  <p>Example: three documents are described by how often they use the words (data, model). \(d_1 = (3, 1)\), \(d_2 = (6, 2)\), \(d_3 = (1, 3)\).</p>
+  <ol class="steps">
+    <li>\(d_1\) and \(d_2\): dot product \(18 + 2 = 20\). Lengths \(\sqrt{10}\) and \(\sqrt{40}\). Their product is \(\sqrt{400} = 20\). Cosine similarity \(= 20 / 20 = 1\).</li>
+    <li>\(d_1\) and \(d_3\): dot product \(3 + 3 = 6\). Lengths \(\sqrt{10}\) and \(\sqrt{10}\), product 10. Cosine similarity \(= 6 / 10 = 0.6\).</li>
+  </ol>
+  <p>\(d_2\) is \(d_1\) written twice as long: same mix of words, so similarity 1, even though the two points are far apart in distance. \(d_3\) has the opposite emphasis, so it scores lower.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Find the angle between (1, 1) and (−1, 1).</li>
+    <li>Cosine similarity of (2, 0) and (1, 1).</li>
+    <li>Find k so that (2, k) is orthogonal to (3, −6).</li>
+    <li>Find the angle between (1, 2) and (−2, −4). Explain the result with a picture.</li>
+    <li>Are (1, 2, −1) and (3, −1, 1) orthogonal?</li>
+    <li>Two vectors have lengths 3 and 4 and meet at 60°. What is their dot product?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. Dot product: \(-1 + 1 = 0\). So \(\cos\theta = 0\) and the angle is 90°.</p>
+    <p>2. Dot product: \(2 + 0 = 2\). Lengths: 2 and \(\sqrt2 \approx 1.414\). \(2 / (2 \times 1.414) \approx 0.707\).</p>
+    <p>3. Set the dot product to zero: \(2 \times 3 + k \times (-6) = 0\), so \(6 - 6k = 0\), so \(k = 1\). Check: \((2, 1) \cdot (3, -6) = 6 - 6 = 0\).</p>
+    <p>4. Dot product: \(-2 - 8 = -10\). Lengths: \(\sqrt5\) and \(\sqrt{20}\), product \(\sqrt{100} = 10\). \(\cos\theta = -10 / 10 = -1\), so θ = 180°. The second vector is −2 times the first: same line, opposite direction.</p>
+    <p>5. \(3 - 2 - 1 = 0\). Yes, orthogonal. The test works in any number of dimensions.</p>
+    <p>6. \(3 \times 4 \times \cos 60° = 12 \times 0.5 = 6\).</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+def cosine(a, b):
+    return (a @ b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+d1, d2, d3 = np.array([3, 1]), np.array([6, 2]), np.array([1, 3])
+print(cosine(d1, d2))    # 1.0
+print(cosine(d1, d3))    # 0.6
+
+a, b = np.array([1, 0]), np.array([1, 1])
+print(np.degrees(np.arccos(cosine(a, b))))   # 45.0</code></pre>
+
+  <div class="quiz" data-answer="c">
+    <p class="q">You double the length of b without changing its direction. What happens to the cosine similarity of a and b?</p>
+    <div class="opts">
+      <button data-o="a">It doubles along with b</button>
+      <button data-o="b">It is cut to half of it</button>
+      <button data-o="c">It stays exactly as it was</button>
+    </div>
+    <p class="fb" data-ok="Right. The dot product doubles, but so does the length of b in the denominator, so the ratio is unchanged." data-no="Not this one. Doubling b doubles the dot product on top and the length of b underneath. The two cancel, so the cosine does not move."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l5" id="done-l5">Mark lesson 1.5 done</label>
+</section>
+
+<!-- ================= 1.6 ================= -->
+<section class="lesson" id="l6">
+  <div class="eyebrow">Lesson 1.6</div>
+  <h2>Projection</h2>
+  <p class="win">Goal: find the part of one vector that lies along another, in four steps.</p>
+  <p class="why">Fitting a line to data is a projection: the model's predictions are the closest point it can reach to the true values, and the leftover error is perpendicular to everything the model can produce. PCA in Part D is projection again. This lesson is the first sight of both.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.6 · drag a and b; the thick green arrow is the projection of a onto b</div>
+    <canvas id="c16" aria-label="Projection of vector a onto vector b"></canvas>
+    <div class="readout" id="r16"></div>
+    <ul class="try">
+      <li>The grey dashed line drops from the tip of a to the line of b. At what angle does it meet that line?</li>
+      <li>Change only the length of b, keeping its direction. Does the green arrow move?</li>
+      <li>Swing a past 90° from b. Where does the projection go, and what sign does c take?</li>
+      <li>Make a perpendicular to b. What is the projection?</li>
+    </ul>
+  </div>
+
+  <h3>The picture</h3>
+  <p>Imagine a light shining straight down onto the line through b. The <b>projection</b> of a onto b is the shadow a casts on that line. It answers the question: how much of a goes in the direction of b?</p>
+  <p>The shadow lies on the line of b, so it must be some multiple of b. Call that multiple c. The whole task is to find c.</p>
+
+  <h3>Where the formula comes from, step by step</h3>
+  <ol class="steps">
+    <li>The projection is \(c\,b\) for some number c that we do not know yet.</li>
+    <li>The leftover part of a is what remains after removing the shadow: \(a - c\,b\). In the lab this is the grey dashed line.</li>
+    <li>The shadow falls straight down, so the leftover is perpendicular to b. From Lesson 1.5, perpendicular means the dot product is zero: $$(a - c\,b) \cdot b = 0$$</li>
+    <li>Distribute the dot product (third property in Lesson 1.4): $$a \cdot b - c\,(b \cdot b) = 0$$</li>
+    <li>Move the second term across: \(a \cdot b = c\,(b \cdot b)\).</li>
+    <li>Divide both sides by \(b \cdot b\): $$c = \frac{a \cdot b}{b \cdot b}$$</li>
+  </ol>
+  <p>So the projection of a onto b is $$\text{proj}_b\,a = \left(\frac{a \cdot b}{b \cdot b}\right) b$$ Notice the bracket is just a number (two dot products divided), and it multiplies the vector b.</p>
+
+  <h3>The four-step routine</h3>
+  <p>Project \(a = (3, 4)\) onto \(b = (1, 2)\).</p>
+  <ol class="steps">
+    <li><b>Compute \(a \cdot b\):</b> \(3 \times 1 + 4 \times 2 = 3 + 8 = 11\).</li>
+    <li><b>Compute \(b \cdot b\):</b> \(1 \times 1 + 2 \times 2 = 1 + 4 = 5\).</li>
+    <li><b>Divide to get c:</b> \(c = 11 / 5 = 2.2\).</li>
+    <li><b>Multiply b by c:</b> \(2.2 \times (1, 2) = (2.2, 4.4)\).</li>
+  </ol>
+  <p><b>Always check.</b> The leftover is \(a - (2.2, 4.4) = (0.8, -0.4)\). Its dot product with b is \(0.8 \times 1 + (-0.4) \times 2 = 0.8 - 0.8 = 0\). Perpendicular, as it must be.</p>
+  <p class="slip"><b>Common slips.</b> Dividing by \(a \cdot a\) instead of \(b \cdot b\): the denominator always uses the vector you project <i>onto</i>. Stopping at c: the projection is a vector, \(c\,b\), not the number c.</p>
+
+  <h3>Reading the number c</h3>
+  <ul>
+    <li>\(c \gt 0\): the shadow points the same way as b.</li>
+    <li>\(c = 0\): a is perpendicular to b, and the shadow is the zero vector.</li>
+    <li>\(c \lt 0\): the shadow points opposite to b.</li>
+  </ul>
+  <p>The projection is also the <b>closest point</b> to a on the line of b. Any other point on that line is further away, because the perpendicular route is the shortest. That "closest point" idea is exactly what least squares regression uses.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Project (4, 2) onto (1, 0). Explain the answer without calculating.</li>
+    <li>Project (1, 1) onto (3, 4), and check the leftover.</li>
+    <li>Project (−2, 1) onto (1, 1). What does the sign of c tell you?</li>
+    <li>Project \(a = (2, 1, 2)\) onto \(b = (1, 0, 1)\).</li>
+    <li>If a is orthogonal to b, what is the projection of a onto b?</li>
+    <li>Project (2, 6) onto (1, 1), then onto (3, 3). Compare.</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(a \cdot b = 4\), \(b \cdot b = 1\), \(c = 4\), projection \(= (4, 0)\). (1, 0) points along the horizontal axis, so the shadow is just the horizontal part of a.</p>
+    <p>2. \(a \cdot b = 3 + 4 = 7\). \(b \cdot b = 9 + 16 = 25\). \(c = 0.28\). Projection \(= (0.84, 1.12)\). Leftover: \((1 - 0.84,\ 1 - 1.12) = (0.16, -0.12)\). Check: \(0.16 \times 3 + (-0.12) \times 4 = 0.48 - 0.48 = 0\).</p>
+    <p>3. \(a \cdot b = -2 + 1 = -1\). \(b \cdot b = 2\). \(c = -0.5\). Projection \(= (-0.5, -0.5)\). The negative c says the shadow points opposite to b: the angle between them is more than 90°.</p>
+    <p>4. \(a \cdot b = 2 + 0 + 2 = 4\). \(b \cdot b = 1 + 0 + 1 = 2\). \(c = 2\). Projection \(= (2, 0, 2)\). Leftover \((0, 1, 0)\), and \((0, 1, 0) \cdot (1, 0, 1) = 0\).</p>
+    <p>5. \(a \cdot b = 0\), so \(c = 0\) and the projection is the zero vector. No part of a lies along b.</p>
+    <p>6. Onto (1, 1): \(a \cdot b = 8\), \(b \cdot b = 2\), \(c = 4\), projection (4, 4). Onto (3, 3): \(a \cdot b = 24\), \(b \cdot b = 18\), \(c = 4/3\), projection \(\tfrac43 (3, 3) = (4, 4)\). The same. Only the direction of b matters, not its length.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+def project(a, b):
+    c = (a @ b) / (b @ b)
+    return c * b
+
+a, b = np.array([3, 4]), np.array([1, 2])
+p = project(a, b)
+print(p)               # [2.2 4.4]
+print((a - p) @ b)     # 0.0 (or a tiny number like 1e-16): the leftover is perpendicular</code></pre>
+
+  <div class="quiz" data-answer="a">
+    <p class="q">When projecting a onto b, which quantity goes in the denominator of c?</p>
+    <div class="opts">
+      <button data-o="a">b · b, from the target vector</button>
+      <button data-o="b">a · a, from the vector moved</button>
+      <button data-o="c">a · b, the same as on the top</button>
+    </div>
+    <p class="fb" data-ok="Right. c = (a · b) / (b · b). The vector you project onto supplies the denominator." data-no="Not this one. The denominator comes from the vector you are projecting onto: c = (a · b) / (b · b)."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l6" id="done-l6">Mark lesson 1.6 done</label>
+</section>
+
+<!-- ================= 1.7 ================= -->
+<section class="lesson" id="l7">
+  <div class="eyebrow">Lesson 1.7 <span class="new">New</span></div>
+  <h2>Linear combinations and span</h2>
+  <p class="win">Goal: build a target vector out of two given vectors, and say which targets are reachable.</p>
+  <p class="why">A model's prediction is a mix of its feature columns: so much of this column plus so much of that one. Asking "can the model fit this data?" is the same as asking "can I reach this target by mixing these vectors?". The words for this are linear combination and span, and they are used on almost every page of a linear algebra text.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.7 · mix v and w to land the green dot on the red ring at (3, 4)</div>
+    <canvas id="c17" aria-label="A linear combination of two vectors aimed at a target"></canvas>
+    <div class="controls">
+      <label for="a17">amount of v: c₁ <input type="range" id="a17" min="-3" max="3" step="0.25" value="1"><output id="a17o"></output></label>
+      <label for="b17">amount of w: c₂ <input type="range" id="b17" min="-3" max="3" step="0.25" value="0.5"><output id="b17o"></output></label>
+    </div>
+    <div class="readout" id="r17"></div>
+    <ul class="try">
+      <li>Hit the target using only the two sliders. Write down c₁ and c₂.</li>
+      <li>Change only c₁ and watch the green dot. Along which direction does it slide? Then only c₂.</li>
+      <li>Now drag the tip of w until it lies on the same line as v (for example v = (2, 1) and w = (−2, −1)). Can you still hit the target? Where can the green dot go?</li>
+    </ul>
+  </div>
+
+  <h3>What a linear combination is</h3>
+  <p>Take some vectors. Scale each one by a number of your choice. Add the results. That is a <b>linear combination</b>. It uses only the two operations from Lesson 1.2.</p>
+  <p>With two vectors v and w and two numbers \(c_1\) and \(c_2\): $$c_1 v + c_2 w$$ The numbers \(c_1, c_2\) are called <b>coefficients</b> or weights.</p>
+
+  <h3>Computing one, step by step</h3>
+  <p>Take \(v = (1, 2)\), \(w = (3, 1)\), \(c_1 = 2\), \(c_2 = 1\).</p>
+  <ol class="steps">
+    <li>Scale v: \(2 \times (1, 2) = (2, 4)\).</li>
+    <li>Scale w: \(1 \times (3, 1) = (3, 1)\).</li>
+    <li>Add: \((2 + 3,\ 4 + 1) = (5, 5)\).</li>
+  </ol>
+  <p>So \(2v + 1w = (5, 5)\).</p>
+
+  <h3>The reverse question: which coefficients hit a target?</h3>
+  <p>Now you are given the target \((5, 5)\) and must find \(c_1\) and \(c_2\) with \(c_1 (1, 2) + c_2 (3, 1) = (5, 5)\). This is the question the lab asks, done with algebra.</p>
+  <ol class="steps">
+    <li><b>Write the combination in components.</b> \(c_1 (1, 2) + c_2 (3, 1) = (c_1 + 3c_2,\ 2c_1 + c_2)\).</li>
+    <li><b>Match each component to the target.</b> First components: \(c_1 + 3c_2 = 5\). Second components: \(2c_1 + c_2 = 5\). Two equations, two unknowns.</li>
+    <li><b>Solve the first equation for \(c_1\):</b> \(c_1 = 5 - 3c_2\).</li>
+    <li><b>Substitute into the second:</b> \(2(5 - 3c_2) + c_2 = 5\), so \(10 - 6c_2 + c_2 = 5\), so \(10 - 5c_2 = 5\), so \(c_2 = 1\).</li>
+    <li><b>Go back for \(c_1\):</b> \(c_1 = 5 - 3 \times 1 = 2\).</li>
+    <li><b>Check:</b> \(2(1, 2) + 1(3, 1) = (2, 4) + (3, 1) = (5, 5)\).</li>
+  </ol>
+  <p>Notice what just happened: a question about vectors turned into a system of linear equations. That link is the heart of Part B.</p>
+
+  <h3>Span: everything you can reach</h3>
+  <p>The <b>span</b> of a set of vectors is the set of all their linear combinations: every point you could land on by choosing the coefficients freely.</p>
+  <div class="tablewrap"><table>
+    <tr><th>You have</th><th>Their span</th></tr>
+    <tr><td>one non-zero vector v</td><td>the line through the origin in the direction of v</td></tr>
+    <tr><td>two vectors that point along different lines</td><td>the whole plane \(\mathbb{R}^2\): any target can be hit</td></tr>
+    <tr><td>two vectors on the same line (one is a multiple of the other)</td><td>still only that line: the second vector adds nothing new</td></tr>
+  </table></div>
+  <p>The third row is what the lab's last experiment shows. Two vectors on the same line are called <b>linearly dependent</b>: one of them is redundant. Two vectors that are not on the same line are <b>linearly independent</b>: each contributes a direction the other cannot. You will meet these two terms properly in Part B; for now the picture is enough.</p>
+  <p>In data terms: if one feature column is just 2 times another (say, a length in metres and the same length in half-metres), the second column gives the model no new information.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Compute \(3(1, 0) + 2(0, 1)\).</li>
+    <li>Compute \(2(1, 2) - (3, 1)\).</li>
+    <li>Find \(c_1, c_2\) with \(c_1 (1, 1) + c_2 (1, -1) = (4, 2)\).</li>
+    <li>Can any combination of (1, 2) and (2, 4) equal (3, 5)? Show why or why not.</li>
+    <li>Describe the span of the single vector (1, 2).</li>
+    <li>Write (7, 3) as a combination of (1, 0) and (0, 1). What do you notice about the coefficients?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \((3, 0) + (0, 2) = (3, 2)\).</p>
+    <p>2. \((2, 4) - (3, 1) = (-1, 3)\). Subtracting is a combination with coefficient −1.</p>
+    <p>3. Components: \(c_1 + c_2 = 4\) and \(c_1 - c_2 = 2\). Add the two equations: \(2c_1 = 6\), so \(c_1 = 3\). Then \(c_2 = 4 - 3 = 1\). Check: \(3(1, 1) + 1(1, -1) = (3, 3) + (1, -1) = (4, 2)\).</p>
+    <p>4. Components: \(c_1 + 2c_2 = 3\) and \(2c_1 + 4c_2 = 5\). Double the first equation: \(2c_1 + 4c_2 = 6\). But the second says the same left side equals 5. Both cannot be true, so no combination works. The reason: (2, 4) is 2 times (1, 2), so both lie on one line, and (3, 5) is not on that line.</p>
+    <p>5. All multiples \(c\,(1, 2) = (c, 2c)\): the line through the origin where the second component is always twice the first.</p>
+    <p>6. \(7(1, 0) + 3(0, 1) = (7, 3)\). The coefficients are the components themselves. (1, 0) and (0, 1) are called the <b>standard basis vectors</b>; every vector is automatically a combination of them.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+v, w = np.array([1, 2]), np.array([3, 1])
+print(2*v + 1*w)                      # [5 5]
+
+# the reverse question: which c1, c2 give the target (5, 5)?
+A = np.column_stack([v, w])           # v and w side by side as columns
+target = np.array([5, 5])
+print(np.linalg.solve(A, target))     # [2. 1.]
+
+# two vectors on the same line: no unique answer exists
+A_bad = np.column_stack([[1, 2], [2, 4]])
+# np.linalg.solve(A_bad, [3, 5])  -> raises LinAlgError: Singular matrix</code></pre>
+
+  <div class="quiz" data-answer="b">
+    <p class="q">What is the span of the two vectors (1, 3) and (2, 6)?</p>
+    <div class="opts">
+      <button data-o="a">The whole plane R²</button>
+      <button data-o="b">One line through 0</button>
+      <button data-o="c">Just those two points</button>
+    </div>
+    <p class="fb" data-ok="Right. (2, 6) is 2 times (1, 3), so both lie on one line and their combinations never leave it." data-no="Not this one. (2, 6) is exactly 2 times (1, 3). They share a line, so every combination stays on that line."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l7" id="done-l7">Mark lesson 1.7 done</label>
+</section>
+
+<!-- ================= 1.8 ================= -->
+<section class="lesson" id="l8">
+  <div class="eyebrow">Lesson 1.8</div>
+  <h2>Matrix times vector, row by row</h2>
+  <p class="win">Goal: multiply any matrix by a vector correctly, using a size check and one row at a time.</p>
+  <p class="why">Put your whole dataset in a matrix X, one row per example. Put the model's weights in a vector w. Then \(Xw\) is the prediction for every example at once. This one product is the forward pass of linear regression, and the first step of every layer in a neural network.</p>
+
+  <h3>Warm-up, before you read on</h3>
+  <p>Try this from memory, on paper. If it goes wrong, good: the lesson is built to fix exactly that.</p>
+  <p>$$\begin{pmatrix} 2 & 1 \\ 0 & 3 \\ 5 & 2 \end{pmatrix} \begin{pmatrix} 4 \\ 2 \end{pmatrix} = \ ?$$</p>
+  <details><summary>Answer</summary><div>
+    <p>(10, 6, 24). Three rows, so three entries. Row 1: \(2 \times 4 + 1 \times 2 = 10\). Row 2: \(0 \times 4 + 3 \times 2 = 6\). Row 3: \(5 \times 4 + 2 \times 2 = 24\).</p>
+  </div></details>
+
+  <h3>What a matrix is</h3>
+  <p>A <b>matrix</b> is a rectangular table of numbers. Its <b>shape</b> is written rows × columns, always in that order.</p>
+  <p>$$X = \begin{pmatrix} 3 & 1 \\ 2 & 4 \\ 0 & 5 \end{pmatrix}$$ This matrix has 3 rows and 2 columns, so its shape is 3 × 2 (read "three by two"). The entry in row i and column j is written \(x_{ij}\): here \(x_{21} = 2\) (row 2, column 1) and \(x_{32} = 5\) (row 3, column 2).</p>
+  <p><b>Reading it as data.</b> Each row is one example, each column is one feature. Say the rows are three stores and the columns are how many units of product A and product B each store sold. Then row 1 says store 1 sold 3 of A and 1 of B. Each row is a vector, exactly as in Lesson 1.1.</p>
+
+  <h3>The product, in words</h3>
+  <p>To multiply a matrix by a vector, take the <b>dot product of each row with the vector</b>. Each row gives one number. Stack those numbers and you have the answer.</p>
+  <p>With prices \(w = (2, 5)\) for products A and B, \(Xw\) is each store's revenue: quantities dotted with prices, once per store.</p>
+
+  <h3>The three-step routine</h3>
+  <ol class="steps">
+    <li><b>Size check.</b> Count the columns of the matrix and the entries of the vector. They must be equal, or the product does not exist. Then count the rows: the answer will have exactly that many entries. Write that number down before calculating.</li>
+    <li><b>One row at a time.</b> Cover every row except one with your hand or a sheet of paper. Take the dot product of the visible row with the vector: first with first, second with second, add.</li>
+    <li><b>Move down and repeat</b> until every row is done. Check that you have as many entries as you predicted in step 1.</li>
+  </ol>
+
+  <div class="lab">
+    <div class="cap">LAB 1.8 · step through a product one row at a time</div>
+    <div id="mv" class="mv"></div>
+    <div class="controls">
+      <button id="mvnext" type="button">Next step</button>
+      <button id="mvreset" type="button">Start this one again</button>
+      <button id="mvnew" type="button">New problem</button>
+    </div>
+    <ul class="try">
+      <li>For each new problem, predict the number of entries and the next row's value on paper <b>before</b> pressing Next step.</li>
+      <li>Do five new problems in a row without a mistake.</li>
+    </ul>
+  </div>
+
+  <h3>Worked example, fully written out</h3>
+  <p>$$\begin{pmatrix} 3 & 1 \\ 2 & 4 \\ 0 & 5 \end{pmatrix} \begin{pmatrix} 2 \\ 5 \end{pmatrix}$$</p>
+  <ol class="steps">
+    <li><b>Size check.</b> The matrix has 2 columns and the vector has 2 entries: allowed. The matrix has 3 rows: the answer has 3 entries.</li>
+    <li><b>Row 1 is (3, 1).</b> \(3 \times 2 + 1 \times 5 = 6 + 5 = 11\).</li>
+    <li><b>Row 2 is (2, 4).</b> \(2 \times 2 + 4 \times 5 = 4 + 20 = 24\).</li>
+    <li><b>Row 3 is (0, 5).</b> \(0 \times 2 + 5 \times 5 = 0 + 25 = 25\).</li>
+    <li><b>Stack them:</b> the answer is (11, 24, 25). Three entries, as predicted.</li>
+  </ol>
+  <p>Store 1 earned 11, store 2 earned 24, store 3 earned 25.</p>
+  <p class="slip"><b>The two slips to guard against.</b> (1) Borrowing a number from a different row while working on a row: covering the other rows prevents it. (2) Working down a column instead of across a row: the size check catches it, because the answer would come out with the wrong number of entries.</p>
+
+  <h3>The general formula</h3>
+  <p>For a matrix A with m rows and n columns, and a vector x with n entries, the product \(Ax\) has m entries, and entry i is $$ (Ax)_i = a_{i1}x_1 + a_{i2}x_2 + \dots + a_{in}x_n = \sum_{j=1}^{n} a_{ij}\,x_j$$ In words: entry i of the answer is row i of A dotted with x.</p>
+
+  <h3>From revenue to predictions</h3>
+  <p>A linear model with weights w and bias b predicts \(\hat{y} = w \cdot x + b\) for one example (Lesson 1.4). For a whole dataset X, do every row at once: $$\hat{y} = Xw + b$$ where the bias is added to every entry.</p>
+  <p>Example: \(X = \begin{pmatrix} 1 & 2 \\ 2 & 0 \\ 3 & 1 \end{pmatrix}\), \(w = (10, 5)\), bias 2. Rows: \(10 + 10 = 20\), \(20 + 0 = 20\), \(30 + 5 = 35\). Add 2 to each: predictions (22, 22, 37).</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>\(\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}\begin{pmatrix} 5 \\ 6 \end{pmatrix}\)</li>
+    <li>\(\begin{pmatrix} 2 & 0 & 1 \\ -1 & 3 & 2 \end{pmatrix}\begin{pmatrix} 1 \\ 2 \\ 3 \end{pmatrix}\). Do the size check first.</li>
+    <li>A matrix has shape 4 × 3. How many entries must the vector have, and how many entries will the answer have?</li>
+    <li>Can you multiply a 2 × 3 matrix by a vector with 2 entries?</li>
+    <li>\(\begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}\begin{pmatrix} 7 \\ -3 \end{pmatrix}\). What does this matrix do to a vector?</li>
+    <li>\(\begin{pmatrix} 4 & -2 \\ 1 & 3 \\ -1 & 0 \\ 2 & 2 \end{pmatrix}\begin{pmatrix} 3 \\ -1 \end{pmatrix}\)</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. Size: 2 columns, 2 entries, fine; 2 rows, so 2 entries. Row 1: \(1 \times 5 + 2 \times 6 = 5 + 12 = 17\). Row 2: \(3 \times 5 + 4 \times 6 = 15 + 24 = 39\). Answer (17, 39).</p>
+    <p>2. Size: 3 columns, 3 entries, fine; 2 rows, so 2 entries. Row 1: \(2 \times 1 + 0 \times 2 + 1 \times 3 = 2 + 0 + 3 = 5\). Row 2: \(-1 \times 1 + 3 \times 2 + 2 \times 3 = -1 + 6 + 6 = 11\). Answer (5, 11).</p>
+    <p>3. The vector needs 3 entries (one per column). The answer has 4 entries (one per row).</p>
+    <p>4. No. The matrix has 3 columns, so each row has 3 numbers, and they cannot be paired with only 2 entries.</p>
+    <p>5. Row 1: \(7 + 0 = 7\). Row 2: \(0 - 3 = -3\). Answer (7, −3): the vector comes back unchanged. This matrix is called the <b>identity matrix</b>. It plays the role that the number 1 plays in ordinary multiplication.</p>
+    <p>6. Size: 2 columns, 2 entries, fine; 4 rows, so 4 entries. Row 1: \(12 + 2 = 14\). Row 2: \(3 - 3 = 0\). Row 3: \(-3 + 0 = -3\). Row 4: \(6 - 2 = 4\). Answer (14, 0, −3, 4).</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+X = np.array([[3, 1],
+              [2, 4],
+              [0, 5]])
+w = np.array([2, 5])
+
+print(X.shape, w.shape)   # (3, 2) (2,)   columns of X match entries of w
+print(X @ w)              # [11 24 25]
+
+# the same thing, one row at a time
+for row in X:
+    print(row, "->", row @ w)
+
+# predictions for a whole dataset
+X2 = np.array([[1, 2], [2, 0], [3, 1]])
+print(X2 @ np.array([10, 5]) + 2)   # [22 22 37]</code></pre>
+
+  <p class="watch">Primary source for this lesson: Khan Academy, <a href="https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/null-column-space/v/matrix-vector-products">Matrix vector products</a>. Quick reference: <a href="../reference/matrix-vector-product.html">matrix-vector product sheet</a> in your course folder.</p>
+
+  <div class="quiz" data-answer="c">
+    <p class="q">A 5 × 3 matrix is multiplied by a vector. How many entries does the answer have?</p>
+    <div class="opts">
+      <button data-o="a">3, one per column of it</button>
+      <button data-o="b">15, one per entry in it</button>
+      <button data-o="c">5, one per row of matrix</button>
+    </div>
+    <p class="fb" data-ok="Right. Each row produces one number, and there are 5 rows. The 3 tells you how long the vector must be." data-no="Not this one. Each row gives one dot product, so the answer has one entry per row: 5. The 3 is how many entries the vector needs."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l8" id="done-l8">Mark lesson 1.8 done</label>
+</section>
+
+<!-- ================= 1.9 ================= -->
+<section class="lesson" id="l9">
+  <div class="eyebrow">Lesson 1.9 <span class="new">New</span></div>
+  <h2>Matrix times vector, column view</h2>
+  <p class="win">Goal: see \(Ax\) as a mix of the columns of A, and use that to say which outputs are possible.</p>
+  <p class="why">The row view tells you how to compute. The column view tells you what the answer means: every output of a linear model is a combination of its feature columns. That single picture explains when a system of equations has a solution, what least squares does, and later what eigenvectors are.</p>
+  <p class="slip"><b>Before starting.</b> Only begin this lesson once Lab 1.8 feels routine. The column view is a second way of looking at the same product, and it is confusing if the row routine is still shaky.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.9 · the dashed arrows are the two columns of A; the sliders are x₁ and x₂</div>
+    <canvas id="c19" aria-label="Matrix-vector product as a combination of the columns"></canvas>
+    <div class="controls">
+      <label for="a19">x₁ <input type="range" id="a19" min="-3" max="3" step="0.25" value="1"><output id="a19o"></output></label>
+      <label for="b19">x₂ <input type="range" id="b19" min="-3" max="3" step="0.25" value="1"><output id="b19o"></output></label>
+    </div>
+    <div class="readout" id="r19"></div>
+    <ul class="try">
+      <li>Compare the two lines "column view" and "row view" in the readout as you move the sliders. Do they ever disagree?</li>
+      <li>Set x = (1, 0). Which column does the green dot land on? Then x = (0, 1).</li>
+      <li>Drag the columns so they lie on one line. Which outputs can \(Ax\) still produce?</li>
+    </ul>
+  </div>
+
+  <h3>The same product, organised differently</h3>
+  <p>Take \(A = \begin{pmatrix} 3 & 1 \\ 2 & 4 \end{pmatrix}\) and \(x = (2, 5)\). The columns of A are \((3, 2)\) and \((1, 4)\): read each one downward.</p>
+  <p><b>Row view (Lesson 1.8).</b> Row 1: \(3 \times 2 + 1 \times 5 = 11\). Row 2: \(2 \times 2 + 4 \times 5 = 24\). Answer (11, 24).</p>
+  <p><b>Column view.</b> Use the entries of x as coefficients for the columns:</p>
+  <ol class="steps">
+    <li>Scale column 1 by \(x_1 = 2\): \(2 \times (3, 2) = (6, 4)\).</li>
+    <li>Scale column 2 by \(x_2 = 5\): \(5 \times (1, 4) = (5, 20)\).</li>
+    <li>Add: \((6 + 5,\ 4 + 20) = (11, 24)\).</li>
+  </ol>
+  <p>The same answer. In general $$Ax = x_1\,(\text{column 1}) + x_2\,(\text{column 2}) + \dots + x_n\,(\text{column } n)$$ So \(Ax\) is a <b>linear combination of the columns of A</b>, with the entries of x as the coefficients. This is Lesson 1.7 again, with the two vectors stored side by side in a matrix.</p>
+
+  <h3>Why the two views always agree</h3>
+  <p>Write the product with letters, \(A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}\) and \(x = (x_1, x_2)\), and compute both ways.</p>
+  <ol class="steps">
+    <li>Row view: \(Ax = (a x_1 + b x_2,\ \ c x_1 + d x_2)\).</li>
+    <li>Column view: \(x_1 (a, c) + x_2 (b, d) = (a x_1,\ c x_1) + (b x_2,\ d x_2) = (a x_1 + b x_2,\ \ c x_1 + d x_2)\).</li>
+  </ol>
+  <p>Identical expressions. The row view collects the terms across each row first; the column view collects them down each column first. The arithmetic is the same either way.</p>
+
+  <h3>What the column view tells you</h3>
+  <ul>
+    <li><b>Which outputs are possible.</b> As x varies, \(Ax\) can reach exactly the span of the columns of A, and nothing else. That set is called the <b>column space</b> of A. You only need the name for now.</li>
+    <li><b>What solving \(Ax = b\) means.</b> "Find x so that \(Ax = b\)" is the same as "find the coefficients that combine the columns into b". That is the target game from Lab 1.7. A solution exists exactly when b lies in the span of the columns.</li>
+    <li><b>What a redundant feature is.</b> If one column is a multiple of another, the columns span less than you would expect, and some targets b become unreachable.</li>
+    <li><b>How to read a matrix quickly.</b> \(A\,(1, 0)\) returns column 1 and \(A\,(0, 1)\) returns column 2. So the columns of a matrix show where it sends the standard basis vectors. Part B builds the whole idea of a matrix as a transformation on this fact.</li>
+  </ul>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Compute \(\begin{pmatrix} 1 & 3 \\ 2 & 1 \end{pmatrix}\begin{pmatrix} 2 \\ 1 \end{pmatrix}\) by rows, then by columns.</li>
+    <li>For \(A = \begin{pmatrix} 4 & -1 \\ 2 & 5 \end{pmatrix}\), write down \(A\,(1, 0)\) and \(A\,(0, 1)\) without calculating.</li>
+    <li>For \(A = \begin{pmatrix} 1 & 2 \\ 2 & 4 \end{pmatrix}\), can \(Ax = (3, 5)\) be solved? Use the columns.</li>
+    <li>Find x with \(\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix} x = \begin{pmatrix} 4 \\ 2 \end{pmatrix}\).</li>
+    <li>A has columns (1, 0, 2) and (0, 1, 1). Compute \(A\,(3, -2)\) with the column view. What shape is A?</li>
+    <li>A data matrix has a column "height in cm" and a column "height in m". Why is that a problem for the column space?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. Rows: \(1 \times 2 + 3 \times 1 = 5\) and \(2 \times 2 + 1 \times 1 = 5\), so (5, 5). Columns: \(2\,(1, 2) + 1\,(3, 1) = (2, 4) + (3, 1) = (5, 5)\).</p>
+    <p>2. \(A\,(1, 0) = (4, 2)\), the first column. \(A\,(0, 1) = (-1, 5)\), the second column.</p>
+    <p>3. The columns are (1, 2) and (2, 4). The second is 2 times the first, so their span is one line, the multiples of (1, 2). Is (3, 5) a multiple of (1, 2)? 3 times (1, 2) is (3, 6), not (3, 5). So no solution. This is practice problem 4 of Lesson 1.7 in matrix form.</p>
+    <p>4. Column view: \(x_1 (1, 1) + x_2 (1, -1) = (4, 2)\). Components: \(x_1 + x_2 = 4\) and \(x_1 - x_2 = 2\). Adding: \(2x_1 = 6\), so \(x_1 = 3\), then \(x_2 = 1\). So \(x = (3, 1)\). Check by rows: \(3 + 1 = 4\) and \(3 - 1 = 2\).</p>
+    <p>5. \(3\,(1, 0, 2) - 2\,(0, 1, 1) = (3, 0, 6) - (0, 2, 2) = (3, -2, 4)\). A has 3 rows and 2 columns: shape 3 × 2.</p>
+    <p>6. The cm column is exactly 100 times the m column. The two columns lie on one line, so the second adds no new direction to the column space. The model gains nothing from it, and there is no longer a single best pair of weights for the two columns.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+A = np.array([[3, 1],
+              [2, 4]])
+x = np.array([2, 5])
+
+print(A @ x)                               # [11 24]  row view
+print(x[0]*A[:, 0] + x[1]*A[:, 1])         # [11 24]  column view; A[:, 0] is column 1
+
+print(A @ np.array([1, 0]))                # [3 2]  -> column 1
+print(A @ np.array([0, 1]))                # [1 4]  -> column 2
+
+print(np.linalg.solve(np.array([[1, 1], [1, -1]]), np.array([4, 2])))   # [3. 1.]</code></pre>
+
+  <p class="watch">Watch for the picture: 3Blue1Brown, <a href="https://www.3blue1brown.com/topics/linear-algebra">Essence of Linear Algebra</a>, chapters 2 (linear combinations, span and basis vectors) and 3 (linear transformations and matrices). Read for another explanation with interactive figures: Margalit and Rabinoff, <a href="https://textbooks.math.gatech.edu/ila/">Interactive Linear Algebra</a>, the sections on vector equations and spans, and on matrix equations.</p>
+
+  <div class="quiz" data-answer="a">
+    <p class="q">In the column view, what do the entries of x do?</p>
+    <div class="opts">
+      <button data-o="a">Scale each column, then add</button>
+      <button data-o="b">Pick out one row to dot with</button>
+      <button data-o="c">Count how many rows A has</button>
+    </div>
+    <p class="fb" data-ok="Right. Each entry of x is the coefficient of one column, and Ax is the sum of the scaled columns." data-no="Not this one. Each entry of x multiplies one column of A, and the scaled columns are added together."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l9" id="done-l9">Mark lesson 1.9 done</label>
+</section>
+
+<!-- ================= 1.10 ================= -->
+<section class="lesson" id="l10">
+  <div class="eyebrow">Lesson 1.10</div>
+  <h2>Checkpoint and cheat sheet</h2>
+  <p class="win">Goal: confirm Part A holds without help, or find the one lesson to revisit.</p>
+  <p>Do these twelve on paper without looking back. They are deliberately mixed, so each one makes you decide which tool to use. Each solution names the lesson to revisit.</p>
+
+  <ol class="ex">
+    <li>For \(a = (2, -1)\) and \(b = (-3, 4)\), compute \(2a + b\).</li>
+    <li>\(\lVert (5, 12) \rVert\)</li>
+    <li>The unit vector in the direction of (−3, 4).</li>
+    <li>The distance between (2, −1) and (−1, 3).</li>
+    <li>Are (1, −2, 3) and (2, 1, 0) orthogonal?</li>
+    <li>The angle between (3, 0) and (3, 3).</li>
+    <li>Find k so that (k, 2) is orthogonal to (4, −6).</li>
+    <li>Project (2, 6) onto (1, 1) and check the leftover.</li>
+    <li>Find \(c_1, c_2\) with \(c_1 (2, 1) + c_2 (1, 3) = (7, 11)\).</li>
+    <li>\(\begin{pmatrix} 1 & 4 \\ 2 & -1 \\ 0 & 3 \end{pmatrix}\begin{pmatrix} 3 \\ 2 \end{pmatrix}\)</li>
+    <li>Compute \(\begin{pmatrix} 2 & 1 \\ 0 & 3 \end{pmatrix}\begin{pmatrix} 4 \\ -1 \end{pmatrix}\) using the column view, then confirm with rows.</li>
+    <li>A 6 × 4 data matrix is multiplied by a weight vector. How long is the weight vector, how long is the result, and what does each entry of the result mean?</li>
+  </ol>
+  <details><summary>Solutions and where to look</summary><div>
+    <p>1. \(2a = (4, -2)\). Add b: \((4 - 3,\ -2 + 4) = (1, 2)\). <i>Lesson 1.2</i></p>
+    <p>2. \(25 + 144 = 169\), root 13. <i>1.3</i></p>
+    <p>3. Length \(\sqrt{9 + 16} = 5\). Divide: \((-0.6, 0.8)\). <i>1.3</i></p>
+    <p>4. Difference \((2 - (-1),\ -1 - 3) = (3, -4)\). Length \(\sqrt{9 + 16} = 5\). <i>1.3</i></p>
+    <p>5. \(2 - 2 + 0 = 0\). Yes. <i>1.4, 1.5</i></p>
+    <p>6. Dot product 9. Lengths 3 and \(\sqrt{18} \approx 4.243\). \(\cos\theta = 9 / 12.73 \approx 0.707\), so 45°. <i>1.5</i></p>
+    <p>7. \(4k - 12 = 0\), so \(k = 3\). <i>1.5</i></p>
+    <p>8. \(a \cdot b = 8\), \(b \cdot b = 2\), \(c = 4\), projection (4, 4). Leftover \((-2, 2)\), and \((-2, 2) \cdot (1, 1) = 0\). <i>1.6</i></p>
+    <p>9. \(2c_1 + c_2 = 7\) and \(c_1 + 3c_2 = 11\). From the first, \(c_2 = 7 - 2c_1\). Substitute: \(c_1 + 21 - 6c_1 = 11\), so \(-5c_1 = -10\), so \(c_1 = 2\) and \(c_2 = 3\). Check: \((4, 2) + (3, 9) = (7, 11)\). <i>1.7</i></p>
+    <p>10. Three rows, three entries. \(3 + 8 = 11\); \(6 - 2 = 4\); \(0 + 6 = 6\). Answer (11, 4, 6). <i>1.8</i></p>
+    <p>11. Columns: \(4\,(2, 0) - 1\,(1, 3) = (8, 0) - (1, 3) = (7, -3)\). Rows: \(8 - 1 = 7\) and \(0 - 3 = -3\). <i>1.9</i></p>
+    <p>12. The weight vector has 4 entries, one per feature column. The result has 6 entries, one per row. Each entry is the model's weighted total for that example. <i>1.8</i></p>
+    <p><b>Reading your score.</b> 10 or more: ready for Part B. 7 to 9: redo the practice sets of the lessons you missed. Fewer: work those lessons again with the labs, and ask about the steps that do not make sense.</p>
+  </div></details>
+
+  <h3>Cheat sheet</h3>
+  <div class="sheet">
+    <div><h4>Vectors</h4>\(a + b = (a_1 + b_1,\ a_2 + b_2)\)<br>\(c\,a = (c\,a_1,\ c\,a_2)\)<br>\(a - b\): arrow from tip of b to tip of a<br>same number of components required</div>
+    <div><h4>Length and distance</h4>\(\lVert v \rVert = \sqrt{v_1^2 + \dots + v_n^2}\)<br>distance \(= \lVert a - b \rVert\)<br>unit vector: \(\hat{v} = v / \lVert v \rVert\)</div>
+    <div><h4>Dot product</h4>\(a \cdot b = \sum a_i b_i\) (a number)<br>\(a \cdot a = \lVert a \rVert^2\)<br>\(a \cdot b = \lVert a \rVert \lVert b \rVert \cos\theta\)<br>\(a \cdot b = 0 \iff\) orthogonal<br>cosine similarity: \(\dfrac{a \cdot b}{\lVert a \rVert \lVert b \rVert}\)</div>
+    <div><h4>Projection of a onto b</h4>\(c = \dfrac{a \cdot b}{b \cdot b}\)<br>projection \(= c\,b\)<br>check: \((a - c\,b) \cdot b = 0\)</div>
+    <div><h4>Combinations and span</h4>\(c_1 v + c_2 w\): a linear combination<br>span: all reachable points<br>same line: dependent, span is that line<br>different lines: independent, span is \(\mathbb{R}^2\)</div>
+    <div><h4>Matrix times vector</h4>shape: rows × columns<br>columns of A = entries of x<br>result: one entry per row<br>row view: \((Ax)_i = \text{row}_i \cdot x\)<br>column view: \(Ax = x_1\,\text{col}_1 + \dots + x_n\,\text{col}_n\)<br>predictions: \(\hat{y} = Xw + b\)</div>
+  </div>
+
+  <h3>What comes next</h3>
+  <p>Part B: matrices as transformations of space, matrix times matrix, systems of linear equations, the inverse, and rank. It starts from the last bullet of Lesson 1.9: the columns of a matrix show where it sends (1, 0) and (0, 1).</p>
+  <p class="watch">Full glossary of the terms used so far: <a href="../reference/glossary.html">glossary</a> in your course folder.</p>
+  <label class="donebox"><input type="checkbox" data-done="l10" id="done-l10">Mark lesson 1.10 done</label>
+</section>
+</main>
+</div>
+
+<script src="../assets/course.js"></script>
+<script>
+(function(){
+"use strict";
+var M=window.MDS,Plot=M.Plot,css=M.css,$=M.$,num=M.num,vec=M.vec,fmt=M.fmt;
+function sq(id,r){var p=new Plot(id,-r,r,0,0,1);p.sq=true;p.yc=0;return p;}
+function dot(a,b){return a.x*b.x+a.y*b.y;}
+function len(a){return Math.hypot(a.x,a.y);}
+
+/* 1.1 one vector */
+(function(){
+  var p=sq("c11",6),v={x:3,y:2};
+  function draw(){
+    p.clear();
+    p.seg(0,0,v.x,0,css("--warm"),2,[5,4]);p.seg(v.x,0,v.x,v.y,css("--warm"),2,[5,4]);
+    p.arrow(0,0,v.x,v.y,css("--accent"),3);p.handle(v,css("--accent"));
+    p.label(v.x,v.y,"v = "+vec(v),css("--ink"),12,-14);
+    var hx=v.x===0?"no sideways move":(Math.abs(v.x)+" "+(v.x>0?"right":"left")),hy=v.y===0?"no vertical move":(Math.abs(v.y)+" "+(v.y>0?"up":"down"));
+    $("r11").textContent="v = "+vec(v)+"\nfirst component  v₁ = "+num(v.x)+"   →  "+hx+"\nsecond component v₂ = "+num(v.y)+"   →  "+hy;
+  }
+  M.drag(p,[v],draw);M.reg(draw);
+})();
+
+/* 1.2a addition */
+(function(){
+  var p=sq("c12a",6),a={x:2,y:1},b={x:1,y:3};
+  function draw(){
+    var s={x:a.x+b.x,y:a.y+b.y};
+    p.clear();
+    p.arrow(a.x,a.y,s.x,s.y,css("--warm"),1.6,[5,4]);p.arrow(b.x,b.y,s.x,s.y,css("--accent"),1.6,[5,4]);
+    p.arrow(0,0,a.x,a.y,css("--accent"),3);p.arrow(0,0,b.x,b.y,css("--warm"),3);
+    p.arrow(0,0,s.x,s.y,css("--good"),3);
+    p.handle(a,css("--accent"));p.handle(b,css("--warm"));
+    p.label(a.x,a.y,"a",css("--accent"),12,12);p.label(b.x,b.y,"b",css("--warm"),12,-12);p.label(s.x,s.y,"a + b",css("--good"),10,-12);
+    $("r12a").textContent="a = "+vec(a)+"    b = "+vec(b)+"\na + b = ("+num(a.x)+" + "+num(b.x)+",  "+num(a.y)+" + "+num(b.y)+") = "+vec(s)+"\nwalk along a, then along b (dashed): you land on the green tip";
+  }
+  M.drag(p,[a,b],draw);M.reg(draw);
+})();
+
+/* 1.2b scaling */
+(function(){
+  var p=sq("c12b",6),v={x:2,y:1};
+  function draw(){
+    var c=M.out("k12",2),s={x:c*v.x,y:c*v.y};
+    p.clear();
+    p.arrow(0,0,s.x,s.y,css("--warm"),5);p.arrow(0,0,v.x,v.y,css("--accent"),2.2);
+    p.handle(v,css("--accent"));
+    p.label(v.x,v.y,"v",css("--accent"),12,12);p.label(s.x,s.y,"c·v",css("--warm"),12,-12);
+    var w=c<0?"points the opposite way":(c===0?"collapses to the zero vector":"points the same way");
+    $("r12b").textContent="v = "+vec(v)+"    c = "+num(c)+"\nc·v = ("+num(c)+"·"+num(v.x)+",  "+num(c)+"·"+num(v.y)+") = "+vec(s)+"\nlength is "+num(Math.abs(c))+" times the length of v, and it "+w;
+  }
+  M.drag(p,[v],draw);M.bind(["k12"],draw);
+})();
+
+/* 1.3 length and distance */
+(function(){
+  var p=sq("c13",6),a={x:3,y:4},b={x:-2,y:1};
+  function draw(){
+    var d={x:a.x-b.x,y:a.y-b.y};
+    p.clear();
+    p.seg(0,0,a.x,0,css("--muted"),1.5,[4,4]);p.seg(a.x,0,a.x,a.y,css("--muted"),1.5,[4,4]);
+    p.seg(a.x,a.y,b.x,b.y,css("--good"),2.5,[6,4]);
+    p.arrow(0,0,a.x,a.y,css("--accent"),3);p.arrow(0,0,b.x,b.y,css("--warm"),3);
+    p.handle(a,css("--accent"));p.handle(b,css("--warm"));
+    p.label(a.x,a.y,"a",css("--accent"),12,-12);p.label(b.x,b.y,"b",css("--warm"),12,-12);
+    $("r13").textContent="‖a‖ = √("+num(a.x)+"² + "+num(a.y)+"²) = √("+num(a.x*a.x)+" + "+num(a.y*a.y)+") = √"+num(dot(a,a))+" = "+fmt(len(a),3)+
+      "\n‖b‖ = √("+num(b.x*b.x)+" + "+num(b.y*b.y)+") = √"+num(dot(b,b))+" = "+fmt(len(b),3)+
+      "\ndistance from b to a:  a − b = "+vec(d)+"   ‖a − b‖ = √("+num(d.x*d.x)+" + "+num(d.y*d.y)+") = "+fmt(len(d),3);
+  }
+  M.drag(p,[a,b],draw);M.reg(draw);
+})();
+
+/* 1.4 and 1.5 dot product, angle */
+function dotlab(cid,rid,mode,a,b){
+  var p=sq(cid,6);
+  function draw(){
+    var d=dot(a,b),la=len(a),lb=len(b);
+    p.clear();
+    if(la>0&&lb>0)p.angle(a,b,css("--good"));
+    p.arrow(0,0,a.x,a.y,css("--accent"),3);p.arrow(0,0,b.x,b.y,css("--warm"),3);
+    p.handle(a,css("--accent"));p.handle(b,css("--warm"));
+    p.label(a.x,a.y,"a",css("--accent"),12,-12);p.label(b.x,b.y,"b",css("--warm"),12,-12);
+    var t="a = "+vec(a)+"    b = "+vec(b)+"\na · b = "+num(a.x)+"·"+num(b.x)+" + "+num(a.y)+"·"+num(b.y)+" = "+num(a.x*b.x)+" + "+num(a.y*b.y)+" = "+num(d);
+    if(mode==="sign"){
+      t+="\n"+(Math.abs(d)<1e-9?"zero: the arrows are perpendicular (a right angle)":(d>0?"positive: the arrows point broadly the same way (angle under 90°)":"negative: the arrows point broadly opposite ways (angle over 90°)"));
+    }else{
+      if(la===0||lb===0)t+="\none vector has length 0, so there is no angle to measure";
+      else{var cs=Math.max(-1,Math.min(1,d/(la*lb))),th=Math.acos(cs)*180/Math.PI;
+        t+="\n‖a‖ = "+fmt(la,3)+"    ‖b‖ = "+fmt(lb,3)+"\ncos θ = a·b / (‖a‖‖b‖) = "+num(d)+" / ("+fmt(la,3)+" × "+fmt(lb,3)+") = "+fmt(cs,3)+"     θ = "+fmt(th,1)+"°";}
+    }
+    $(rid).textContent=t;
+  }
+  M.drag(p,[a,b],draw);M.reg(draw);
+}
+dotlab("c14","r14","sign",{x:3,y:1},{x:1,y:3});
+dotlab("c15","r15","angle",{x:4,y:0},{x:3,y:3});
+
+/* 1.6 projection */
+(function(){
+  var p=sq("c16",6),a={x:2,y:4},b={x:4,y:2};
+  function draw(){
+    p.clear();
+    var bb=dot(b,b);
+    if(bb>0){
+      var c=dot(a,b)/bb,pr={x:c*b.x,y:c*b.y},e={x:a.x-pr.x,y:a.y-pr.y},k=20/Math.sqrt(bb);
+      p.seg(-k*b.x,-k*b.y,k*b.x,k*b.y,css("--muted"),1,[3,5]);
+      p.seg(a.x,a.y,pr.x,pr.y,css("--muted"),2,[5,4]);
+      p.arrow(0,0,b.x,b.y,css("--warm"),2.4);p.arrow(0,0,pr.x,pr.y,css("--good"),5);p.arrow(0,0,a.x,a.y,css("--accent"),3);
+      p.label(pr.x,pr.y,"projection",css("--good"),10,14);
+      $("r16").textContent="a = "+vec(a)+"    b = "+vec(b)+"\nstep 1   a · b = "+num(dot(a,b))+"\nstep 2   b · b = "+num(bb)+"\nstep 3   c = (a · b) / (b · b) = "+fmt(c,3)+"\nstep 4   projection = c·b = "+vec(pr)+"\ncheck    left over  a − projection = "+vec(e)+",  and its dot product with b is "+num(dot(e,b));
+    }else{p.arrow(0,0,a.x,a.y,css("--accent"),3);$("r16").textContent="b is the zero vector: it has no direction to project onto.";}
+    p.handle(a,css("--accent"));p.handle(b,css("--warm"));
+    p.label(a.x,a.y,"a",css("--accent"),12,-12);p.label(b.x,b.y,"b",css("--warm"),12,12);
+  }
+  M.drag(p,[a,b],draw);M.reg(draw);
+})();
+
+/* 1.7 and 1.9 combinations of two vectors */
+function combo(o){
+  var p=sq(o.c,7),v=o.v,w=o.w,t=o.t;
+  function draw(){
+    var c1=M.out(o.s1,2),c2=M.out(o.s2,2),m={x:c1*v.x,y:c1*v.y},r={x:m.x+c2*w.x,y:m.y+c2*w.y};
+    p.clear();
+    p.arrow(0,0,v.x,v.y,css("--accent"),1.6,[4,3]);p.arrow(0,0,w.x,w.y,css("--warm"),1.6,[4,3]);
+    p.arrow(0,0,m.x,m.y,css("--accent"),3.5);p.arrow(m.x,m.y,r.x,r.y,css("--warm"),3.5);
+    if(t)p.ring(t.x,t.y,css("--bad"),11);
+    p.dot(r.x,r.y,css("--good"),6);
+    p.handle(v,css("--accent"));p.handle(w,css("--warm"));
+    p.label(v.x,v.y,o.n1,css("--accent"),12,-12);p.label(w.x,w.y,o.n2,css("--warm"),12,-12);
+    p.label(r.x,r.y,vec(r),css("--good"),10,14);
+    var par=Math.abs(v.x*w.y-v.y*w.x)<1e-9,txt;
+    if(o.matrix){
+      txt="A = [ "+num(v.x)+"  "+num(w.x)+" ]     x = ("+num(c1)+", "+num(c2)+")\n    [ "+num(v.y)+"  "+num(w.y)+" ]\n"+
+        "column view:  "+num(c1)+"·"+vec(v)+" + "+num(c2)+"·"+vec(w)+" = "+vec(m)+" + "+vec({x:c2*w.x,y:c2*w.y})+" = "+vec(r)+"\n"+
+        "row view:     ("+num(v.x)+"·"+num(c1)+" + "+num(w.x)+"·"+num(c2)+",  "+num(v.y)+"·"+num(c1)+" + "+num(w.y)+"·"+num(c2)+") = "+vec(r);
+    }else{
+      txt=num(c1)+"·"+o.n1+" + "+num(c2)+"·"+o.n2+" = "+num(c1)+"·"+vec(v)+" + "+num(c2)+"·"+vec(w)+"\n= "+vec(m)+" + "+vec({x:c2*w.x,y:c2*w.y})+" = "+vec(r);
+    }
+    if(t){txt+="\ntarget "+vec(t)+": "+(Math.hypot(r.x-t.x,r.y-t.y)<0.13?"hit":"not yet, distance "+fmt(Math.hypot(r.x-t.x,r.y-t.y),2));}
+    if(par)txt+="\n"+o.n1+" and "+o.n2+" lie on one line: every combination stays on that line";
+    $(o.r).textContent=txt;
+  }
+  M.drag(p,[v,w],draw);M.bind([o.s1,o.s2],draw);
+}
+combo({c:"c17",r:"r17",s1:"a17",s2:"b17",v:{x:2,y:1},w:{x:-1,y:2},t:{x:3,y:4},n1:"v",n2:"w"});
+combo({c:"c19",r:"r19",s1:"a19",s2:"b19",v:{x:3,y:2},w:{x:1,y:4},t:null,n1:"col 1",n2:"col 2",matrix:true});
+
+/* 1.8 row-by-row stepper */
+(function(){
+  var box=$("mv"),X,w,step;
+  function ri(a,b){return a+Math.floor(Math.random()*(b-a+1));}
+  function fresh(first){
+    if(first){X=[[3,1],[2,4],[0,5]];w=[2,5];}
+    else{var m=ri(2,4),n=ri(2,3),i,j;X=[];for(i=0;i<m;i++){X.push([]);for(j=0;j<n;j++)X[i].push(ri(-3,6));}w=[];for(j=0;j<n;j++)w.push(ri(-2,5));}
+    step=0;render();
+  }
+  function rowval(i){var s=0;for(var j=0;j<w.length;j++)s+=X[i][j]*w[j];return s;}
+  function render(){
+    var m=X.length,n=w.length,h='<div class="mvrow"><table class="mat">',i,j;
+    for(i=0;i<m;i++){h+='<tr class="'+(step===0?"":(i===step-1?"on":"dim"))+'">';for(j=0;j<n;j++)h+="<td>"+num(X[i][j])+"</td>";h+="</tr>";}
+    h+='</table><span class="op">×</span><table class="mat vecw">';
+    for(j=0;j<n;j++)h+='<tr><td>'+num(w[j])+"</td></tr>";
+    h+='</table><span class="op">=</span><table class="mat res">';
+    for(i=0;i<m;i++)h+='<tr class="'+(i===step-1?"on":"")+'"><td>'+(i<step?num(rowval(i)):"?")+"</td></tr>";
+    h+="</table></div>";
+    var msg;
+    if(step===0)msg="Size check first. The matrix has "+m+" rows and "+n+" columns. The vector has "+n+" entries, the same as the number of columns, so the product exists. The answer will have "+m+" entries, one per row.";
+    else{
+      i=step-1;var parts=[],vals=[];for(j=0;j<n;j++){parts.push(num(X[i][j])+"·"+num(w[j]));vals.push(num(X[i][j]*w[j]));}
+      msg="Row "+step+" only (the other rows are faded out). Pair each number in the row with the number in the same position of the vector:\n"+parts.join(" + ")+" = "+vals.join(" + ")+" = "+num(rowval(i));
+      if(step===m){var all=[];for(i=0;i<m;i++)all.push(num(rowval(i)));msg+="\nDone. Answer: ("+all.join(", ")+"), with "+m+" entries as predicted.";}
+    }
+    box.innerHTML=h+'<div class="readout">'+msg+"</div>";
+    $("mvnext").disabled=step>=m;
+  }
+  $("mvnext").addEventListener("click",function(){if(step<X.length){step++;render();}});
+  $("mvnew").addEventListener("click",function(){fresh(false);});
+  $("mvreset").addEventListener("click",function(){step=0;render();});
+  fresh(true);
+})();
+
+M.initPage("mds-m1a-done");
+})();
+</script>
+</body>
+</html>

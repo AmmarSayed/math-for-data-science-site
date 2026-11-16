@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linear Algebra Part B Transformations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/course.css">
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" defer></script>
+</head>
+<body>
+<div class="shell">
+<nav class="rail" aria-label="Lessons">
+  <div class="course">Math for Data Science</div>
+  <div class="mod">Module 1 · Part B<br>Transformations, Systems and the Inverse</div>
+  <ol id="toc">
+    <li><a href="#l1"><span class="num">1.11</span>A matrix moves space</a></li>
+    <li><a href="#l2"><span class="num">1.12</span>A gallery of transformations</a></li>
+    <li><a href="#l3"><span class="num">1.13</span>Matrix times matrix</a></li>
+    <li><a href="#l4"><span class="num">1.14</span>Order matters, and the transpose</a></li>
+    <li><a href="#l5"><span class="num">1.15</span>Systems of equations as Ax = b</a></li>
+    <li><a href="#l6"><span class="num">1.16</span>Solving by elimination</a></li>
+    <li><a href="#l7"><span class="num">1.17</span>The inverse matrix</a></li>
+    <li><a href="#l8"><span class="num">1.18</span>Rank: when space collapses</a></li>
+    <li><a href="#l9"><span class="num">1.19</span>Least squares, first look</a></li>
+    <li><a href="#l10"><span class="num">1.20</span>Checkpoint and cheat sheet</a></li>
+  </ol>
+  <div class="progress"><span id="ptext">0 of 10 lessons done</span><div class="bar"><i id="pbar"></i></div></div>
+</nav>
+
+<main>
+<header class="top">
+  <h1>Transformations, Systems and the Inverse</h1>
+  <p>Part A ended with one fact: the columns of a matrix show where it sends (1, 0) and (0, 1). Part B builds on it. A matrix becomes something that moves the whole plane, multiplying two matrices becomes doing one move after another, and solving equations becomes undoing a move. The part ends by fitting a line to data with nothing but these tools.</p>
+  <p><b>What you need from Part A.</b> The matrix-vector product by rows and by columns (Lessons 1.8 and 1.9), linear combinations and span (1.7), and projection (1.6). If the row routine still slips, do five more problems in Lab 1.8 first.</p>
+  <p><b>Same rules as Part A.</b> Every technique is shown step by step before it is used. New material carries a <span class="new">New</span> tag. Nearly all of Part B is new, so expect to go slower. If a step does not follow, select it and comment, or ask in the chat.</p>
+</header>
+
+<!-- ================= 1.11 ================= -->
+<section class="lesson" id="l1">
+  <div class="eyebrow">Lesson 1.11 <span class="new">New</span></div>
+  <h2>A matrix moves space</h2>
+  <p class="win">Goal: read a 2 × 2 matrix as a rule that moves every point of the plane, and build a matrix from a description of the move.</p>
+  <p class="why">A neural network layer takes a vector in and gives a vector out by multiplying with a matrix. PCA rotates your data to a better viewpoint with a matrix. To understand what those do, you need to see a matrix as an action on space, and not only as a table of numbers.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.11 · drag the blue and orange tips (the columns of A) and the grey tip (the input x)</div>
+    <canvas id="c111" aria-label="A matrix shown as a moved grid with an input vector and its output"></canvas>
+    <div class="readout" id="r111"></div>
+    <ul class="try">
+      <li>Leave the columns alone and drag x around. The green arrow is Ax. Put x on (1, 0). Where is Ax? Put x on (0, 1).</li>
+      <li>The faint blue lines are the grid after the move. Drag the blue tip. Do the grid lines stay straight? Stay evenly spaced? Does the origin ever move?</li>
+      <li>Put x at (2, 1). In the moved grid, count 2 steps along the blue direction and 1 along the orange. Do you land on the green tip?</li>
+    </ul>
+  </div>
+
+  <h3>The idea, in steps</h3>
+  <ol class="steps">
+    <li><b>A matrix is a function for vectors.</b> Give it a vector x, it returns the vector Ax. A function that takes vectors to vectors is called a <b>transformation</b>. For a 2 × 2 matrix, both the input and the output live in the plane, so you can picture the matrix as moving each point of the plane to a new place.</li>
+    <li><b>Two special inputs tell you everything.</b> From Lesson 1.9: \(A\,(1, 0)\) is column 1 of A, and \(A\,(0, 1)\) is column 2. The vectors (1, 0) and (0, 1) are the standard basis vectors from Lesson 1.7.</li>
+    <li><b>Every other input follows from those two.</b> Any vector is a combination of the basis vectors: \((x_1, x_2) = x_1 (1, 0) + x_2 (0, 1)\). The column view says \(Ax = x_1 (\text{column 1}) + x_2 (\text{column 2})\). So: wherever (1, 0) and (0, 1) land, x lands at the same combination of those landing spots.</li>
+  </ol>
+  <p>That is what the lab's third experiment shows. The matrix carries the whole grid along with the two basis vectors, and every point keeps its "address" in the moved grid.</p>
+
+  <h3>Worked example: from matrix to move</h3>
+  <p>Take \(A = \begin{pmatrix} 2 & -1 \\ 1 & 1 \end{pmatrix}\). Where does \(x = (1, 2)\) go?</p>
+  <ol class="steps">
+    <li>Read the columns downward: column 1 is (2, 1), column 2 is (−1, 1). So (1, 0) lands on (2, 1) and (0, 1) lands on (−1, 1).</li>
+    <li>x is 1 of the first basis vector and 2 of the second, so it lands at \(1 \times (2, 1) + 2 \times (-1, 1)\).</li>
+    <li>Compute: \((2, 1) + (-2, 2) = (0, 3)\).</li>
+    <li>Check with the row routine: row 1 gives \(2 \times 1 + (-1) \times 2 = 0\); row 2 gives \(1 \times 1 + 1 \times 2 = 3\). Same answer.</li>
+  </ol>
+
+  <h3>Worked example: from move to matrix</h3>
+  <p>You are told: "this transformation sends (1, 0) to (0, 1) and sends (0, 1) to (−1, 0)". Write its matrix.</p>
+  <ol class="steps">
+    <li>Where (1, 0) lands becomes column 1: write (0, 1) downward as the first column.</li>
+    <li>Where (0, 1) lands becomes column 2: write (−1, 0) downward as the second column.</li>
+    <li>Result: \(A = \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}\).</li>
+  </ol>
+  <p>(This one turns everything a quarter turn anticlockwise. You will meet it again in the next lesson.)</p>
+
+  <h3>What "linear" means</h3>
+  <p>Transformations that come from matrices are called <b>linear transformations</b>. In the lab you saw the signs of one: grid lines stay straight, stay parallel and evenly spaced, and the origin stays put. In symbols, a linear transformation respects the two vector operations:</p>
+  <ul>
+    <li>\(A(u + v) = Au + Av\): add then move, or move then add, same result.</li>
+    <li>\(A(c\,u) = c\,(Au)\): scale then move, or move then scale, same result.</li>
+  </ul>
+  <p>Check the first with \(A\) as above, \(u = (1, 1)\), \(v = (2, 0)\). \(Au = (2 - 1,\ 1 + 1) = (1, 2)\). \(Av = (4, 2)\). Sum: (5, 4). The other way: \(u + v = (3, 1)\), and \(A(3, 1) = (6 - 1,\ 3 + 1) = (5, 4)\). Equal.</p>
+  <p class="slip"><b>Not linear:</b> sliding everything sideways, \(T(x) = x + (1, 1)\), moves the origin, so no 2 × 2 matrix can do it. Bending or curving the grid is not linear either.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>For \(A = \begin{pmatrix} 3 & 0 \\ 0 & 2 \end{pmatrix}\), where do (1, 0) and (0, 1) land? Describe the move in words.</li>
+    <li>A transformation sends (1, 0) to (1, 1) and (0, 1) to (−1, 1). Write its matrix, then find where (2, 3) goes.</li>
+    <li>Apply \(\begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}\) to (4, 1). What does this matrix do to any vector?</li>
+    <li>You know \(A(1, 0) = (2, 0)\) and \(A(0, 1) = (0, 2)\). Without writing the matrix, find \(A(5, -1)\).</li>
+    <li>Is \(T(x) = x + (1, 1)\) a linear transformation? Give one reason.</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. (1, 0) lands on (3, 0) and (0, 1) lands on (0, 2). Everything is stretched 3 times sideways and 2 times vertically.</p>
+    <p>2. Columns are the landing spots: \(\begin{pmatrix} 1 & -1 \\ 1 & 1 \end{pmatrix}\). Then \((2, 3) \to 2\,(1, 1) + 3\,(-1, 1) = (2, 2) + (-3, 3) = (-1, 5)\).</p>
+    <p>3. Row 1: \(0 \times 4 + 1 \times 1 = 1\). Row 2: \(1 \times 4 + 0 \times 1 = 4\). Result (1, 4). It swaps the two components, which mirrors the plane across the diagonal line.</p>
+    <p>4. \((5, -1) = 5\,(1, 0) - 1\,(0, 1)\), so it lands at \(5\,(2, 0) - 1\,(0, 2) = (10, -2)\).</p>
+    <p>5. No. It sends the origin (0, 0) to (1, 1), and a linear transformation always keeps the origin fixed, because \(A\,(0, 0) = (0, 0)\) for every matrix.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+A = np.array([[2, -1],
+              [1,  1]])
+print(A @ np.array([1, 0]))     # [2 1]   column 1
+print(A @ np.array([0, 1]))     # [-1 1]  column 2
+print(A @ np.array([1, 2]))     # [0 3]
+
+# move many points at once: each column of P is one point
+P = np.array([[0, 1, 1, 0],
+              [0, 0, 1, 1]])    # the corners of the unit square
+print(A @ P)                    # the corners after the move</code></pre>
+
+  <div class="quiz" data-answer="b">
+    <p class="q">A matrix has columns (4, 0) and (1, 2). Where does it send the vector (0, 1)?</p>
+    <div class="opts">
+      <button data-o="a">To (4, 0), its first column</button>
+      <button data-o="b">To (1, 2), the second column</button>
+      <button data-o="c">To (4, 1), which is its top row</button>
+    </div>
+    <p class="fb" data-ok="Right. (0, 1) is the second basis vector, and it lands on column 2." data-no="Not this one. (0, 1) means none of column 1 and one of column 2, so it lands exactly on the second column, (1, 2)."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l1" id="done-l1">Mark lesson 1.11 done</label>
+</section>
+
+<!-- ================= 1.12 ================= -->
+<section class="lesson" id="l2">
+  <div class="eyebrow">Lesson 1.12 <span class="new">New</span></div>
+  <h2>A gallery of transformations</h2>
+  <p class="win">Goal: recognise the common moves (scale, stretch, reflect, rotate, shear, flatten) from their matrices, and write the matrix for a move.</p>
+  <p class="why">Complicated matrices are built from these simple moves. In Part D you will see that every matrix is a rotation, then a stretch, then another rotation. Standardising data is a stretch; PCA is a rotation; reducing dimensions is a flatten.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.12 · choose a move; the grey F is the original, the green F is after the move</div>
+    <canvas id="c112" aria-label="A shape and grid under a chosen transformation"></canvas>
+    <div class="controls">
+      <label for="s112">move <select id="s112"></select></label>
+      <label for="t112">how far <input type="range" id="t112" min="0" max="1" step="0.02" value="1"><output id="t112o"></output></label>
+    </div>
+    <div class="readout" id="r112"></div>
+    <ul class="try">
+      <li>For each move, before looking at the matrix: follow the blue arrow (where (1, 0) goes) and the orange arrow (where (0, 1) goes), and predict the two columns.</li>
+      <li>Slide "how far" from 0 to 1 slowly to watch the grid travel.</li>
+      <li>Which two moves squash the F completely flat? Could you recover the original F from the flat one?</li>
+    </ul>
+  </div>
+
+  <h3>How to write the matrix for any move</h3>
+  <p>One routine covers every case, and it is Lesson 1.11 in two lines:</p>
+  <ol class="steps">
+    <li>Ask where (1, 0) ends up. Write that vector as column 1.</li>
+    <li>Ask where (0, 1) ends up. Write that vector as column 2.</li>
+  </ol>
+
+  <h3>The gallery</h3>
+  <div class="tablewrap"><table>
+    <tr><th>Move</th><th>(1, 0) goes to</th><th>(0, 1) goes to</th><th>Matrix</th></tr>
+    <tr><td>Do nothing (identity)</td><td>(1, 0)</td><td>(0, 1)</td><td>\(\begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}\)</td></tr>
+    <tr><td>Scale everything by 2</td><td>(2, 0)</td><td>(0, 2)</td><td>\(\begin{pmatrix} 2 & 0 \\ 0 & 2 \end{pmatrix}\)</td></tr>
+    <tr><td>Stretch sideways by 2</td><td>(2, 0)</td><td>(0, 1)</td><td>\(\begin{pmatrix} 2 & 0 \\ 0 & 1 \end{pmatrix}\)</td></tr>
+    <tr><td>Reflect across the horizontal axis</td><td>(1, 0)</td><td>(0, −1)</td><td>\(\begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}\)</td></tr>
+    <tr><td>Rotate 90° anticlockwise</td><td>(0, 1)</td><td>(−1, 0)</td><td>\(\begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}\)</td></tr>
+    <tr><td>Shear sideways</td><td>(1, 0)</td><td>(1, 1)</td><td>\(\begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix}\)</td></tr>
+    <tr><td>Flatten onto the horizontal axis</td><td>(1, 0)</td><td>(0, 0)</td><td>\(\begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix}\)</td></tr>
+  </table></div>
+
+  <h3>Reading each one</h3>
+  <ul>
+    <li><b>Scale and stretch.</b> The numbers on the diagonal say how much each axis is stretched. A matrix with numbers only on the diagonal is called a <b>diagonal matrix</b>, and it never mixes the two components.</li>
+    <li><b>Reflect.</b> A −1 on the diagonal flips that axis.</li>
+    <li><b>Rotate 90°.</b> Turn (1, 0) a quarter turn anticlockwise and it points straight up: (0, 1). Turn (0, 1) a quarter turn and it points left: (−1, 0). Those are the two columns.</li>
+    <li><b>Shear.</b> (1, 0) stays where it is, and (0, 1) leans over to (1, 1). The higher a point is, the further it slides sideways, like pushing the top of a deck of cards.</li>
+    <li><b>Flatten.</b> (0, 1) is sent to (0, 0), so all vertical information is destroyed. Every point drops onto the horizontal axis. This is a projection, Lesson 1.6, done to the whole plane at once.</li>
+  </ul>
+  <p><b>Rotation by any angle</b> <span class="new">New</span>. Turning by an angle θ anticlockwise sends (1, 0) to \((\cos\theta, \sin\theta)\) and (0, 1) to \((-\sin\theta, \cos\theta)\), so the matrix is $$\begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix}$$ You do not need to memorise this now. Check it against the table: at θ = 90°, \(\cos\theta = 0\) and \(\sin\theta = 1\), which gives the rotate-90° matrix.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Write the matrix that makes every vector 3 times as long without changing its direction.</li>
+    <li>Write the matrix that reflects across the vertical axis (left and right swap).</li>
+    <li>Write the matrix for a half turn (180°). Apply it to (2, 5).</li>
+    <li>Apply the shear \(\begin{pmatrix} 1 & 2 \\ 0 & 1 \end{pmatrix}\) to (1, 0) and to (1, 1).</li>
+    <li>Apply the flatten matrix to (3, 4) and to (3, −7). What do you notice?</li>
+    <li>Apply the rotate-90° matrix to (1, 0), then apply it again to the result. Which single move is that?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. (1, 0) goes to (3, 0) and (0, 1) goes to (0, 3): \(\begin{pmatrix} 3 & 0 \\ 0 & 3 \end{pmatrix}\).</p>
+    <p>2. (1, 0) goes to (−1, 0); (0, 1) stays: \(\begin{pmatrix} -1 & 0 \\ 0 & 1 \end{pmatrix}\).</p>
+    <p>3. A half turn sends (1, 0) to (−1, 0) and (0, 1) to (0, −1): \(\begin{pmatrix} -1 & 0 \\ 0 & -1 \end{pmatrix}\). Applied to (2, 5): (−2, −5).</p>
+    <p>4. (1, 0): row 1 gives \(1 + 0 = 1\), row 2 gives 0, so (1, 0), unchanged. (1, 1): row 1 gives \(1 + 2 = 3\), row 2 gives 1, so (3, 1).</p>
+    <p>5. Both go to (3, 0). Two different inputs give the same output, so the second component cannot be recovered. Information has been lost.</p>
+    <p>6. First: (0, 1). Second: row 1 gives \(0 \times 0 + (-1) \times 1 = -1\), row 2 gives \(1 \times 0 + 0 \times 1 = 0\), so (−1, 0). Two quarter turns make a half turn.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+theta = np.radians(90)
+R = np.array([[np.cos(theta), -np.sin(theta)],
+              [np.sin(theta),  np.cos(theta)]])
+print(np.round(R))                      # [[ 0. -1.] [ 1.  0.]]
+
+shear = np.array([[1, 1], [0, 1]])
+flat  = np.array([[1, 0], [0, 0]])
+print(shear @ np.array([1, 1]))         # [2 1]
+print(flat @ np.array([3, 4]), flat @ np.array([3, -7]))   # [3 0] [3 0]</code></pre>
+
+  <div class="quiz" data-answer="c">
+    <p class="q">What does the matrix with columns (1, 0) and (0, −1) do?</p>
+    <div class="opts">
+      <button data-o="a">Turns the plane by 90°</button>
+      <button data-o="b">Makes everything twice as big</button>
+      <button data-o="c">Flips the plane upside down</button>
+    </div>
+    <p class="fb" data-ok="Right. (1, 0) stays put and (0, 1) is sent to (0, −1): a reflection across the horizontal axis." data-no="Not this one. Read the columns: (1, 0) stays where it is, and (0, 1) goes to (0, −1). Up becomes down, a reflection."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l2" id="done-l2">Mark lesson 1.12 done</label>
+</section>
+
+<!-- ================= 1.13 ================= -->
+<section class="lesson" id="l3">
+  <div class="eyebrow">Lesson 1.13 <span class="new">New</span></div>
+  <h2>Matrix times matrix</h2>
+  <p class="win">Goal: multiply two matrices with a size check and a row-times-column routine, and say what the product means.</p>
+  <p class="why">A deep network is one matrix move after another. The formula that fits a regression line contains a matrix times a matrix. This is the operation that lets several steps be combined into one.</p>
+
+  <h3>What the product is for</h3>
+  <p>Suppose you move a vector x with a matrix B, and then move the result with a matrix A. The final position is \(A(Bx)\). The product \(AB\) is defined as the single matrix that does both moves in one go: $$(AB)\,x = A\,(B\,x)$$ Read \(AB\) from right to left: <b>B acts first, then A</b>. It is the same convention as \(g(f(x))\) in Module 0, where the inside function acts first.</p>
+
+  <h3>Step 1 of every product: the size check</h3>
+  <p>Write the two shapes next to each other: $$(m \times n)\,(n \times p) \ \to\ m \times p$$ The two inside numbers must be equal. The two outside numbers give the shape of the answer.</p>
+  <div class="tablewrap"><table>
+    <tr><th>A</th><th>B</th><th>AB</th></tr>
+    <tr><td>2 × 2</td><td>2 × 2</td><td>2 × 2</td></tr>
+    <tr><td>2 × 3</td><td>3 × 2</td><td>2 × 2</td></tr>
+    <tr><td>3 × 2</td><td>2 × 4</td><td>3 × 4</td></tr>
+    <tr><td>2 × 3</td><td>2 × 3</td><td>not allowed: inside numbers 3 and 2 differ</td></tr>
+  </table></div>
+  <p>The matrix-vector product from Lesson 1.8 is the special case where B has one column: (m × n)(n × 1) gives m × 1.</p>
+
+  <h3>Step 2: fill the answer one entry at a time</h3>
+  <p><b>The rule:</b> the entry in row i and column j of \(AB\) is (row i of A) dotted with (column j of B).</p>
+  <p>Compute \(AB\) for \(A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}\) and \(B = \begin{pmatrix} 0 & 1 \\ 2 & 3 \end{pmatrix}\).</p>
+  <ol class="steps">
+    <li><b>Size check.</b> (2 × 2)(2 × 2): inside numbers match, answer is 2 × 2. Draw an empty 2 × 2 grid with four slots.</li>
+    <li><b>Slot row 1, column 1.</b> Row 1 of A is (1, 2). Column 1 of B is (0, 2), read downward. Dot product: \(1 \times 0 + 2 \times 2 = 4\).</li>
+    <li><b>Slot row 1, column 2.</b> Row 1 of A is (1, 2). Column 2 of B is (1, 3). Dot product: \(1 \times 1 + 2 \times 3 = 7\).</li>
+    <li><b>Slot row 2, column 1.</b> Row 2 of A is (3, 4). Column 1 of B is (0, 2). Dot product: \(3 \times 0 + 4 \times 2 = 8\).</li>
+    <li><b>Slot row 2, column 2.</b> Row 2 of A is (3, 4). Column 2 of B is (1, 3). Dot product: \(3 \times 1 + 4 \times 3 = 15\).</li>
+  </ol>
+  <p>$$AB = \begin{pmatrix} 4 & 7 \\ 8 & 15 \end{pmatrix}$$</p>
+  <p class="slip"><b>Keeping your place.</b> The slot's row number tells you which row of the <i>left</i> matrix to use. The slot's column number tells you which column of the <i>right</i> matrix to use. Rows always come from the left matrix, columns from the right. Use the cover-the-rest habit from Lab 1.8: one row of A and one column of B visible at a time.</p>
+
+  <h3>Why the rule is what it is</h3>
+  <p>The rule is not arbitrary. It is forced by "B first, then A".</p>
+  <ol class="steps">
+    <li>Column 1 of any matrix is where it sends (1, 0) (Lesson 1.11). So column 1 of \(AB\) is where (1, 0) ends up after both moves.</li>
+    <li>B sends (1, 0) to column 1 of B, which is (0, 2).</li>
+    <li>Then A moves that vector: \(A\,(0, 2) = (1 \times 0 + 2 \times 2,\ 3 \times 0 + 4 \times 2) = (4, 8)\).</li>
+    <li>So column 1 of \(AB\) is (4, 8). That matches the answer above.</li>
+    <li>The same reasoning for (0, 1) gives column 2: \(A\,(1, 3) = (1 + 6,\ 3 + 12) = (7, 15)\).</li>
+  </ol>
+  <p>In short: <b>each column of AB is A times the matching column of B</b>. The row-dot-column rule is that statement written entry by entry.</p>
+
+  <h3>A non-square example</h3>
+  <p>\(A = \begin{pmatrix} 1 & 0 & 2 \\ -1 & 3 & 1 \end{pmatrix}\) is 2 × 3 and \(B = \begin{pmatrix} 3 & 1 \\ 2 & 1 \\ 1 & 0 \end{pmatrix}\) is 3 × 2.</p>
+  <ol class="steps">
+    <li>Size check: (2 × 3)(3 × 2), inside numbers match, answer is 2 × 2.</li>
+    <li>Row 1, column 1: \((1, 0, 2) \cdot (3, 2, 1) = 3 + 0 + 2 = 5\).</li>
+    <li>Row 1, column 2: \((1, 0, 2) \cdot (1, 1, 0) = 1 + 0 + 0 = 1\).</li>
+    <li>Row 2, column 1: \((-1, 3, 1) \cdot (3, 2, 1) = -3 + 6 + 1 = 4\).</li>
+    <li>Row 2, column 2: \((-1, 3, 1) \cdot (1, 1, 0) = -1 + 3 + 0 = 2\).</li>
+  </ol>
+  <p>$$AB = \begin{pmatrix} 5 & 1 \\ 4 & 2 \end{pmatrix}$$</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>\(\begin{pmatrix} 2 & 0 \\ 1 & 3 \end{pmatrix}\begin{pmatrix} 1 & 4 \\ 0 & 2 \end{pmatrix}\)</li>
+    <li>Give the shape of each product, or say it is not allowed: (3 × 2)(2 × 4); (2 × 3)(2 × 3); (4 × 1)(1 × 4); (1 × 4)(4 × 1).</li>
+    <li>\(\begin{pmatrix} 1 & 2 & 0 \\ 0 & 1 & -1 \end{pmatrix}\begin{pmatrix} 1 & 0 \\ 2 & 1 \\ 3 & -2 \end{pmatrix}\)</li>
+    <li>\(\begin{pmatrix} 5 & -2 \\ 7 & 3 \end{pmatrix}\begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}\). What do you notice?</li>
+    <li>R rotates by 90° anticlockwise and S stretches sideways by 2 (both are in the gallery). Find the single matrix for "rotate first, then stretch".</li>
+    <li>Treat (1, 2, 3) as a 1 × 3 matrix and (4, 5, 6) as a 3 × 1 column. Multiply them. What familiar operation is this?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. Slots: \(2 \times 1 + 0 \times 0 = 2\); \(2 \times 4 + 0 \times 2 = 8\); \(1 \times 1 + 3 \times 0 = 1\); \(1 \times 4 + 3 \times 2 = 10\). Answer \(\begin{pmatrix} 2 & 8 \\ 1 & 10 \end{pmatrix}\).</p>
+    <p>2. 3 × 4. Not allowed (3 and 2 differ). 4 × 4. 1 × 1, a single number.</p>
+    <p>3. Size: (2 × 3)(3 × 2) gives 2 × 2. Row 1: \((1, 2, 0) \cdot (1, 2, 3) = 1 + 4 + 0 = 5\) and \((1, 2, 0) \cdot (0, 1, -2) = 0 + 2 + 0 = 2\). Row 2: \((0, 1, -1) \cdot (1, 2, 3) = 0 + 2 - 3 = -1\) and \((0, 1, -1) \cdot (0, 1, -2) = 0 + 1 + 2 = 3\). Answer \(\begin{pmatrix} 5 & 2 \\ -1 & 3 \end{pmatrix}\).</p>
+    <p>4. The answer is \(\begin{pmatrix} 5 & -2 \\ 7 & 3 \end{pmatrix}\), unchanged. Multiplying by the identity matrix does nothing, like multiplying a number by 1.</p>
+    <p>5. "Rotate first, then stretch" is \(SR\) (the first move sits on the right). \(SR = \begin{pmatrix} 2 & 0 \\ 0 & 1 \end{pmatrix}\begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}\). Slots: \(0 + 0 = 0\); \(-2 + 0 = -2\); \(0 + 1 = 1\); \(0 + 0 = 0\). Answer \(\begin{pmatrix} 0 & -2 \\ 1 & 0 \end{pmatrix}\). Check column 1: rotating (1, 0) gives (0, 1); stretching sideways leaves (0, 1) alone. Correct.</p>
+    <p>6. (1 × 3)(3 × 1) gives 1 × 1: \(4 + 10 + 18 = 32\). It is the dot product.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[0, 1], [2, 3]])
+print(A @ B)              # [[ 4  7] [ 8 15]]
+
+# column by column: A times each column of B
+print(A @ B[:, 0], A @ B[:, 1])     # [4 8] [ 7 15]
+
+# doing B then A to a vector equals doing AB once
+x = np.array([1, -1])
+print(A @ (B @ x), (A @ B) @ x)     # same vector twice
+
+C = np.ones((3, 2)); D = np.ones((2, 4))
+print((C @ D).shape)      # (3, 4)</code></pre>
+  <p class="slip"><b>In NumPy,</b> <code>A * B</code> multiplies matching entries, which is a different operation. Matrix multiplication is <code>A @ B</code>.</p>
+
+  <div class="quiz" data-answer="a">
+    <p class="q">In the product AB, which move is applied to a vector first?</p>
+    <div class="opts">
+      <button data-o="a">B, the one on the right side</button>
+      <button data-o="b">A, the one on the left side</button>
+      <button data-o="c">Both at once, in no real order</button>
+    </div>
+    <p class="fb" data-ok="Right. (AB)x means A(Bx): the matrix next to the vector acts first." data-no="Not this one. (AB)x = A(Bx). The matrix closest to x, which is B, acts first; then A."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l3" id="done-l3">Mark lesson 1.13 done</label>
+</section>
+
+<!-- ================= 1.14 ================= -->
+<section class="lesson" id="l4">
+  <div class="eyebrow">Lesson 1.14 <span class="new">New</span></div>
+  <h2>Order matters, and the transpose</h2>
+  <p class="win">Goal: know which rules of ordinary multiplication survive for matrices and which one fails, and flip a matrix with the transpose.</p>
+  <p class="why">Almost every formula in machine learning is a chain of matrix products with transposes in it, such as \(X^{\mathsf T}X\). Reading them correctly depends on two habits: never swap the order, and know what the little T does.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.14 · the same two moves in both orders</div>
+    <canvas id="c114" aria-label="A shape transformed by AB and by BA"></canvas>
+    <div class="controls">
+      <label for="sa114">A <select id="sa114"></select></label>
+      <label for="sb114">B <select id="sb114"></select></label>
+    </div>
+    <div class="readout" id="r114"></div>
+    <ul class="try">
+      <li>Start with A = stretch and B = rotate 90°. Are the blue and orange shapes in the same place?</li>
+      <li>Find a pair where the two orders do agree. (Try two moves of the same kind.)</li>
+    </ul>
+  </div>
+
+  <h3>The rule that fails: you cannot swap the order</h3>
+  <p>For numbers, \(3 \times 5 = 5 \times 3\). For matrices, \(AB\) and \(BA\) are usually different. Take the pair from Lesson 1.13.</p>
+  <p>\(AB = \begin{pmatrix} 4 & 7 \\ 8 & 15 \end{pmatrix}\) (computed there). Now \(BA\), with \(B = \begin{pmatrix} 0 & 1 \\ 2 & 3 \end{pmatrix}\) on the left:</p>
+  <ol class="steps">
+    <li>Row 1 of B, column 1 of A: \((0, 1) \cdot (1, 3) = 0 + 3 = 3\).</li>
+    <li>Row 1 of B, column 2 of A: \((0, 1) \cdot (2, 4) = 0 + 4 = 4\).</li>
+    <li>Row 2 of B, column 1 of A: \((2, 3) \cdot (1, 3) = 2 + 9 = 11\).</li>
+    <li>Row 2 of B, column 2 of A: \((2, 3) \cdot (2, 4) = 4 + 12 = 16\).</li>
+  </ol>
+  <p>\(BA = \begin{pmatrix} 3 & 4 \\ 11 & 16 \end{pmatrix}\), which is not \(AB\). The picture explains it: turning then stretching is a different journey from stretching then turning. Putting on socks then shoes is not the same as shoes then socks.</p>
+
+  <h3>The rules that survive</h3>
+  <div class="tablewrap"><table>
+    <tr><th>Rule</th><th>Meaning</th></tr>
+    <tr><td>\((AB)C = A(BC)\)</td><td>You may regroup, as long as the left-to-right order stays the same.</td></tr>
+    <tr><td>\(A(B + C) = AB + AC\)</td><td>Multiplication distributes over addition.</td></tr>
+    <tr><td>\(AI = IA = A\)</td><td>The identity matrix behaves like the number 1.</td></tr>
+  </table></div>
+  <p><b>Adding matrices</b> and <b>multiplying a matrix by a number</b> work entry by entry, exactly as for vectors in Lesson 1.2: \(\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix} + \begin{pmatrix} 10 & 0 \\ 0 & 10 \end{pmatrix} = \begin{pmatrix} 11 & 2 \\ 3 & 14 \end{pmatrix}\), and \(2\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix} = \begin{pmatrix} 2 & 4 \\ 6 & 8 \end{pmatrix}\). The two matrices being added must have the same shape.</p>
+
+  <h3>The transpose</h3>
+  <p>The <b>transpose</b> of a matrix, written \(A^{\mathsf T}\), turns its rows into columns.</p>
+  <ol class="steps">
+    <li>Start with \(A = \begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{pmatrix}\), shape 2 × 3.</li>
+    <li>Take row 1, (1, 2, 3), and write it as column 1.</li>
+    <li>Take row 2, (4, 5, 6), and write it as column 2.</li>
+    <li>Result: \(A^{\mathsf T} = \begin{pmatrix} 1 & 4 \\ 2 & 5 \\ 3 & 6 \end{pmatrix}\), shape 3 × 2.</li>
+  </ol>
+  <p>The shape flips from m × n to n × m. Doing it twice brings the matrix back: \((A^{\mathsf T})^{\mathsf T} = A\).</p>
+
+  <h3>Three facts about the transpose you will use</h3>
+  <ul>
+    <li><b>The dot product as a matrix product.</b> Write vectors as columns. Then \(a^{\mathsf T}\) is a row, and \(a^{\mathsf T} b\) is (1 × n)(n × 1), a single number: the dot product \(a \cdot b\). Papers nearly always write the dot product this way.</li>
+    <li><b>The transpose of a product reverses the order:</b> \((AB)^{\mathsf T} = B^{\mathsf T} A^{\mathsf T}\).</li>
+    <li><b>Symmetric matrices.</b> A square matrix that equals its own transpose, \(A = A^{\mathsf T}\), is called <b>symmetric</b>. It is a mirror image of itself across the diagonal, such as \(\begin{pmatrix} 2 & 7 \\ 7 & 5 \end{pmatrix}\).</li>
+  </ul>
+
+  <h3>The matrix \(X^{\mathsf T}X\), step by step</h3>
+  <p>For any data matrix X, the product \(X^{\mathsf T}X\) appears in regression, PCA and covariance. Take \(X = \begin{pmatrix} 1 & 1 \\ 1 & 2 \\ 1 & 3 \end{pmatrix}\).</p>
+  <ol class="steps">
+    <li>Transpose: \(X^{\mathsf T} = \begin{pmatrix} 1 & 1 & 1 \\ 1 & 2 & 3 \end{pmatrix}\).</li>
+    <li>Size check: (2 × 3)(3 × 2) gives 2 × 2.</li>
+    <li>Row 1 of \(X^{\mathsf T}\), column 1 of X: \((1, 1, 1) \cdot (1, 1, 1) = 3\).</li>
+    <li>Row 1 of \(X^{\mathsf T}\), column 2 of X: \((1, 1, 1) \cdot (1, 2, 3) = 6\).</li>
+    <li>Row 2 of \(X^{\mathsf T}\), column 1 of X: \((1, 2, 3) \cdot (1, 1, 1) = 6\).</li>
+    <li>Row 2 of \(X^{\mathsf T}\), column 2 of X: \((1, 2, 3) \cdot (1, 2, 3) = 1 + 4 + 9 = 14\).</li>
+  </ol>
+  <p>\(X^{\mathsf T}X = \begin{pmatrix} 3 & 6 \\ 6 & 14 \end{pmatrix}\). Two things to notice. The rows of \(X^{\mathsf T}\) are the columns of X, so <b>every entry of \(X^{\mathsf T}X\) is the dot product of two columns of X</b>. And the result is square and symmetric, whatever the shape of X. You will use this exact matrix in Lesson 1.19.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>For \(A = \begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix}\) and \(B = \begin{pmatrix} 1 & 0 \\ 1 & 1 \end{pmatrix}\), compute \(AB\) and \(BA\).</li>
+    <li>Transpose \(\begin{pmatrix} 2 & -1 \\ 0 & 5 \\ 3 & 3 \end{pmatrix}\).</li>
+    <li>Which are symmetric? \(\begin{pmatrix} 1 & 7 \\ 7 & 4 \end{pmatrix}\), \(\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}\).</li>
+    <li>Compute \(X^{\mathsf T}X\) for \(X = \begin{pmatrix} 2 & 0 \\ 1 & 1 \\ 0 & 3 \end{pmatrix}\).</li>
+    <li>A is 2 × 3 and B is 3 × 4. What is the shape of \((AB)^{\mathsf T}\)?</li>
+    <li>For \(a = (1, 2, 3)\) and \(b = (4, 0, -1)\), compute \(a^{\mathsf T} b\).</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(AB\): slots \(1 + 1 = 2\); \(0 + 1 = 1\); \(0 + 1 = 1\); \(0 + 1 = 1\), so \(\begin{pmatrix} 2 & 1 \\ 1 & 1 \end{pmatrix}\). \(BA\): slots \(1 + 0 = 1\); \(1 + 0 = 1\); \(1 + 0 = 1\); \(1 + 1 = 2\), so \(\begin{pmatrix} 1 & 1 \\ 1 & 2 \end{pmatrix}\). Different.</p>
+    <p>2. Rows become columns: \(\begin{pmatrix} 2 & 0 & 3 \\ -1 & 5 & 3 \end{pmatrix}\).</p>
+    <p>3. The first is symmetric (the two off-diagonal entries are both 7). The second is not (2 and 3 differ).</p>
+    <p>4. Columns of X are (2, 1, 0) and (0, 1, 3). Dot products: column 1 with itself \(4 + 1 + 0 = 5\); column 1 with column 2 \(0 + 1 + 0 = 1\); column 2 with itself \(0 + 1 + 9 = 10\). \(X^{\mathsf T}X = \begin{pmatrix} 5 & 1 \\ 1 & 10 \end{pmatrix}\).</p>
+    <p>5. \(AB\) is 2 × 4, so its transpose is 4 × 2.</p>
+    <p>6. \(1 \times 4 + 2 \times 0 + 3 \times (-1) = 4 + 0 - 3 = 1\).</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[0, 1], [2, 3]])
+print(A @ B)        # [[ 4  7] [ 8 15]]
+print(B @ A)        # [[ 3  4] [11 16]]   different
+
+X = np.array([[1, 1], [1, 2], [1, 3]])
+print(X.T)          # the transpose
+print(X.T @ X)      # [[ 3  6] [ 6 14]]   square and symmetric
+
+a, b = np.array([1, 2, 3]), np.array([4, 0, -1])
+print(a.T @ b)      # 1</code></pre>
+
+  <div class="quiz" data-answer="b">
+    <p class="q">X is a data matrix with 100 rows and 5 columns. What is the shape of \(X^{\mathsf T}X\)?</p>
+    <div class="opts">
+      <button data-o="a">100 × 100, one per row</button>
+      <button data-o="b">5 × 5, one per feature</button>
+      <button data-o="c">100 × 5, the same as X</button>
+    </div>
+    <p class="fb" data-ok="Right. Xᵀ is 5 × 100, so (5 × 100)(100 × 5) gives 5 × 5: one row and column per feature." data-no="Not this one. Xᵀ is 5 × 100. The size rule (5 × 100)(100 × 5) gives 5 × 5."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l4" id="done-l4">Mark lesson 1.14 done</label>
+</section>
+
+<!-- ================= 1.15 ================= -->
+<section class="lesson" id="l5">
+  <div class="eyebrow">Lesson 1.15 <span class="new">New</span></div>
+  <h2>Systems of equations as Ax = b</h2>
+  <p class="win">Goal: translate a set of linear equations into \(Ax = b\) and back, and picture it in two ways.</p>
+  <p class="why">"Find the weights that make the model output equal the targets" is a system of linear equations. Seeing it as \(Ax = b\) lets you ask the three questions that matter: is there a solution, is there exactly one, and how do I find it.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.15 · line 1 is fixed; change line 2 with the sliders</div>
+    <canvas id="c115" aria-label="Two lines and their intersection"></canvas>
+    <div class="controls">
+      <label for="m115">slope of line 2 <input type="range" id="m115" min="-2" max="2" step="0.25" value="-1"><output id="m115o"></output></label>
+      <label for="k115">height of line 2 <input type="range" id="k115" min="-3" max="5" step="0.5" value="4"><output id="k115o"></output></label>
+    </div>
+    <div class="readout" id="r115"></div>
+    <ul class="try">
+      <li>Each line is one equation: the points on it are exactly the (x, y) pairs that satisfy it. What does the crossing point satisfy?</li>
+      <li>Set the slope of line 2 to 0.5, the same as line 1. What happens to the solution? Then set the height to 1 as well.</li>
+    </ul>
+  </div>
+
+  <h3>From equations to Ax = b, step by step</h3>
+  <p>Take the system</p>
+  <p>$$\begin{aligned} x + 2y &= 5 \\ 3x - y &= 1 \end{aligned}$$</p>
+  <ol class="steps">
+    <li><b>Collect the coefficients into a matrix.</b> One row per equation, one column per unknown. Row 1 has the coefficients of x and y in the first equation: (1, 2). Row 2: (3, −1). So \(A = \begin{pmatrix} 1 & 2 \\ 3 & -1 \end{pmatrix}\).</li>
+    <li><b>Put the unknowns in a vector:</b> \(\mathbf{x} = (x, y)\).</li>
+    <li><b>Put the right-hand sides in a vector:</b> \(b = (5, 1)\).</li>
+    <li><b>Check that \(A\mathbf{x} = b\) says the same thing.</b> Row 1 of A dotted with (x, y) is \(1x + 2y\), which must equal 5. Row 2 gives \(3x - 1y\), which must equal 1. Those are the original equations.</li>
+  </ol>
+  <p>$$\begin{pmatrix} 1 & 2 \\ 3 & -1 \end{pmatrix}\begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} 5 \\ 1 \end{pmatrix}$$</p>
+  <p class="slip"><b>Watch the missing terms.</b> If an equation has no y, its coefficient is 0, and the 0 must be written in the matrix. A term like \(-y\) has coefficient −1.</p>
+
+  <h3>Two pictures of the same system</h3>
+  <div class="two">
+    <div><b>Row picture.</b> Each equation is a line in the plane. A solution is a point on both lines: where they cross. Here the lines cross at (1, 2). Check: \(1 + 4 = 5\) and \(3 - 2 = 1\).</div>
+    <div><b>Column picture.</b> By Lesson 1.9, \(A\mathbf{x}\) is \(x\,(1, 3) + y\,(2, -1)\). So the system asks: which combination of the columns lands on b = (5, 1)? Answer: \(1\,(1, 3) + 2\,(2, -1) = (1, 3) + (4, -2) = (5, 1)\).</div>
+  </div>
+  <p>Both pictures give x = 1, y = 2. The row picture is easier to draw; the column picture is the one that extends to data, where "can the columns reach b?" is the question a model faces.</p>
+
+  <h3>The three possible outcomes</h3>
+  <div class="tablewrap"><table>
+    <tr><th>Outcome</th><th>Row picture</th><th>Column picture</th></tr>
+    <tr><td>Exactly one solution</td><td>the lines cross at one point</td><td>the columns point along different lines, so any b is reached in exactly one way</td></tr>
+    <tr><td>No solution</td><td>the lines are parallel</td><td>the columns lie on one line and b is not on it</td></tr>
+    <tr><td>Infinitely many solutions</td><td>the two lines are the same line</td><td>the columns lie on one line and b is on it too</td></tr>
+  </table></div>
+  <p>There is never exactly two, or exactly seven. A linear system has no solution, one solution, or infinitely many.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Write as \(A\mathbf{x} = b\): \(2x - y = 3\) and \(x + 4y = 6\).</li>
+    <li>Write out the equations for \(\begin{pmatrix} 1 & 1 \\ 2 & -3 \end{pmatrix}\begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} 7 \\ 4 \end{pmatrix}\), then solve by substitution.</li>
+    <li>Verify your answer to problem 2 with the column picture.</li>
+    <li>How many solutions: \(x + y = 2\) and \(2x + 2y = 4\)?</li>
+    <li>How many solutions: \(x + y = 2\) and \(2x + 2y = 5\)?</li>
+    <li>Two notebooks and one pen cost 45. One notebook and three pens cost 35. Write the system as \(A\mathbf{x} = b\) and find the two prices.</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(A = \begin{pmatrix} 2 & -1 \\ 1 & 4 \end{pmatrix}\), \(\mathbf{x} = (x, y)\), \(b = (3, 6)\).</p>
+    <p>2. \(x + y = 7\) and \(2x - 3y = 4\). From the first, \(x = 7 - y\). Substitute: \(2(7 - y) - 3y = 4\), so \(14 - 5y = 4\), so \(y = 2\) and \(x = 5\).</p>
+    <p>3. \(5\,(1, 2) + 2\,(1, -3) = (5, 10) + (2, -6) = (7, 4)\). It lands on b.</p>
+    <p>4. Infinitely many. The second equation is the first multiplied by 2, so both describe the same line.</p>
+    <p>5. None. Doubling the first equation gives \(2x + 2y = 4\), which contradicts \(2x + 2y = 5\). The lines are parallel.</p>
+    <p>6. With n the notebook price and p the pen price: \(\begin{pmatrix} 2 & 1 \\ 1 & 3 \end{pmatrix}\begin{pmatrix} n \\ p \end{pmatrix} = \begin{pmatrix} 45 \\ 35 \end{pmatrix}\). From the second equation \(n = 35 - 3p\). Substitute: \(2(35 - 3p) + p = 45\), so \(70 - 5p = 45\), so \(p = 5\) and \(n = 20\).</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+A = np.array([[1, 2], [3, -1]])
+b = np.array([5, 1])
+x = np.linalg.solve(A, b)
+print(x)            # [1. 2.]
+print(A @ x)        # [5. 1.]  it reproduces b</code></pre>
+
+  <div class="quiz" data-answer="c">
+    <p class="q">In \(A\mathbf{x} = b\), what does each row of A hold?</p>
+    <div class="opts">
+      <button data-o="a">The values of one single unknown</button>
+      <button data-o="b">The right-hand side of the system</button>
+      <button data-o="c">The coefficients of one equation</button>
+    </div>
+    <p class="fb" data-ok="Right. One row per equation, one column per unknown." data-no="Not this one. Each row of A holds the coefficients from one equation. Each column belongs to one unknown, and the right-hand sides go in b."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l5" id="done-l5">Mark lesson 1.15 done</label>
+</section>
+
+<!-- ================= 1.16 ================= -->
+<section class="lesson" id="l6">
+  <div class="eyebrow">Lesson 1.16 <span class="new">New</span></div>
+  <h2>Solving by elimination</h2>
+  <p class="win">Goal: solve a system with two or three unknowns by a fixed routine that always works.</p>
+  <p class="why">Substitution gets messy beyond two unknowns. Elimination is the method computers actually use to solve \(A\mathbf{x} = b\), including inside <code>np.linalg.solve</code>. Doing it by hand a few times is how you learn what "no solution" and "infinitely many" look like in the numbers.</p>
+
+  <h3>The idea</h3>
+  <p>Use one equation to remove an unknown from the equations below it. Repeat until the last equation has a single unknown. Solve that one, then work back up.</p>
+  <p>To save writing, drop the letters and keep only the numbers in an <b>augmented matrix</b>: the coefficient matrix A with b attached as an extra column after a bar.</p>
+
+  <h3>The three allowed row operations</h3>
+  <p>Each one changes how the system looks without changing its solutions.</p>
+  <ol class="steps">
+    <li><b>Swap two rows.</b> The order of the equations does not matter.</li>
+    <li><b>Multiply a row by a non-zero number.</b> \(x + y = 3\) and \(2x + 2y = 6\) have the same solutions.</li>
+    <li><b>Add a multiple of one row to another row.</b> If two equations are true, so is their sum. This is the operation that creates zeros.</li>
+  </ol>
+
+  <h3>Two unknowns, step by step</h3>
+  <p>Solve \(x + 2y = 5\) and \(3x - y = 1\), the system from Lesson 1.15.</p>
+  <ol class="steps">
+    <li><b>Write the augmented matrix:</b> \(\left(\begin{array}{cc|c} 1 & 2 & 5 \\ 3 & -1 & 1 \end{array}\right)\).</li>
+    <li><b>Choose the target.</b> We want a 0 where the 3 is, so that row 2 no longer contains x.</li>
+    <li><b>Find the multiplier.</b> Row 2 starts with 3 and row 1 starts with 1. \(3 / 1 = 3\), so subtract 3 copies of row 1 from row 2. We write this as R2 ← R2 − 3·R1.</li>
+    <li><b>Do it to every entry of row 2, including the one after the bar.</b> \(3 - 3 \times 1 = 0\). \(-1 - 3 \times 2 = -7\). \(1 - 3 \times 5 = -14\). New row 2: \((0, -7 \mid -14)\).</li>
+    <li><b>The matrix is now</b> \(\left(\begin{array}{cc|c} 1 & 2 & 5 \\ 0 & -7 & -14 \end{array}\right)\).</li>
+    <li><b>Read row 2 as an equation:</b> \(-7y = -14\), so \(y = 2\).</li>
+    <li><b>Go back up to row 1:</b> \(x + 2y = 5\) with \(y = 2\) gives \(x + 4 = 5\), so \(x = 1\).</li>
+  </ol>
+  <p>Solution (1, 2), as before. The last two steps, solving from the bottom row upward, are called <b>back-substitution</b>.</p>
+
+  <h3>Three unknowns</h3>
+  <p>The same routine, with more zeros to make. Step through it:</p>
+  <p>$$\begin{aligned} x + y + z &= 6 \\ 2x + 3y + z &= 11 \\ x - y + 2z &= 5 \end{aligned}$$</p>
+  <div class="lab">
+    <div class="cap">LAB 1.16 · elimination, one row operation at a time</div>
+    <div id="el" class="mv"></div>
+    <div class="controls">
+      <button id="elprev" type="button">Back</button>
+      <button id="elnext" type="button">Next step</button>
+    </div>
+    <ul class="try">
+      <li>Before each Next step, decide on paper which row operation comes next and what the new row will be.</li>
+      <li>After the last step, put (1, 2, 3) into all three original equations.</li>
+    </ul>
+  </div>
+  <p><b>The order of work</b> for three unknowns: clear the first column below row 1 (two operations), then clear the second column below row 2 (one operation), then back-substitute. The matrix ends up with zeros below the diagonal, which is called <b>triangular</b> form. The first non-zero number in each row, the one you divide by, is called a <b>pivot</b>.</p>
+
+  <h3>What the special cases look like</h3>
+  <div class="tablewrap"><table>
+    <tr><th>A row becomes</th><th>As an equation</th><th>Meaning</th></tr>
+    <tr><td>\((0 \ \ 0 \mid 0)\)</td><td>\(0 = 0\)</td><td>That equation was a copy of another. One fewer real equation: infinitely many solutions.</td></tr>
+    <tr><td>\((0 \ \ 0 \mid 5)\)</td><td>\(0 = 5\)</td><td>A contradiction. No solution.</td></tr>
+  </table></div>
+  <p>If the number you need as a pivot is 0, swap that row with a lower row that has a non-zero number there.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>\(x + y = 5\), \(2x + 3y = 13\).</li>
+    <li>\(2x + 4y = 10\), \(x - y = -1\).</li>
+    <li>\(x + y + z = 3\), \(x + 2y + 3z = 6\), \(2x + 3y + 5z = 10\).</li>
+    <li>\(x + 2y = 4\), \(2x + 4y = 8\). What does the last row tell you?</li>
+    <li>\(x + 2y = 4\), \(2x + 4y = 9\). What does the last row tell you?</li>
+    <li>\(2x + y - z = 1\), \(x + y + z = 6\), \(3x - y + 2z = 7\). Hint: swap the first two rows first, so the top-left number is 1.</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(\left(\begin{array}{cc|c} 1 & 1 & 5 \\ 2 & 3 & 13 \end{array}\right)\). R2 ← R2 − 2·R1: \((0, 1 \mid 3)\). So \(y = 3\), then \(x + 3 = 5\) gives \(x = 2\).</p>
+    <p>2. \(\left(\begin{array}{cc|c} 2 & 4 & 10 \\ 1 & -1 & -1 \end{array}\right)\). Multiplier \(1/2\): R2 ← R2 − ½·R1 gives \((0, -1 - 2 \mid -1 - 5) = (0, -3 \mid -6)\). So \(y = 2\), then \(2x + 8 = 10\) gives \(x = 1\).</p>
+    <p>3. R2 ← R2 − R1: \((0, 1, 2 \mid 3)\). R3 ← R3 − 2·R1: \((0, 1, 3 \mid 4)\). R3 ← R3 − R2: \((0, 0, 1 \mid 1)\). Back-substitution: \(z = 1\). Row 2: \(y + 2 = 3\), so \(y = 1\). Row 1: \(x + 1 + 1 = 3\), so \(x = 1\). Check in the third original equation: \(2 + 3 + 5 = 10\).</p>
+    <p>4. R2 ← R2 − 2·R1 gives \((0, 0 \mid 0)\): \(0 = 0\). The second equation carried no new information. Infinitely many solutions: every point on the line \(x + 2y = 4\).</p>
+    <p>5. R2 ← R2 − 2·R1 gives \((0, 0 \mid 1)\): \(0 = 1\). Impossible, so no solution.</p>
+    <p>6. After the swap: rows \((1, 1, 1 \mid 6)\), \((2, 1, -1 \mid 1)\), \((3, -1, 2 \mid 7)\). R2 ← R2 − 2·R1: \((0, -1, -3 \mid -11)\). R3 ← R3 − 3·R1: \((0, -4, -1 \mid -11)\). R3 ← R3 − 4·R2: \((0, 0, -1 + 12 \mid -11 + 44) = (0, 0, 11 \mid 33)\). So \(z = 3\). Row 2: \(-y - 9 = -11\), so \(y = 2\). Row 1: \(x + 2 + 3 = 6\), so \(x = 1\).</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+M = np.array([[1., 1, 1, 6],
+              [2, 3, 1, 11],
+              [1, -1, 2, 5]])      # augmented matrix; floats so division works
+
+M[1] = M[1] - 2*M[0]
+M[2] = M[2] - 1*M[0]
+M[2] = M[2] + 2*M[1]
+print(M)                            # triangular form
+
+z = M[2, 3] / M[2, 2]
+y = (M[1, 3] - M[1, 2]*z) / M[1, 1]
+x = (M[0, 3] - M[0, 1]*y - M[0, 2]*z) / M[0, 0]
+print(x, y, z)                      # 1.0 2.0 3.0</code></pre>
+
+  <div class="quiz" data-answer="a">
+    <p class="q">During elimination a row turns into (0, 0 | 4). What does that mean?</p>
+    <div class="opts">
+      <button data-o="a">The system has no solution</button>
+      <button data-o="b">The system has many solutions</button>
+      <button data-o="c">The last unknown is equal to 4</button>
+    </div>
+    <p class="fb" data-ok="Right. The row says 0 = 4, which can never be true." data-no="Not this one. Read the row as an equation: 0x + 0y = 4, that is 0 = 4. No values of x and y can make that true."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l6" id="done-l6">Mark lesson 1.16 done</label>
+</section>
+
+<!-- ================= 1.17 ================= -->
+<section class="lesson" id="l7">
+  <div class="eyebrow">Lesson 1.17 <span class="new">New</span></div>
+  <h2>The inverse matrix</h2>
+  <p class="win">Goal: find the inverse of a 2 × 2 matrix, use it to solve a system, and say when no inverse exists.</p>
+  <p class="why">The formula for the best regression weights contains an inverse. "Can this be inverted?" is the same question as "does the data pin down a single answer?". Knowing what the inverse is, and when it fails, explains a class of errors you will meet in practice, such as "singular matrix".</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.17 · drag the columns of A and the input x; the green ring shows A⁻¹ bringing Ax home</div>
+    <canvas id="c117" aria-label="A matrix, an input, its output and the inverse returning it"></canvas>
+    <div class="readout" id="r117"></div>
+    <ul class="try">
+      <li>Wherever you put x, does the green ring always sit on it?</li>
+      <li>Drag the two columns onto one line, for example (2, 1) and (4, 2). What happens to the grid, to ad − bc, and to the inverse?</li>
+    </ul>
+  </div>
+
+  <h3>What an inverse is</h3>
+  <p>A matrix A moves x to Ax. The <b>inverse</b> of A, written \(A^{-1}\), is the matrix that moves every vector back to where it started: $$A^{-1}(A\,x) = x \quad \text{for every } x$$ Doing A and then \(A^{-1}\) is the same as doing nothing, so $$A^{-1}A = I \qquad \text{and also} \qquad A\,A^{-1} = I$$ where I is the identity matrix. It plays the role that \(\tfrac15\) plays for 5: \(\tfrac15 \times 5 = 1\).</p>
+  <p>Examples from the gallery: the inverse of "stretch sideways by 2" is "shrink sideways by half". The inverse of "rotate 90° anticlockwise" is "rotate 90° clockwise". Only square matrices can have an inverse.</p>
+
+  <h3>Finding an inverse from first principles</h3>
+  <p>Take \(A = \begin{pmatrix} 2 & 1 \\ 1 & 1 \end{pmatrix}\). Use the routine of Lesson 1.11: the columns of \(A^{-1}\) are where \(A^{-1}\) sends (1, 0) and (0, 1).</p>
+  <ol class="steps">
+    <li><b>Column 1 of \(A^{-1}\)</b> is the vector u that A sends to (1, 0), because \(A^{-1}\) must bring (1, 0) back to it. So solve \(A u = (1, 0)\): \(2u_1 + u_2 = 1\) and \(u_1 + u_2 = 0\).</li>
+    <li>Subtract the second equation from the first: \(u_1 = 1\). Then \(u_2 = -1\). So column 1 is (1, −1).</li>
+    <li><b>Column 2 of \(A^{-1}\)</b> is the vector v with \(A v = (0, 1)\): \(2v_1 + v_2 = 0\) and \(v_1 + v_2 = 1\).</li>
+    <li>Subtract: \(v_1 = -1\). Then \(v_2 = 2\). So column 2 is (−1, 2).</li>
+    <li><b>Assemble:</b> \(A^{-1} = \begin{pmatrix} 1 & -1 \\ -1 & 2 \end{pmatrix}\).</li>
+    <li><b>Check by multiplying:</b> \(A A^{-1}\) has slots \(2 - 1 = 1\); \(-2 + 2 = 0\); \(1 - 1 = 0\); \(-1 + 2 = 1\). That is the identity.</li>
+  </ol>
+
+  <h3>The shortcut for 2 × 2 matrices</h3>
+  <p>Doing the steps above with letters instead of numbers gives a formula. For \(A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}\): $$A^{-1} = \frac{1}{ad - bc}\begin{pmatrix} d & -b \\ -c & a \end{pmatrix}$$ As a routine:</p>
+  <ol class="steps">
+    <li>Compute the number \(ad - bc\) (main diagonal product minus the other diagonal product).</li>
+    <li>If it is 0, stop: there is no inverse.</li>
+    <li>Swap the two entries on the main diagonal, a and d.</li>
+    <li>Change the sign of the other two entries, b and c. Do not move them.</li>
+    <li>Divide every entry by \(ad - bc\).</li>
+  </ol>
+  <p><b>Why it works.</b> Multiply A by the swapped-and-negated matrix: $$\begin{pmatrix} a & b \\ c & d \end{pmatrix}\begin{pmatrix} d & -b \\ -c & a \end{pmatrix} = \begin{pmatrix} ad - bc & -ab + ba \\ cd - dc & -cb + da \end{pmatrix} = \begin{pmatrix} ad - bc & 0 \\ 0 & ad - bc \end{pmatrix}$$ The result is \((ad - bc)\) times the identity. Dividing by \(ad - bc\) leaves exactly the identity, which is what an inverse must give.</p>
+
+  <h3>Worked example with the shortcut</h3>
+  <p>Invert \(A = \begin{pmatrix} 4 & 2 \\ 1 & 3 \end{pmatrix}\).</p>
+  <ol class="steps">
+    <li>\(ad - bc = 4 \times 3 - 2 \times 1 = 12 - 2 = 10\). Not zero, so an inverse exists.</li>
+    <li>Swap the main diagonal: 4 and 3 trade places.</li>
+    <li>Negate the others: 2 becomes −2, 1 becomes −1. This gives \(\begin{pmatrix} 3 & -2 \\ -1 & 4 \end{pmatrix}\).</li>
+    <li>Divide by 10: \(A^{-1} = \begin{pmatrix} 0.3 & -0.2 \\ -0.1 & 0.4 \end{pmatrix}\).</li>
+  </ol>
+
+  <h3>Solving Ax = b with the inverse</h3>
+  <p>Start from \(A\mathbf{x} = b\). Multiply both sides <b>on the left</b> by \(A^{-1}\): \(A^{-1}A\,\mathbf{x} = A^{-1}b\). Since \(A^{-1}A = I\) and \(I\mathbf{x} = \mathbf{x}\): $$\mathbf{x} = A^{-1}\,b$$</p>
+  <p>With the A above and \(b = (10, 5)\): row 1 gives \(0.3 \times 10 + (-0.2) \times 5 = 3 - 1 = 2\); row 2 gives \(-0.1 \times 10 + 0.4 \times 5 = -1 + 2 = 1\). So \(\mathbf{x} = (2, 1)\). Check in the original system: \(4 \times 2 + 2 \times 1 = 10\) and \(1 \times 2 + 3 \times 1 = 5\).</p>
+  <p class="slip"><b>Side matters.</b> Because order matters for matrices, you must multiply on the same side on both sides of the equation. \(A^{-1}b\) is correct; \(b\,A^{-1}\) is not even the right shape.</p>
+
+  <h3>When there is no inverse</h3>
+  <p>If \(ad - bc = 0\) the formula would divide by zero. The lab shows what that means: the two columns lie on one line, the grid collapses onto that line, and many inputs land on the same output. A move that merges different points cannot be undone, so no inverse exists. Such a matrix is called <b>singular</b>. One that has an inverse is called <b>invertible</b>.</p>
+  <p>The number \(ad - bc\) is called the <b>determinant</b> of A. Part C studies it properly; for now it is the test for whether a 2 × 2 matrix can be inverted.</p>
+  <p><b>In practice,</b> software solves \(A\mathbf{x} = b\) by elimination and does not compute \(A^{-1}\) first: it is faster and loses less accuracy. The inverse matters as an idea and inside formulas.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Invert \(\begin{pmatrix} 3 & 1 \\ 5 & 2 \end{pmatrix}\) and check by multiplying.</li>
+    <li>Invert \(\begin{pmatrix} 2 & 0 \\ 0 & 5 \end{pmatrix}\). Explain the answer as a move.</li>
+    <li>Does \(\begin{pmatrix} 1 & 2 \\ 2 & 4 \end{pmatrix}\) have an inverse?</li>
+    <li>Use your answer to problem 1 to solve \(\begin{pmatrix} 3 & 1 \\ 5 & 2 \end{pmatrix}\mathbf{x} = \begin{pmatrix} 4 \\ 7 \end{pmatrix}\).</li>
+    <li>Invert the rotate-90° matrix \(\begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}\). Which move is the result?</li>
+    <li>Invert \(\begin{pmatrix} 4 & 3 \\ 2 & 1 \end{pmatrix}\).</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(ad - bc = 6 - 5 = 1\). Swap 3 and 2, negate 1 and 5, divide by 1: \(\begin{pmatrix} 2 & -1 \\ -5 & 3 \end{pmatrix}\). Check: slots \(6 - 5 = 1\); \(-3 + 3 = 0\); \(10 - 10 = 0\); \(-5 + 6 = 1\).</p>
+    <p>2. \(ad - bc = 10\). Swap: \(\begin{pmatrix} 5 & 0 \\ 0 & 2 \end{pmatrix}\); nothing to negate; divide by 10: \(\begin{pmatrix} 0.5 & 0 \\ 0 & 0.2 \end{pmatrix}\). The original stretches by 2 sideways and 5 vertically; the inverse shrinks by the same factors.</p>
+    <p>3. \(ad - bc = 4 - 4 = 0\). No inverse. The second column is twice the first.</p>
+    <p>4. \(\mathbf{x} = A^{-1}b\): row 1 gives \(2 \times 4 - 1 \times 7 = 1\); row 2 gives \(-5 \times 4 + 3 \times 7 = 1\). So \(\mathbf{x} = (1, 1)\). Check: \(3 + 1 = 4\) and \(5 + 2 = 7\).</p>
+    <p>5. \(ad - bc = 0 - (-1)(1) = 1\). Swap the diagonal (both 0, no change), negate the others: \(\begin{pmatrix} 0 & 1 \\ -1 & 0 \end{pmatrix}\). It sends (1, 0) to (0, −1): a quarter turn clockwise.</p>
+    <p>6. \(ad - bc = 4 - 6 = -2\). Swap and negate: \(\begin{pmatrix} 1 & -3 \\ -2 & 4 \end{pmatrix}\). Divide by −2: \(\begin{pmatrix} -0.5 & 1.5 \\ 1 & -2 \end{pmatrix}\). Check row 1 of the product: \(4 \times (-0.5) + 3 \times 1 = 1\) and \(4 \times 1.5 + 3 \times (-2) = 0\).</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+A = np.array([[4, 2], [1, 3]])
+Ainv = np.linalg.inv(A)
+print(Ainv)                       # [[ 0.3 -0.2] [-0.1  0.4]]
+print(np.round(A @ Ainv, 10))     # the identity
+print(Ainv @ np.array([10, 5]))   # [2. 1.]
+print(np.linalg.solve(A, np.array([10, 5])))   # same answer, the preferred way
+
+S = np.array([[1, 2], [2, 4]])
+# np.linalg.inv(S)  -> LinAlgError: Singular matrix</code></pre>
+
+  <div class="quiz" data-answer="b">
+    <p class="q">For which matrix does no inverse exist?</p>
+    <div class="opts">
+      <button data-o="a">Columns (1, 0) and (0, 3)</button>
+      <button data-o="b">Columns (2, 1) and (6, 3)</button>
+      <button data-o="c">Columns (0, 1) and (1, 0)</button>
+    </div>
+    <p class="fb" data-ok="Right. (6, 3) is 3 times (2, 1), so ad − bc = 2·3 − 6·1 = 0 and the plane collapses onto a line." data-no="Not this one. Look for columns on the same line. (6, 3) is 3 times (2, 1), which makes ad − bc = 0."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l7" id="done-l7">Mark lesson 1.17 done</label>
+</section>
+
+<!-- ================= 1.18 ================= -->
+<section class="lesson" id="l8">
+  <div class="eyebrow">Lesson 1.18 <span class="new">New</span></div>
+  <h2>Rank: when space collapses</h2>
+  <p class="win">Goal: say what the rank of a matrix is, find it for small matrices, and connect it to solutions and to redundant data.</p>
+  <p class="why">Rank counts how much independent information a matrix holds. A data matrix whose columns repeat each other has low rank, and models built on it have no single best answer. Dimensionality reduction, in Part D, is the deliberate use of low rank.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.18 · the green dots are 90 points after the move; drag the two columns</div>
+    <canvas id="c118" aria-label="A cloud of points under a matrix, showing collapse when the columns align"></canvas>
+    <div class="readout" id="r118"></div>
+    <ul class="try">
+      <li>Slowly bring the orange column onto the same line as the blue one. Watch the cloud of dots and the value of ad − bc.</li>
+      <li>When the cloud is flat, the readout names a direction that is sent to zero. Check it by hand with the row routine.</li>
+      <li>Drag both columns to the origin. Where do all the points go?</li>
+    </ul>
+  </div>
+
+  <h3>The definition</h3>
+  <p>The <b>rank</b> of a matrix is the number of dimensions its outputs fill. Equivalently, it is the number of linearly independent columns (Lesson 1.7): the columns that each add a new direction.</p>
+  <div class="tablewrap"><table>
+    <tr><th>2 × 2 matrix whose columns…</th><th>Outputs \(A\mathbf{x}\) fill</th><th>Rank</th></tr>
+    <tr><td>point along two different lines</td><td>the whole plane</td><td>2 (called full rank)</td></tr>
+    <tr><td>lie on one line (and are not both zero)</td><td>that line only</td><td>1</td></tr>
+    <tr><td>are both the zero vector</td><td>the single point (0, 0)</td><td>0</td></tr>
+  </table></div>
+  <p>The set of all outputs is the column space from Lesson 1.9. So: <b>rank = the dimension of the column space</b>.</p>
+
+  <h3>Finding the rank of a small matrix</h3>
+  <ol class="steps">
+    <li><b>For a 2 × 2 matrix,</b> compute \(ad - bc\). If it is not 0, the rank is 2.</li>
+    <li>If \(ad - bc = 0\) but the matrix has at least one non-zero entry, the rank is 1.</li>
+    <li><b>For other shapes,</b> ask of each column in turn: is it a combination of the columns before it? Count the columns for which the answer is no.</li>
+    <li>The rank can never be more than the number of rows or the number of columns, whichever is smaller.</li>
+  </ol>
+  <p>Example: \(\begin{pmatrix} 1 & 2 \\ 2 & 4 \end{pmatrix}\). \(ad - bc = 4 - 4 = 0\), and the matrix is not all zeros, so the rank is 1. The second column is twice the first.</p>
+  <p>Example: \(\begin{pmatrix} 1 & 0 & 2 \\ 0 & 1 & 3 \end{pmatrix}\). Column 1 is new. Column 2 is not a multiple of column 1, so it is new. Column 3 is \(2\,(1, 0) + 3\,(0, 1)\), a combination of the first two, so it adds nothing. Rank 2, which is also the most a matrix with 2 rows can have.</p>
+
+  <h3>What collapses, and where it goes</h3>
+  <p>When a 2 × 2 matrix has rank 1, a whole line of inputs is squashed onto the origin. Those inputs, the vectors x with \(A\mathbf{x} = (0, 0)\), form the <b>null space</b> of A. You only need the name and the picture for now.</p>
+  <p>For \(A = \begin{pmatrix} 1 & 2 \\ 2 & 4 \end{pmatrix}\), try \(\mathbf{x} = (2, -1)\): row 1 gives \(2 - 2 = 0\), row 2 gives \(4 - 4 = 0\). So (2, −1) and all its multiples are sent to zero.</p>
+  <p>This is why a singular matrix cannot be inverted: if \(A\mathbf{x} = b\), then \(A(\mathbf{x} + \text{anything from the null space})\) is also b. Many inputs share each output.</p>
+
+  <h3>One fact, five ways to say it</h3>
+  <p>For a square matrix A, these statements are all true together or all false together:</p>
+  <ul>
+    <li>A has full rank.</li>
+    <li>The columns of A are linearly independent.</li>
+    <li>A has an inverse.</li>
+    <li>\(A\mathbf{x} = b\) has exactly one solution for every b.</li>
+    <li>The only vector A sends to zero is the zero vector. (For 2 × 2: \(ad - bc \ne 0\).)</li>
+  </ul>
+  <p>When they fail, \(A\mathbf{x} = b\) has either no solution (b is off the column space) or infinitely many (b is on it), as in Lesson 1.15.</p>
+
+  <h3>Rank in data</h3>
+  <p>Suppose a data matrix has columns "height in cm", "height in m" and "weight". The first column is 100 times the second, so together they count once. The rank is at most 2 although there are 3 columns. One column is redundant, and a regression on all three cannot decide how to split the weight between the two height columns. This situation is called <b>collinearity</b>.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Rank of \(\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}\).</li>
+    <li>Rank of \(\begin{pmatrix} 2 & 4 \\ 1 & 2 \end{pmatrix}\).</li>
+    <li>For the matrix in problem 2, find a non-zero vector that it sends to (0, 0).</li>
+    <li>A matrix has 50 rows and 3 columns. What is the largest rank it can have?</li>
+    <li>A 2 × 2 matrix has rank 1. How many solutions can \(A\mathbf{x} = b\) have?</li>
+    <li>A data matrix has columns "price in EGP", "price in USD at a fixed rate" and "quantity". What can you say about its rank?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(ad - bc = 4 - 6 = -2\), not zero. Rank 2.</p>
+    <p>2. \(ad - bc = 4 - 4 = 0\), and the matrix is not all zeros. Rank 1.</p>
+    <p>3. The second column is 2 times the first, so "2 of column 1 minus 1 of column 2" cancels: \(\mathbf{x} = (2, -1)\). Check: row 1 gives \(4 - 4 = 0\), row 2 gives \(2 - 2 = 0\).</p>
+    <p>4. 3. The rank cannot exceed the number of columns.</p>
+    <p>5. None if b is not on the line of the columns; infinitely many if it is. Never exactly one.</p>
+    <p>6. The USD column is a fixed multiple of the EGP column, so those two count once. The rank is at most 2.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+print(np.linalg.matrix_rank(np.array([[1, 2], [3, 4]])))   # 2
+print(np.linalg.matrix_rank(np.array([[1, 2], [2, 4]])))   # 1
+
+rng = np.random.default_rng(0)
+height_m = rng.normal(1.7, 0.1, 50)
+X = np.column_stack([height_m * 100, height_m, rng.normal(70, 10, 50)])
+print(X.shape, np.linalg.matrix_rank(X))                   # (50, 3) 2</code></pre>
+
+  <div class="quiz" data-answer="c">
+    <p class="q">A 2 × 2 matrix sends every vector onto a single line through the origin. What is its rank?</p>
+    <div class="opts">
+      <button data-o="a">Rank 2, as it has two columns</button>
+      <button data-o="b">Rank 0, as the area is now zero</button>
+      <button data-o="c">Rank 1, as a line has one dimension</button>
+    </div>
+    <p class="fb" data-ok="Right. Rank is the number of dimensions the outputs fill, and a line has one." data-no="Not this one. Rank counts the dimensions of the output. The outputs fill a line, which is one-dimensional, so the rank is 1."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l8" id="done-l8">Mark lesson 1.18 done</label>
+</section>
+
+<!-- ================= 1.19 ================= -->
+<section class="lesson" id="l9">
+  <div class="eyebrow">Lesson 1.19 <span class="new">New</span></div>
+  <h2>Least squares, first look</h2>
+  <p class="win">Goal: fit a line to three points by hand using \(X^{\mathsf T}X\,w = X^{\mathsf T}y\), and explain where that equation comes from.</p>
+  <p class="why">This is linear regression, the first real model of machine learning, solved exactly with the tools of Parts A and B. In Module 0 you fitted a line by moving sliders and by gradient descent. Here is the direct route to the same answer. Module 7 returns to it in full.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.19 · drag the three data points; the line is the least squares fit</div>
+    <canvas id="c119" aria-label="Three draggable points with their least squares line and residuals"></canvas>
+    <div class="readout" id="r119"></div>
+    <ul class="try">
+      <li>The orange segments are the residuals (truth minus prediction). Look at the last line of the readout as you drag. What stays true?</li>
+      <li>Put the three points exactly on one straight line. What happens to the residuals?</li>
+      <li>Stack all three points at the same x value. Why does the fit fail?</li>
+    </ul>
+  </div>
+
+  <h3>Step 1: the problem has no exact solution</h3>
+  <p>Data: three points, (1, 1), (2, 3) and (3, 4). Model: \(\hat{y} = w_0 + w_1 x\), with intercept \(w_0\) and slope \(w_1\). If the line passed through every point we would need</p>
+  <p>$$\begin{aligned} w_0 + 1\,w_1 &= 1 \\ w_0 + 2\,w_1 &= 3 \\ w_0 + 3\,w_1 &= 4 \end{aligned}$$</p>
+  <p>Three equations, two unknowns. The first two give \(w_1 = 2\) and \(w_0 = -1\) (subtract them). But then the third says \(-1 + 6 = 5\), not 4. No line passes through all three points.</p>
+
+  <h3>Step 2: write it with a matrix</h3>
+  <p>$$X = \begin{pmatrix} 1 & 1 \\ 1 & 2 \\ 1 & 3 \end{pmatrix}, \qquad w = \begin{pmatrix} w_0 \\ w_1 \end{pmatrix}, \qquad y = \begin{pmatrix} 1 \\ 3 \\ 4 \end{pmatrix}$$ The first column of X is all ones, so that it multiplies the intercept \(w_0\). The second column holds the x values. The three equations are \(Xw = y\), and the predictions for any choice of w are \(\hat{y} = Xw\).</p>
+
+  <h3>Step 3: see why there is no solution, and what to do instead</h3>
+  <ol class="steps">
+    <li>By the column view (Lesson 1.9), \(Xw\) is a combination of the two columns of X. Those columns are vectors with 3 components, so they live in \(\mathbb{R}^3\).</li>
+    <li>Two vectors in \(\mathbb{R}^3\) span only a flat plane inside that space. Every possible prediction vector \(Xw\) lies on that plane.</li>
+    <li>The target y = (1, 3, 4) is not on the plane. That is what "no exact solution" means.</li>
+    <li>So choose the point on the plane that is <b>closest</b> to y. From Lesson 1.6, the closest point is the projection, and it is the one where the leftover is perpendicular.</li>
+  </ol>
+  <p>The leftover here is the <b>residual</b> vector \(r = y - Xw\): truth minus prediction, one entry per data point. Its squared length is the sum of squared errors, so "closest" means "smallest sum of squared errors". That is where the name <b>least squares</b> comes from.</p>
+
+  <h3>Step 4: turn "perpendicular" into an equation</h3>
+  <ol class="steps">
+    <li>The residual must be perpendicular to the plane, which means perpendicular to both columns of X. Perpendicular means dot product zero (Lesson 1.5): \((\text{column 1}) \cdot r = 0\) and \((\text{column 2}) \cdot r = 0\).</li>
+    <li>The rows of \(X^{\mathsf T}\) are the columns of X (Lesson 1.14). So those two dot products are the two entries of \(X^{\mathsf T} r\). Both conditions together say \(X^{\mathsf T} r = 0\).</li>
+    <li>Replace r by \(y - Xw\): \(X^{\mathsf T}(y - Xw) = 0\).</li>
+    <li>Distribute: \(X^{\mathsf T}y - X^{\mathsf T}Xw = 0\).</li>
+    <li>Move the second term across: $$X^{\mathsf T}X\,w = X^{\mathsf T}y$$</li>
+  </ol>
+  <p>These are called the <b>normal equations</b>. They are a square system: \(X^{\mathsf T}X\) is 2 × 2, so there are two equations for the two unknown weights, and you can solve them with Lesson 1.16 or 1.17.</p>
+
+  <h3>Step 5: compute</h3>
+  <ol class="steps">
+    <li><b>\(X^{\mathsf T}X\).</b> From Lesson 1.14, its entries are dot products of the columns of X: ones with ones \(= 3\); ones with x values \(= 1 + 2 + 3 = 6\); x values with themselves \(= 1 + 4 + 9 = 14\). So \(X^{\mathsf T}X = \begin{pmatrix} 3 & 6 \\ 6 & 14 \end{pmatrix}\).</li>
+    <li><b>\(X^{\mathsf T}y\).</b> Each column of X dotted with y: ones with y \(= 1 + 3 + 4 = 8\); x values with y \(= 1 \times 1 + 2 \times 3 + 3 \times 4 = 19\). So \(X^{\mathsf T}y = (8, 19)\).</li>
+    <li><b>The system:</b> \(3w_0 + 6w_1 = 8\) and \(6w_0 + 14w_1 = 19\).</li>
+    <li><b>Eliminate.</b> R2 ← R2 − 2·R1: \(6 - 6 = 0\), \(14 - 12 = 2\), \(19 - 16 = 3\). So \(2w_1 = 3\) and \(w_1 = 1.5\).</li>
+    <li><b>Back-substitute:</b> \(3w_0 + 6 \times 1.5 = 8\), so \(3w_0 = -1\) and \(w_0 = -\tfrac13 \approx -0.333\).</li>
+  </ol>
+  <p>The best line is \(\hat{y} = -0.333 + 1.5\,x\).</p>
+
+  <h3>Step 6: check the claim</h3>
+  <div class="tablewrap"><table>
+    <tr><th>x</th><th>y</th><th>prediction \(-0.333 + 1.5x\)</th><th>residual</th></tr>
+    <tr><td>1</td><td>1</td><td>1.167</td><td>−0.167</td></tr>
+    <tr><td>2</td><td>3</td><td>2.667</td><td>0.333</td></tr>
+    <tr><td>3</td><td>4</td><td>4.167</td><td>−0.167</td></tr>
+  </table></div>
+  <ul>
+    <li>Residual dotted with the column of ones: \(-0.167 + 0.333 - 0.167 = 0\). The residuals add up to zero.</li>
+    <li>Residual dotted with the column of x values: \(-0.167 \times 1 + 0.333 \times 2 - 0.167 \times 3 = -0.167 + 0.667 - 0.5 = 0\).</li>
+  </ul>
+  <p>The residual is perpendicular to both columns, as required. The lab shows the same two zeros for any position of the points.</p>
+
+  <h3>The formula, and its fine print</h3>
+  <p>If \(X^{\mathsf T}X\) is invertible, multiply both sides of the normal equations on the left by its inverse: $$w = (X^{\mathsf T}X)^{-1}X^{\mathsf T}y$$ This is the closed-form solution of linear regression. It needs \(X^{\mathsf T}X\) to be invertible, which holds exactly when the columns of X are linearly independent (X has full column rank, Lesson 1.18). If two feature columns are multiples of each other, \(X^{\mathsf T}X\) is singular and there is no single best w.</p>
+  <p>Gradient descent from Module 0 reaches the same w by walking downhill on the squared error. The normal equations jump there directly. For very large datasets the walk is cheaper, which is why both exist.</p>
+
+  <h3>Practice on paper</h3>
+  <p>Use the data points (0, 1), (1, 3), (2, 4) and the model \(\hat{y} = w_0 + w_1 x\).</p>
+  <ol class="ex">
+    <li>Write X and y.</li>
+    <li>Compute \(X^{\mathsf T}X\) and \(X^{\mathsf T}y\).</li>
+    <li>Solve the normal equations for \(w_0\) and \(w_1\).</li>
+    <li>Compute the three predictions and residuals. Do the residuals add up to zero?</li>
+    <li>Why could we not simply solve \(Xw = y\)?</li>
+    <li>What goes wrong with \(X^{\mathsf T}X\) if X has two columns that are multiples of each other?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(X = \begin{pmatrix} 1 & 0 \\ 1 & 1 \\ 1 & 2 \end{pmatrix}\), \(y = (1, 3, 4)\).</p>
+    <p>2. Ones with ones: 3. Ones with x values: \(0 + 1 + 2 = 3\). x values with themselves: \(0 + 1 + 4 = 5\). So \(X^{\mathsf T}X = \begin{pmatrix} 3 & 3 \\ 3 & 5 \end{pmatrix}\). Ones with y: 8. x values with y: \(0 + 3 + 8 = 11\). So \(X^{\mathsf T}y = (8, 11)\).</p>
+    <p>3. \(3w_0 + 3w_1 = 8\) and \(3w_0 + 5w_1 = 11\). R2 ← R2 − R1: \(2w_1 = 3\), so \(w_1 = 1.5\). Then \(3w_0 + 4.5 = 8\), so \(w_0 = 3.5 / 3 \approx 1.167\).</p>
+    <p>4. Predictions: 1.167, 2.667, 4.167. Residuals: \(1 - 1.167 = -0.167\); \(3 - 2.667 = 0.333\); \(4 - 4.167 = -0.167\). They add up to 0. (The same y values shifted one step to the left give the same slope and a different intercept.)</p>
+    <p>5. It is three equations in two unknowns, and y is not on the plane spanned by the two columns of X, so no w gives \(Xw = y\) exactly.</p>
+    <p>6. The columns are linearly dependent, so X does not have full column rank, \(X^{\mathsf T}X\) is singular, and it has no inverse. There is no unique best w.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+x = np.array([1, 2, 3])
+y = np.array([1, 3, 4])
+X = np.column_stack([np.ones(3), x])      # a column of ones, then the x values
+
+XtX, Xty = X.T @ X, X.T @ y
+print(XtX)                                # [[ 3.  6.] [ 6. 14.]]
+print(Xty)                                # [ 8. 19.]
+
+w = np.linalg.solve(XtX, Xty)
+print(w)                                  # [-0.3333  1.5]
+
+r = y - X @ w
+print(np.round(X.T @ r, 10))              # [0. 0.]  perpendicular to both columns
+
+print(np.linalg.lstsq(X, y, rcond=None)[0])   # the library routine, same w
+print(np.polyfit(x, y, 1))                    # [ 1.5 -0.3333]  slope first</code></pre>
+
+  <p class="watch">Read next for the full treatment with interactive figures: Margalit and Rabinoff, <a href="https://textbooks.math.gatech.edu/ila/">Interactive Linear Algebra</a>, the section on the method of least squares. The book this course follows for ordering, <a href="https://mml-book.com">Mathematics for Machine Learning</a>, covers the same material in its chapters on linear algebra, analytic geometry and linear regression.</p>
+
+  <div class="quiz" data-answer="a">
+    <p class="q">In a least squares fit, the residual vector is perpendicular to what?</p>
+    <div class="opts">
+      <button data-o="a">Every column of the matrix X</button>
+      <button data-o="b">The target vector y that we fit</button>
+      <button data-o="c">The weight vector w we found</button>
+    </div>
+    <p class="fb" data-ok="Right. Xᵀr = 0 says exactly that: each column of X has dot product zero with the residual." data-no="Not this one. The normal equations come from Xᵀr = 0, which says the residual has dot product zero with each column of X."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l9" id="done-l9">Mark lesson 1.19 done</label>
+</section>
+
+<!-- ================= 1.20 ================= -->
+<section class="lesson" id="l10">
+  <div class="eyebrow">Lesson 1.20</div>
+  <h2>Checkpoint and cheat sheet</h2>
+  <p class="win">Goal: confirm Part B holds without help, or find the one lesson to revisit.</p>
+  <p>Twelve mixed problems. Do them on paper without looking back. Each solution names the lesson to revisit.</p>
+
+  <ol class="ex">
+    <li>A sends (1, 0) to (3, 1) and (0, 1) to (−2, 4). Write A and find \(A\,(2, 1)\).</li>
+    <li>Write the single matrix for "reflect across the horizontal axis, then scale everything by 2".</li>
+    <li>\(\begin{pmatrix} 1 & 3 \\ 2 & 0 \end{pmatrix}\begin{pmatrix} 4 & 1 \\ -1 & 2 \end{pmatrix}\)</li>
+    <li>What is the shape of (5 × 2)(2 × 3)? Is (2 × 3)(5 × 2) allowed?</li>
+    <li>Transpose \(\begin{pmatrix} 1 & 2 \\ 3 & 4 \\ 5 & 6 \end{pmatrix}\).</li>
+    <li>Compute \(X^{\mathsf T}X\) for \(X = \begin{pmatrix} 1 & 2 \\ 1 & 4 \end{pmatrix}\).</li>
+    <li>Write \(2x + y = 7\), \(x - y = 2\) as \(A\mathbf{x} = b\) and solve it.</li>
+    <li>Solve by elimination: \(x + y + z = 4\), \(2x + y + 3z = 7\), \(x - y + 2z = 1\).</li>
+    <li>Invert \(\begin{pmatrix} 2 & 1 \\ 5 & 3 \end{pmatrix}\).</li>
+    <li>Use your inverse to solve \(\begin{pmatrix} 2 & 1 \\ 5 & 3 \end{pmatrix}\mathbf{x} = \begin{pmatrix} 4 \\ 11 \end{pmatrix}\).</li>
+    <li>Find the rank of \(\begin{pmatrix} 3 & 6 \\ 1 & 2 \end{pmatrix}\). Is it invertible? How many solutions can \(A\mathbf{x} = b\) have?</li>
+    <li>State the normal equations, and say in one sentence where they come from.</li>
+  </ol>
+  <details><summary>Solutions and where to look</summary><div>
+    <p>1. \(A = \begin{pmatrix} 3 & -2 \\ 1 & 4 \end{pmatrix}\). \(A\,(2, 1) = 2\,(3, 1) + 1\,(-2, 4) = (4, 6)\). <i>Lesson 1.11</i></p>
+    <p>2. Reflect first, so it goes on the right: \(\begin{pmatrix} 2 & 0 \\ 0 & 2 \end{pmatrix}\begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix} = \begin{pmatrix} 2 & 0 \\ 0 & -2 \end{pmatrix}\). <i>1.12, 1.13</i></p>
+    <p>3. Slots: \(4 - 3 = 1\); \(1 + 6 = 7\); \(8 + 0 = 8\); \(2 + 0 = 2\). Answer \(\begin{pmatrix} 1 & 7 \\ 8 & 2 \end{pmatrix}\). <i>1.13</i></p>
+    <p>4. 5 × 3. The second is not allowed: the inside numbers are 3 and 5. <i>1.13</i></p>
+    <p>5. \(\begin{pmatrix} 1 & 3 & 5 \\ 2 & 4 & 6 \end{pmatrix}\). <i>1.14</i></p>
+    <p>6. Columns (1, 1) and (2, 4). Dot products: 2; \(2 + 4 = 6\); \(4 + 16 = 20\). \(\begin{pmatrix} 2 & 6 \\ 6 & 20 \end{pmatrix}\). <i>1.14</i></p>
+    <p>7. \(\begin{pmatrix} 2 & 1 \\ 1 & -1 \end{pmatrix}\begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} 7 \\ 2 \end{pmatrix}\). Adding the two equations: \(3x = 9\), so \(x = 3\) and \(y = 1\). <i>1.15</i></p>
+    <p>8. R2 ← R2 − 2·R1: \((0, -1, 1 \mid -1)\). R3 ← R3 − R1: \((0, -2, 1 \mid -3)\). R3 ← R3 − 2·R2: \((0, 0, -1 \mid -1)\). So \(z = 1\); \(-y + 1 = -1\) gives \(y = 2\); \(x + 2 + 1 = 4\) gives \(x = 1\). <i>1.16</i></p>
+    <p>9. \(ad - bc = 6 - 5 = 1\). \(\begin{pmatrix} 3 & -1 \\ -5 & 2 \end{pmatrix}\). <i>1.17</i></p>
+    <p>10. Row 1: \(3 \times 4 - 1 \times 11 = 1\). Row 2: \(-5 \times 4 + 2 \times 11 = 2\). \(\mathbf{x} = (1, 2)\). Check: \(2 + 2 = 4\) and \(5 + 6 = 11\). <i>1.17</i></p>
+    <p>11. \(ad - bc = 6 - 6 = 0\), not all zeros: rank 1. Not invertible. \(A\mathbf{x} = b\) has no solution or infinitely many. <i>1.18</i></p>
+    <p>12. \(X^{\mathsf T}X\,w = X^{\mathsf T}y\). They say the residual \(y - Xw\) is perpendicular to every column of X, which is the condition for \(Xw\) to be the closest reachable point to y. <i>1.19</i></p>
+    <p><b>Reading your score.</b> 10 or more: ready for Part C. 7 to 9: redo the practice sets of the lessons you missed. Fewer: work those lessons again with the labs, and ask about the steps that do not follow.</p>
+  </div></details>
+
+  <h3>Cheat sheet</h3>
+  <div class="sheet">
+    <div><h4>Matrix as a move</h4>column 1 = where (1, 0) lands<br>column 2 = where (0, 1) lands<br>\(A\mathbf{x} = x_1\,\text{col}_1 + x_2\,\text{col}_2\)<br>linear: lines stay straight, origin fixed</div>
+    <div><h4>Common moves</h4>scale: \(\begin{pmatrix} s & 0 \\ 0 & s \end{pmatrix}\)<br>rotate 90°: \(\begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}\)<br>shear: \(\begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix}\)<br>flatten: \(\begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix}\)</div>
+    <div><h4>Matrix times matrix</h4>\((m \times n)(n \times p) \to m \times p\)<br>slot (i, j) = row i of A · column j of B<br>\(AB\): B acts first, then A<br>\(AB \ne BA\) in general<br>\((AB)C = A(BC)\), \(AI = A\)</div>
+    <div><h4>Transpose</h4>rows become columns<br>\((AB)^{\mathsf T} = B^{\mathsf T}A^{\mathsf T}\)<br>\(a \cdot b = a^{\mathsf T}b\)<br>symmetric: \(A = A^{\mathsf T}\)<br>\(X^{\mathsf T}X\): square, symmetric, dot products of columns</div>
+    <div><h4>Systems</h4>\(A\mathbf{x} = b\): row per equation, column per unknown<br>solutions: none, one, or infinitely many<br>elimination: zeros below the diagonal, then back-substitute<br>\(0 = 0\): infinitely many; \(0 = 5\): none</div>
+    <div><h4>Inverse and rank</h4>\(A^{-1}A = I\), \(\mathbf{x} = A^{-1}b\)<br>\(\begin{pmatrix} a & b \\ c & d \end{pmatrix}^{-1} = \dfrac{1}{ad - bc}\begin{pmatrix} d & -b \\ -c & a \end{pmatrix}\)<br>\(ad - bc = 0\): singular, no inverse<br>rank = number of independent columns<br>full rank ⟺ invertible ⟺ one solution</div>
+    <div><h4>Least squares</h4>\(\hat{y} = Xw\), residual \(r = y - Xw\)<br>\(X^{\mathsf T}r = 0\)<br>\(X^{\mathsf T}X\,w = X^{\mathsf T}y\)<br>\(w = (X^{\mathsf T}X)^{-1}X^{\mathsf T}y\)</div>
+  </div>
+
+  <h3>What comes next</h3>
+  <p>Part C: the determinant (the number \(ad - bc\), and what it measures), change of basis, and then eigenvalues and eigenvectors: the special directions that a matrix only stretches and does not turn. Part D uses them for diagonalization, the SVD and PCA.</p>
+  <p class="watch">All terms from this part are in the <a href="../reference/glossary.html">glossary</a> in your course folder.</p>
+  <label class="donebox"><input type="checkbox" data-done="l10" id="done-l10">Mark lesson 1.20 done</label>
+</section>
+</main>
+</div>
+
+<script src="../assets/course.js"></script>
+<script>
+(function(){
+"use strict";
+var M=window.MDS,Plot=M.Plot,css=M.css,$=M.$,num=M.num,vec=M.vec,fmt=M.fmt;
+function sq(id,r){var p=new Plot(id,-r,r,0,0,1);p.sq=true;p.yc=0;return p;}
+function ap(A,v){return {x:A.a*v.x+A.b*v.y,y:A.c*v.x+A.d*v.y};}
+function mul(A,B){return {a:A.a*B.a+A.b*B.c,b:A.a*B.b+A.b*B.d,c:A.c*B.a+A.d*B.c,d:A.c*B.b+A.d*B.d};}
+function det(A){return A.a*A.d-A.b*A.c;}
+function n3(v){var r=Math.round(v*1000)/1000;return String(r===0?0:r).replace("-","−");}
+function mstr(name,A,f){f=f||num;var pad="        ".slice(0,name.length+3);return name+" = [ "+f(A.a)+"  "+f(A.b)+" ]\n"+pad+"[ "+f(A.c)+"  "+f(A.d)+" ]";}
+function grid(p,A,color){
+  var g=p.g,k;g.globalAlpha=0.3;
+  for(k=-12;k<=12;k++){
+    p.seg(k*A.a-12*A.b,k*A.c-12*A.d,k*A.a+12*A.b,k*A.c+12*A.d,color,1);
+    p.seg(k*A.b-12*A.a,k*A.d-12*A.c,k*A.b+12*A.a,k*A.d+12*A.c,color,1);
+  }
+  g.globalAlpha=1;
+}
+var F=[[0,0],[0,2.5],[1.5,2.5],[1.5,2],[0.5,2],[0.5,1.5],[1.2,1.5],[1.2,1],[0.5,1],[0.5,0]].map(function(q){return {x:q[0],y:q[1]};});
+function shape(p,A,color,alpha){p.poly(F.map(function(q){return ap(A,q);}),color,alpha);}
+var I={a:1,b:0,c:0,d:1},r2=Math.SQRT1_2;
+var PRE={
+  id:["Do nothing (identity)",I],
+  scale:["Scale everything by 2",{a:2,b:0,c:0,d:2}],
+  stretch:["Stretch sideways by 2",{a:2,b:0,c:0,d:1}],
+  reflect:["Reflect across the horizontal axis",{a:1,b:0,c:0,d:-1}],
+  rot90:["Rotate 90° anticlockwise",{a:0,b:-1,c:1,d:0}],
+  rot45:["Rotate 45° anticlockwise",{a:r2,b:-r2,c:r2,d:r2}],
+  shear:["Shear sideways",{a:1,b:1,c:0,d:1}],
+  projx:["Flatten onto the horizontal axis",{a:1,b:0,c:0,d:0}],
+  projd:["Flatten onto the diagonal line",{a:0.5,b:0.5,c:0.5,d:0.5}]
+};
+function fill(sel,keys,val){keys.forEach(function(k){var o=document.createElement("option");o.value=k;o.textContent=PRE[k][0];sel.appendChild(o);});sel.value=val;}
+
+/* 1.11 a matrix moves space */
+(function(){
+  var p=sq("c111",5),e1={x:2,y:1},e2={x:-1,y:1},x={x:1,y:2};
+  function draw(){
+    var A={a:e1.x,b:e2.x,c:e1.y,d:e2.y},y=ap(A,x);
+    p.clear();grid(p,A,css("--accent"));
+    p.arrow(0,0,x.x,x.y,css("--muted"),2,[5,4]);p.arrow(0,0,y.x,y.y,css("--good"),3.5);
+    p.arrow(0,0,e1.x,e1.y,css("--accent"),3);p.arrow(0,0,e2.x,e2.y,css("--warm"),3);
+    p.handle(e1,css("--accent"));p.handle(e2,css("--warm"));p.handle(x,css("--muted"));
+    p.label(e1.x,e1.y,"where (1,0) lands",css("--accent"),12,14);p.label(e2.x,e2.y,"where (0,1) lands",css("--warm"),12,-14);
+    p.label(x.x,x.y,"x",css("--muted"),12,-12);p.label(y.x,y.y,"Ax",css("--good"),12,-12);
+    $("r111").textContent=mstr("A",A)+"\ncolumn 1 = "+vec(e1)+" is where (1, 0) lands;  column 2 = "+vec(e2)+" is where (0, 1) lands\ninput x = "+vec(x)+"\noutput Ax = "+num(x.x)+"·"+vec(e1)+" + "+num(x.y)+"·"+vec(e2)+" = "+vec(y);
+  }
+  M.drag(p,[x,e1,e2],draw);M.reg(draw);
+})();
+
+/* 1.12 gallery */
+(function(){
+  var p=sq("c112",5),sel=$("s112");fill(sel,["scale","stretch","reflect","rot90","rot45","shear","projx","projd"],"shear");
+  function draw(){
+    var T=PRE[sel.value][1],t=M.out("t112",2),A={a:1+t*(T.a-1),b:t*T.b,c:t*T.c,d:1+t*(T.d-1)};
+    p.clear();grid(p,A,css("--accent"));shape(p,I,css("--muted"),0.12);shape(p,A,css("--good"),0.3);
+    p.arrow(0,0,A.a,A.c,css("--accent"),3);p.arrow(0,0,A.b,A.d,css("--warm"),3);
+    $("r112").textContent=PRE[sel.value][0]+"\n"+mstr("A",T,n3)+"\n(1, 0) goes to ("+n3(T.a)+", "+n3(T.c)+")      (0, 1) goes to ("+n3(T.b)+", "+n3(T.d)+")"+(t<1?"\nshown "+Math.round(t*100)+"% of the way from the starting grid":"");
+  }
+  M.bind(["s112","t112"],draw);
+})();
+
+/* 1.14 order matters */
+(function(){
+  var p=sq("c114",6),sa=$("sa114"),sb=$("sb114"),keys=["scale","stretch","reflect","rot90","rot45","shear","projx"];
+  fill(sa,keys,"stretch");fill(sb,keys,"rot90");
+  function draw(){
+    var A=PRE[sa.value][1],B=PRE[sb.value][1],AB=mul(A,B),BA=mul(B,A);
+    p.clear();shape(p,I,css("--muted"),0.12);shape(p,AB,css("--accent"),0.3);shape(p,BA,css("--warm"),0.3);
+    var same=Math.abs(AB.a-BA.a)+Math.abs(AB.b-BA.b)+Math.abs(AB.c-BA.c)+Math.abs(AB.d-BA.d)<1e-9;
+    $("r114").textContent="A: "+PRE[sa.value][0]+"      B: "+PRE[sb.value][0]+"\nblue shape   = AB (do B first, then A)\n"+mstr("AB",AB,n3)+"\norange shape = BA (do A first, then B)\n"+mstr("BA",BA,n3)+"\n"+(same?"For this pair the two orders happen to agree.":"The two orders give different results: AB ≠ BA.");
+  }
+  M.bind(["sa114","sb114"],draw);
+})();
+
+/* 1.15 two lines */
+(function(){
+  var p=sq("c115",6);
+  function draw(){
+    var m=M.out("m115",2),k=M.out("k115",2);
+    p.clear();
+    p.fn(function(x){return 0.5*x+1;},css("--accent"),2.6);p.fn(function(x){return m*x+k;},css("--warm"),2.6);
+    var t="line 1 (blue):    −0.5x + y = 1\nline 2 (orange):  "+num(-m)+"x + y = "+num(k)+"\n";
+    if(Math.abs(m-0.5)>1e-9){var x=(k-1)/(0.5-m),y=0.5*x+1;p.dot(x,y,css("--good"),7);
+      t+="one solution: the lines cross at ("+fmt(x,2)+", "+fmt(y,2)+")\ncheck in line 1: −0.5·"+fmt(x,2)+" + "+fmt(y,2)+" = "+fmt(-0.5*x+y,2);}
+    else if(Math.abs(k-1)>1e-9)t+="no solution: the lines are parallel and never meet";
+    else t+="infinitely many solutions: the two equations describe the same line";
+    $("r115").textContent=t;
+  }
+  M.bind(["m115","k115"],draw);
+})();
+
+/* 1.16 elimination stepper */
+(function(){
+  var S=[
+    {m:[[1,1,1,6],[2,3,1,11],[1,-1,2,5]],hi:-1,t:"The system written as an augmented matrix: the coefficients of x, y, z, then a bar, then the right-hand sides. Goal: make zeros below the diagonal."},
+    {m:[[1,1,1,6],[0,1,-1,-1],[1,-1,2,5]],hi:1,t:"Row 2 ← Row 2 − 2·Row 1. Row 2 starts with 2 and Row 1 with 1, so subtracting 2 copies of Row 1 clears it.\n(2, 3, 1 | 11) − 2·(1, 1, 1 | 6) = (0, 1, −1 | −1)"},
+    {m:[[1,1,1,6],[0,1,-1,-1],[0,-2,1,-1]],hi:2,t:"Row 3 ← Row 3 − 1·Row 1. Row 3 starts with 1, so subtract one copy of Row 1.\n(1, −1, 2 | 5) − (1, 1, 1 | 6) = (0, −2, 1 | −1)"},
+    {m:[[1,1,1,6],[0,1,-1,-1],[0,0,-1,-3]],hi:2,t:"Row 3 ← Row 3 + 2·Row 2. Row 3 now has −2 in the y position and Row 2 has 1 there, so adding 2 copies of Row 2 clears it.\n(0, −2, 1 | −1) + 2·(0, 1, −1 | −1) = (0, 0, −1 | −3)\nThe matrix is now triangular."},
+    {m:[[1,1,1,6],[0,1,-1,-1],[0,0,-1,-3]],hi:2,t:"Back-substitution, from the bottom up.\nRow 3 says −z = −3, so z = 3."},
+    {m:[[1,1,1,6],[0,1,-1,-1],[0,0,-1,-3]],hi:1,t:"Row 2 says y − z = −1. Put in z = 3: y − 3 = −1, so y = 2."},
+    {m:[[1,1,1,6],[0,1,-1,-1],[0,0,-1,-3]],hi:0,t:"Row 1 says x + y + z = 6. Put in y = 2 and z = 3: x + 5 = 6, so x = 1.\nSolution: (x, y, z) = (1, 2, 3). Check in the original Row 2: 2·1 + 3·2 + 3 = 11. Correct."}
+  ],i=0,box=$("el");
+  function render(){
+    var s=S[i],h='<div class="mvrow"><table class="mat aug">',r,c;
+    for(r=0;r<3;r++){h+='<tr class="'+(s.hi===r?"on":"")+'">';for(c=0;c<4;c++)h+='<td'+(c===3?' class="rhs"':'')+">"+num(s.m[r][c])+"</td>";h+="</tr>";}
+    h+='</table></div><div class="readout">Step '+i+" of "+(S.length-1)+"\n"+s.t+"</div>";
+    box.innerHTML=h;$("elnext").disabled=i>=S.length-1;$("elprev").disabled=i<=0;
+  }
+  $("elnext").addEventListener("click",function(){if(i<S.length-1){i++;render();}});
+  $("elprev").addEventListener("click",function(){if(i>0){i--;render();}});
+  render();
+})();
+
+/* 1.17 inverse */
+(function(){
+  var p=sq("c117",5),e1={x:2,y:1},e2={x:1,y:1},x={x:1,y:2};
+  function draw(){
+    var A={a:e1.x,b:e2.x,c:e1.y,d:e2.y},y=ap(A,x),D=det(A);
+    p.clear();grid(p,A,css("--accent"));
+    p.arrow(0,0,e1.x,e1.y,css("--accent"),2);p.arrow(0,0,e2.x,e2.y,css("--warm"),2);
+    p.arrow(0,0,x.x,x.y,css("--muted"),2,[5,4]);p.arrow(0,0,y.x,y.y,css("--good"),3.5);
+    p.handle(e1,css("--accent"));p.handle(e2,css("--warm"));p.handle(x,css("--muted"));
+    p.label(x.x,x.y,"x",css("--muted"),12,-12);p.label(y.x,y.y,"Ax",css("--good"),12,-12);
+    var t=mstr("A",A)+"\nad − bc = "+num(A.a)+"·"+num(A.d)+" − "+num(A.b)+"·"+num(A.c)+" = "+num(D)+"\n";
+    if(Math.abs(D)>1e-9){
+      var V={a:A.d/D,b:-A.b/D,c:-A.c/D,d:A.a/D},back=ap(V,y);p.ring(back.x,back.y,css("--good"),13);
+      t+=mstr("A⁻¹",V,n3)+"\nA sends x = "+vec(x)+" to Ax = "+vec(y)+";  A⁻¹ sends "+vec(y)+" back to "+vec(back)+" (green ring)";
+    }else t+="ad − bc is 0: the two columns lie on one line, the grid has collapsed, and there is no inverse.\nMany different inputs land on the same output, so the move cannot be undone.";
+    $("r117").textContent=t;
+  }
+  M.drag(p,[x,e1,e2],draw);M.reg(draw);
+})();
+
+/* 1.18 rank */
+(function(){
+  var p=sq("c118",5),e1={x:2,y:1},e2={x:1,y:2},pts=[],i,s=7;
+  for(i=0;i<90;i++){s=(s*16807)%2147483647;var u=s/2147483647;s=(s*16807)%2147483647;var v=s/2147483647;pts.push({x:u*4-2,y:v*4-2});}
+  function draw(){
+    var A={a:e1.x,b:e2.x,c:e1.y,d:e2.y},D=det(A);
+    p.clear();grid(p,A,css("--accent"));
+    pts.forEach(function(q){var z=ap(A,q);p.dot(z.x,z.y,css("--good"),3);});
+    p.arrow(0,0,e1.x,e1.y,css("--accent"),3);p.arrow(0,0,e2.x,e2.y,css("--warm"),3);
+    p.handle(e1,css("--accent"));p.handle(e2,css("--warm"));
+    var zero=!(e1.x||e1.y||e2.x||e2.y),rank=Math.abs(D)>1e-9?2:(zero?0:1),t=mstr("A",A)+"\nad − bc = "+num(D)+"\nrank = "+rank+": ";
+    if(rank===2)t+="the columns point along different lines, so the outputs fill the whole plane.\nA has an inverse, and Ax = b has exactly one solution for every b.";
+    else if(rank===1){
+      var nz=(e1.x||e2.x)?{x:-e2.x,y:e1.x}:{x:-e2.y,y:e1.y};
+      t+="both columns lie on one line, so every output lands on that line.\nA has no inverse. Ax = b has no solution unless b is on the line, and then it has infinitely many.\nA direction that gets sent to zero: "+vec(nz)+"  (check: A times it = "+vec(ap(A,nz))+")";
+    }else t+="everything is sent to the single point (0, 0).";
+    $("r118").textContent=t;
+  }
+  M.drag(p,[e1,e2],draw);M.reg(draw);
+})();
+
+/* 1.19 least squares */
+(function(){
+  var p=new Plot("c119",-1,7,0,0,1);p.sq=true;p.yc=2.5;
+  var P=[{x:1,y:1},{x:2,y:3},{x:3,y:4}];
+  function draw(){
+    var n=P.length,sx=0,sy=0,sxx=0,sxy=0;P.forEach(function(q){sx+=q.x;sy+=q.y;sxx+=q.x*q.x;sxy+=q.x*q.y;});
+    var D=n*sxx-sx*sx;p.clear();
+    var t="XᵀX = [ "+num(n)+"  "+num(sx)+" ]      Xᵀy = ( "+num(sy)+", "+num(sxy)+" )\n      [ "+num(sx)+"  "+num(sxx)+" ]\n";
+    if(Math.abs(D)>1e-9){
+      var w0=(sxx*sy-sx*sxy)/D,w1=(n*sxy-sx*sy)/D,r0=0,r1=0,sse=0,res=[];
+      P.forEach(function(q){var yh=w0+w1*q.x,r=q.y-yh;p.seg(q.x,q.y,q.x,yh,css("--warm"),2.5);r0+=r;r1+=r*q.x;sse+=r*r;res.push(fmt(r,3));});
+      p.fn(function(x){return w0+w1*x;},css("--accent"),2.6);
+      t+="solve XᵀX w = Xᵀy:   w₀ (intercept) = "+fmt(w0,3)+"    w₁ (slope) = "+fmt(w1,3)+"\nresiduals: "+res.join(", ")+"\nresidual · column of ones = "+fmt(r0,3)+"     residual · column of x values = "+fmt(r1,3);
+    }else t+="all the points share the same x value, so the two columns of X lie on one line and there is no single best line.";
+    P.forEach(function(q){p.dot(q.x,q.y,css("--ink"),6);p.handle(q,css("--ink"));});
+    $("r119").textContent=t;
+  }
+  M.drag(p,P,draw);M.reg(draw);
+})();
+
+M.initPage("mds-m1b-done");
+})();
+</script>
+</body>
+</html>

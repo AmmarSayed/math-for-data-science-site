@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Joint probability | Mathematics Teach Workspace</title>
+  <link rel="stylesheet" href="../../assets/style.css">
+  <link rel="stylesheet" href="../../assets/lesson.css">
+  <script src="../../assets/practice.js" defer></script>
+</head>
+<body>
+<main class="frame panel lesson">
+  <header>
+    <p class="lesson-kicker">Mathematics · Lesson 2 · 4 minutes</p>
+    <h1>What are the chances of both?</h1>
+    <p class="lead">Find the probability that two independent events both happen. In data analysis, that can mean estimating how often a record passes two separate checks.</p>
+  </header>
+
+  <section aria-labelledby="example">
+    <h2 id="example">Count complete outcomes</h2>
+    <div class="lesson-example">
+      <figure>
+        <table class="course-table outcome-table" aria-describedby="coin-caption">
+          <thead>
+            <tr>
+              <th scope="col">First flip</th>
+              <th scope="col">Heads on flip 2</th>
+              <th scope="col">Tails on flip 2</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Heads</th>
+              <td class="outcome-match"><strong>HH</strong></td>
+              <td>HT</td>
+            </tr>
+            <tr>
+              <th scope="row">Tails</th>
+              <td>TH</td>
+              <td>TT</td>
+            </tr>
+          </tbody>
+        </table>
+        <figcaption id="coin-caption">Two independent flips of a fair coin give four equally likely outcomes. HH is the only outcome with two heads.</figcaption>
+      </figure>
+      <div>
+        <p>In the diagnostic you had two flips. Each cell shows a full result for <strong>both</strong> flips. Count one match out of four possible results, so the chance is <strong>1/4</strong>.</p>
+        <p>You can also take half of a half. Half of all pairs start with heads. Of those, half also end with heads because the second flip has the same chance either way. That is what <strong>independent</strong> means here.</p>
+        <p class="formula">P(heads on both) = 1/2 × 1/2 = 1/4</p>
+      </div>
+    </div>
+    <p class="callout">For two independent events A and B, multiply their probabilities to find the chance that both happen. The individual chances can be different.</p>
+  </section>
+
+  <section aria-labelledby="practice">
+    <h2 id="practice">Find the chance of both</h2>
+    <form data-practice>
+      <fieldset>
+        <legend>1. You flip a fair coin twice. What is the chance of tails first and heads second?</legend>
+        <div class="answer-options">
+          <label><input type="radio" name="sequence" required data-feedback="Count complete pairs of flips. How many cells show tails followed by heads in that order?">½</label>
+          <label><input type="radio" name="sequence" required data-feedback="There are two flips. Try multiplying the chance of tails on the first by the chance of heads on the second.">⅛</label>
+          <label><input type="radio" name="sequence" required data-feedback="Correct. Only TH matches, so the probability is 1/4. You can also calculate 1/2 × 1/2." data-correct>¼</label>
+          <label><input type="radio" name="sequence" required data-feedback="The chance of the full pair cannot exceed the chance of its first step. Look for just the cell that matches both steps.">¾</label>
+        </div>
+      </fieldset>
+      <button class="btn secondary" type="submit">Check answer</button>
+      <p data-feedback-output role="status"></p>
+    </form>
+    <hr class="divider">
+    <form data-practice>
+      <fieldset>
+        <legend>2. A record has an 80% chance of passing check A and a 50% chance of passing check B. The two pass events are independent. What is the chance it passes both?</legend>
+        <div class="answer-options">
+          <label><input type="radio" name="checks" required data-feedback="Correct. Half of the 80% that pass A also pass B. Multiply 0.80 × 0.50 to get 0.40, or 40%." data-correct>40%</label>
+          <label><input type="radio" name="checks" required data-feedback="That is the chance of passing B. How much of the 80% that pass A also pass B?">50%</label>
+          <label><input type="radio" name="checks" required data-feedback="Averaging gives the midpoint between the two percentages. For both checks, take 50% of the 80% that pass A.">65%</label>
+          <label><input type="radio" name="checks" required data-feedback="That is the chance of passing A. Among those records, only half pass B as well.">80%</label>
+        </div>
+      </fieldset>
+      <button class="btn secondary" type="submit">Check answer</button>
+      <p data-feedback-output role="status"></p>
+    </form>
+  </section>
+
+  <footer>
+    <p><a href="0001-slope-as-a-signed-rate.html">Previous lesson</a> · <a href="0003-conditional-probability.html">Next lesson</a> · <a href="../../reference/joint-probability.html">Joint probability reference</a> · <a href="https://www.khanacademy.org/v/compound-probability-of-independent-events">Khan Academy video</a></p>
+    <p class="muted">Try a fresh example from memory tomorrow. Send me your reasoning or ask about any step you want to work through.</p>
+  </footer>
+</main>
+</body>
+</html>

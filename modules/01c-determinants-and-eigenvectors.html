@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linear Algebra Part C Eigenvectors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/course.css">
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" defer></script>
+</head>
+<body>
+<div class="shell">
+<nav class="rail" aria-label="Lessons">
+  <div class="course">Math for Data Science</div>
+  <div class="mod">Module 1 · Part C<br>Determinants and Eigenvectors</div>
+  <ol id="toc">
+    <li><a href="#l1"><span class="num">1.21</span>The determinant measures area</a></li>
+    <li><a href="#l2"><span class="num">1.22</span>Determinant rules and 3 × 3</a></li>
+    <li><a href="#l3"><span class="num">1.23</span>Bases and coordinates</a></li>
+    <li><a href="#l4"><span class="num">1.24</span>The same move in another basis</a></li>
+    <li><a href="#l5"><span class="num">1.25</span>Eigenvectors: directions that do not turn</a></li>
+    <li><a href="#l6"><span class="num">1.26</span>Finding eigenvalues</a></li>
+    <li><a href="#l7"><span class="num">1.27</span>Finding eigenvectors</a></li>
+    <li><a href="#l8"><span class="num">1.28</span>What can happen</a></li>
+    <li><a href="#l9"><span class="num">1.29</span>Why eigenvectors matter</a></li>
+    <li><a href="#l10"><span class="num">1.30</span>Checkpoint and cheat sheet</a></li>
+  </ol>
+  <div class="progress"><span id="ptext">0 of 10 lessons done</span><div class="bar"><i id="pbar"></i></div></div>
+</nav>
+
+<main>
+<header class="top">
+  <h1>Determinants and Eigenvectors</h1>
+  <p>Part B showed a matrix as a move of the plane. Part C asks two questions about any such move. How much does it change areas? That is the determinant. And are there directions it leaves pointing the same way? Those are the eigenvectors, the idea you asked about before the course started.</p>
+  <p><b>What you need from earlier parts.</b> A matrix as a move and its columns (Lesson 1.11), the inverse and the number \(ad - bc\) (1.17), rank and the null space (1.18), solving a small system (1.16), and from Module 0 the quadratic formula and factoring (Lesson 0.5).</p>
+  <p><b>Same rules.</b> Every technique is shown step by step before it is used. All of Part C is new material. If a step does not follow, select it and comment, or ask in the chat.</p>
+</header>
+
+<!-- ================= 1.21 ================= -->
+<section class="lesson" id="l1">
+  <div class="eyebrow">Lesson 1.21 <span class="new">New</span></div>
+  <h2>The determinant measures area</h2>
+  <p class="win">Goal: compute the determinant of a 2 × 2 matrix and read it as an area factor with a sign.</p>
+  <p class="why">In Lesson 1.17 the number \(ad - bc\) decided whether a matrix could be inverted. It was presented as a test with no meaning. It has one: it says how much the move stretches or shrinks area. That meaning is what makes the eigenvalue method in Lesson 1.26 work, and later explains formulas for probability densities and for the volume of data.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.21 · drag the two columns; the grey square is the unit square before the move</div>
+    <canvas id="c121" aria-label="Unit square and its image parallelogram under a matrix"></canvas>
+    <div class="readout" id="r121"></div>
+    <ul class="try">
+      <li>Set the columns to (2, 0) and (0, 3). Count the area of the green shape on the grid. Compare with ad − bc.</li>
+      <li>Keep column 1 fixed and slide column 2 along a line parallel to column 1. Does the area change?</li>
+      <li>Swing column 2 past column 1 to the other side. What happens to the sign and the colour?</li>
+      <li>Put both columns on one line. What is the area?</li>
+    </ul>
+  </div>
+
+  <h3>The definition</h3>
+  <p>For \(A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}\), the <b>determinant</b> is the number $$\det A = ad - bc$$ It is also written \(|A|\). In words: multiply down the main diagonal, multiply down the other diagonal, subtract the second from the first.</p>
+  <ol class="steps">
+    <li>Take \(A = \begin{pmatrix} 3 & 1 \\ 1 & 2 \end{pmatrix}\).</li>
+    <li>Main diagonal: \(3 \times 2 = 6\).</li>
+    <li>Other diagonal: \(1 \times 1 = 1\).</li>
+    <li>Subtract: \(\det A = 6 - 1 = 5\).</li>
+  </ol>
+
+  <h3>What the number means</h3>
+  <p>The unit square has corners (0, 0), (1, 0), (1, 1), (0, 1) and area 1. The matrix sends its two sides, (1, 0) and (0, 1), to the two columns. So the square becomes the parallelogram whose sides are the columns of A.</p>
+  <p><b>The area of that parallelogram is \(|\det A|\).</b> Because the move is linear, every shape is scaled by the same factor, not only the unit square. A region of area 7 becomes a region of area \(7 \times |\det A|\).</p>
+
+  <h3>Why the area is ad − bc</h3>
+  <p>Take columns \((a, c)\) and \((b, d)\) with all four numbers positive and column 2 anticlockwise from column 1, as in the lab's starting position. The parallelogram has corners (0, 0), (a, c), (a + b, c + d), (b, d).</p>
+  <ol class="steps">
+    <li>Draw the rectangle that just encloses it. Its far corner is \((a + b,\ c + d)\), so its area is \((a + b)(c + d)\).</li>
+    <li>Between the rectangle and the parallelogram there are six leftover pieces: two triangles with base a and height c, two triangles with base b and height d, and two small rectangles with sides b and c.</li>
+    <li>Their areas: the first pair of triangles is \(2 \times \tfrac12 ac = ac\). The second pair is \(2 \times \tfrac12 bd = bd\). The two small rectangles are \(2bc\).</li>
+    <li>Parallelogram = rectangle − leftovers: \((a + b)(c + d) - ac - bd - 2bc\).</li>
+    <li>Expand the bracket: \(ac + ad + bc + bd - ac - bd - 2bc\).</li>
+    <li>Cancel: \(ac\) with \(-ac\), \(bd\) with \(-bd\), and \(bc - 2bc = -bc\). What remains is \(ad - bc\).</li>
+  </ol>
+  <p>Check with the example: columns (3, 1) and (1, 2). Rectangle \(4 \times 3 = 12\). Leftovers: \(ac = 3\), \(bd = 2\), \(2bc = 2\), total 7. Parallelogram: \(12 - 7 = 5\). That matches \(\det A = 5\).</p>
+
+  <h3>Reading the sign and the size</h3>
+  <div class="tablewrap"><table>
+    <tr><th>det A</th><th>What the move does</th></tr>
+    <tr><td>greater than 1 or less than −1</td><td>enlarges areas</td></tr>
+    <tr><td>between −1 and 1</td><td>shrinks areas</td></tr>
+    <tr><td>exactly 1 or −1</td><td>keeps areas the same (rotations, reflections, shears)</td></tr>
+    <tr><td>negative</td><td>also flips the plane over, like turning a page: what was anticlockwise becomes clockwise</td></tr>
+    <tr><td>0</td><td>squashes everything onto a line or a point: area 0</td></tr>
+  </table></div>
+  <p>The last row is Lesson 1.17 and 1.18 seen from a new side. A move that flattens the plane to zero area has lost a dimension, so its rank has dropped and it cannot be undone. <b>\(\det A = 0\) exactly when A is singular.</b></p>
+  <p>The gallery from Lesson 1.12, with determinants: scale by 2 has \(2 \times 2 - 0 = 4\) (areas quadruple). Rotate 90° has \(0 - (-1)(1) = 1\). Reflect has \(1 \times (-1) - 0 = -1\). Shear has \(1 \times 1 - 1 \times 0 = 1\). Flatten has \(1 \times 0 - 0 = 0\).</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>\(\det \begin{pmatrix} 2 & 0 \\ 0 & 3 \end{pmatrix}\). Explain the answer as a picture.</li>
+    <li>\(\det \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}\). What does the move do to areas and to orientation?</li>
+    <li>\(\det \begin{pmatrix} 4 & 2 \\ 2 & 1 \end{pmatrix}\). What does it tell you?</li>
+    <li>A shape of area 3 is moved by \(\begin{pmatrix} 2 & 1 \\ 1 & 3 \end{pmatrix}\). What is its new area?</li>
+    <li>Find k so that \(\begin{pmatrix} k & 2 \\ 3 & 6 \end{pmatrix}\) is singular.</li>
+    <li>Without calculating, what is the determinant of any rotation matrix? Why?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(2 \times 3 - 0 \times 0 = 6\). The unit square becomes a 2 by 3 rectangle.</p>
+    <p>2. \(1 \times 4 - 2 \times 3 = 4 - 6 = -2\). Areas double, and the plane is flipped over.</p>
+    <p>3. \(4 \times 1 - 2 \times 2 = 0\). The columns (4, 2) and (2, 1) lie on one line, the plane is squashed flat, and the matrix has no inverse.</p>
+    <p>4. \(\det = 2 \times 3 - 1 \times 1 = 5\). New area \(3 \times 5 = 15\).</p>
+    <p>5. \(6k - 6 = 0\), so \(k = 1\). Then column 1 is (1, 3) and column 2 is (2, 6), twice the first.</p>
+    <p>6. It is 1. Turning a shape does not change its area and does not flip it.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+A = np.array([[3, 1], [1, 2]])
+print(np.linalg.det(A))                          # 5.0 (possibly 4.999999...)
+print(np.linalg.det(np.array([[4, 2], [2, 1]]))) # 0.0  singular
+
+theta = np.radians(37)
+R = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
+print(round(np.linalg.det(R), 10))               # 1.0  for any angle</code></pre>
+
+  <div class="quiz" data-answer="b">
+    <p class="q">A matrix has determinant −3. What happens to a shape of area 2?</p>
+    <div class="opts">
+      <button data-o="a">Its area becomes −6, below zero</button>
+      <button data-o="b">Its area becomes 6, and it flips</button>
+      <button data-o="c">Its area becomes 5, as 2 plus 3</button>
+    </div>
+    <p class="fb" data-ok="Right. Area is multiplied by |−3| = 3, and the negative sign means the plane is flipped over." data-no="Not this one. Area is multiplied by the size of the determinant, 3, giving 6. Area is never negative; the minus sign records a flip."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l1" id="done-l1">Mark lesson 1.21 done</label>
+</section>
+
+<!-- ================= 1.22 ================= -->
+<section class="lesson" id="l2">
+  <div class="eyebrow">Lesson 1.22 <span class="new">New</span></div>
+  <h2>Determinant rules and 3 × 3</h2>
+  <p class="win">Goal: use four rules that save calculation, and compute a 3 × 3 determinant by expanding along a row.</p>
+  <p class="why">You will rarely compute a large determinant by hand; software does that. What you need is to recognise what a determinant tells you and to handle the small ones that appear when finding eigenvalues.</p>
+
+  <h3>Four rules</h3>
+  <p>Each follows from "the determinant is the area factor".</p>
+  <div class="tablewrap"><table>
+    <tr><th>Rule</th><th>Reason</th></tr>
+    <tr><td>\(\det(AB) = \det A \times \det B\)</td><td>Do B (areas times det B), then A (areas times det A). The factors multiply.</td></tr>
+    <tr><td>\(\det(A^{-1}) = \dfrac{1}{\det A}\)</td><td>The inverse must undo the area change.</td></tr>
+    <tr><td>\(\det(A^{\mathsf T}) = \det A\)</td><td>For 2 × 2: swapping b and c leaves \(ad - bc\) unchanged.</td></tr>
+    <tr><td>\(\det I = 1\)</td><td>Doing nothing leaves areas alone.</td></tr>
+  </table></div>
+  <p><b>Check the first rule</b> with the matrices from Lesson 1.13. \(A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}\) has \(\det A = 4 - 6 = -2\). \(B = \begin{pmatrix} 0 & 1 \\ 2 & 3 \end{pmatrix}\) has \(\det B = 0 - 2 = -2\). Their product was \(AB = \begin{pmatrix} 4 & 7 \\ 8 & 15 \end{pmatrix}\), with \(\det(AB) = 60 - 56 = 4\). And \((-2) \times (-2) = 4\).</p>
+  <p class="slip"><b>Not a rule:</b> \(\det(A + B)\) is not \(\det A + \det B\). Also, for a 2 × 2 matrix, \(\det(cA) = c^2 \det A\), not \(c \det A\): scaling both directions by c scales area by \(c^2\).</p>
+
+  <h3>Triangular matrices: multiply the diagonal</h3>
+  <p>A matrix with zeros below the diagonal (or above it) is called triangular. Its determinant is the product of the diagonal entries. For 2 × 2 you can see it directly: \(\det \begin{pmatrix} a & b \\ 0 & d \end{pmatrix} = ad - b \times 0 = ad\). The same holds for any size. Diagonal matrices are a special case.</p>
+
+  <h3>The 3 × 3 determinant</h3>
+  <p>A 3 × 3 matrix moves 3D space, and its determinant is the factor by which it scales <b>volume</b>. The computing routine reduces it to three 2 × 2 determinants. It is called expanding along the first row.</p>
+  <ol class="steps">
+    <li><b>Take the first entry of row 1.</b> Cross out its row and its column. The four numbers left form a 2 × 2 matrix, called its <b>minor</b>. Multiply the entry by the determinant of its minor.</li>
+    <li><b>Take the second entry of row 1.</b> Cross out its row and column, find the determinant of what is left, multiply. This term gets a <b>minus</b> sign.</li>
+    <li><b>Take the third entry of row 1.</b> Same again, with a <b>plus</b> sign.</li>
+    <li><b>Add the three terms.</b> The signs always go plus, minus, plus.</li>
+  </ol>
+  <p>$$\det \begin{pmatrix} a & b & c \\ d & e & f \\ g & h & i \end{pmatrix} = a\,(ei - fh) - b\,(di - fg) + c\,(dh - eg)$$</p>
+
+  <h3>Worked example</h3>
+  <p>$$A = \begin{pmatrix} 2 & 1 & 0 \\ 1 & 3 & 1 \\ 0 & 1 & 2 \end{pmatrix}$$</p>
+  <ol class="steps">
+    <li><b>First entry, 2.</b> Cross out row 1 and column 1. Left: \(\begin{pmatrix} 3 & 1 \\ 1 & 2 \end{pmatrix}\), determinant \(6 - 1 = 5\). Term: \(+2 \times 5 = 10\).</li>
+    <li><b>Second entry, 1.</b> Cross out row 1 and column 2. Left: \(\begin{pmatrix} 1 & 1 \\ 0 & 2 \end{pmatrix}\), determinant \(2 - 0 = 2\). Term: \(-1 \times 2 = -2\).</li>
+    <li><b>Third entry, 0.</b> Whatever its minor is, the term is \(+0 \times (\ldots) = 0\).</li>
+    <li><b>Add:</b> \(10 - 2 + 0 = 8\).</li>
+  </ol>
+  <p>\(\det A = 8\): this matrix makes volumes 8 times larger. Zeros in the row save work, so if another row or column has more zeros, software and people expand along that one instead. The first row is enough for this course.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>\(\det \begin{pmatrix} 1 & 0 & 2 \\ 0 & 3 & 1 \\ 1 & 1 & 1 \end{pmatrix}\)</li>
+    <li>\(\det \begin{pmatrix} 2 & 5 & 1 \\ 0 & 3 & 4 \\ 0 & 0 & -1 \end{pmatrix}\). Use the fastest method.</li>
+    <li>\(\det A = 3\) and \(\det B = -2\). Find \(\det(AB)\) and \(\det(A^{-1})\).</li>
+    <li>A is 2 × 2 with \(\det A = 2\). Find \(\det(3A)\).</li>
+    <li>\(\det \begin{pmatrix} 1 & 2 & 3 \\ 2 & 4 & 6 \\ 0 & 1 & 5 \end{pmatrix}\). Explain the result by looking at the rows.</li>
+    <li>If \(\det A = 0\), what is \(\det(AB)\) for any B? What does that say about the combined move?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. First entry 1: minor \(\begin{pmatrix} 3 & 1 \\ 1 & 1 \end{pmatrix}\), determinant \(3 - 1 = 2\), term \(+2\). Second entry 0: term 0. Third entry 2: minor \(\begin{pmatrix} 0 & 3 \\ 1 & 1 \end{pmatrix}\), determinant \(0 - 3 = -3\), term \(+2 \times (-3) = -6\). Total \(2 + 0 - 6 = -4\).</p>
+    <p>2. It is triangular, so multiply the diagonal: \(2 \times 3 \times (-1) = -6\).</p>
+    <p>3. \(\det(AB) = 3 \times (-2) = -6\). \(\det(A^{-1}) = \tfrac13\).</p>
+    <p>4. \(3^2 \times 2 = 18\).</p>
+    <p>5. First entry 1: \(\begin{pmatrix} 4 & 6 \\ 1 & 5 \end{pmatrix}\) gives \(20 - 6 = 14\), term \(+14\). Second entry 2: \(\begin{pmatrix} 2 & 6 \\ 0 & 5 \end{pmatrix}\) gives 10, term \(-20\). Third entry 3: \(\begin{pmatrix} 2 & 4 \\ 0 & 1 \end{pmatrix}\) gives 2, term \(+6\). Total \(14 - 20 + 6 = 0\). Row 2 is twice row 1, so the matrix is singular: it flattens space.</p>
+    <p>6. \(0 \times \det B = 0\). Once one of the moves has flattened space, no later or earlier move can restore the lost dimension.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+A = np.array([[2, 1, 0], [1, 3, 1], [0, 1, 2]])
+print(round(np.linalg.det(A), 10))        # 8.0
+
+P = np.array([[1, 2], [3, 4]]); Q = np.array([[0, 1], [2, 3]])
+print(np.linalg.det(P @ Q), np.linalg.det(P) * np.linalg.det(Q))   # 4.0 4.0 (up to rounding)</code></pre>
+
+  <div class="quiz" data-answer="c">
+    <p class="q">What is the determinant of a triangular matrix with diagonal entries 2, 5 and 0?</p>
+    <div class="opts">
+      <button data-o="a">7, the sum of its diagonal</button>
+      <button data-o="b">10, from the non-zero ones</button>
+      <button data-o="c">0, the product of all three</button>
+    </div>
+    <p class="fb" data-ok="Right. Multiply the diagonal: 2 × 5 × 0 = 0. A zero on the diagonal of a triangular matrix makes it singular." data-no="Not this one. For a triangular matrix, multiply all the diagonal entries: 2 × 5 × 0 = 0."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l2" id="done-l2">Mark lesson 1.22 done</label>
+</section>
+
+<!-- ================= 1.23 ================= -->
+<section class="lesson" id="l3">
+  <div class="eyebrow">Lesson 1.23 <span class="new">New</span></div>
+  <h2>Bases and coordinates</h2>
+  <p class="win">Goal: describe the same vector with different sets of building blocks, and translate between the descriptions.</p>
+  <p class="why">The numbers in a data row are coordinates relative to the features you happened to measure. PCA replaces those features with better ones and rewrites every data point in the new system. That rewriting is a change of basis. It is also the step that turns a complicated matrix into a simple one in the next lesson.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.23 · drag the basis vectors b₁, b₂ and the point v</div>
+    <canvas id="c123" aria-label="A vector expressed in a draggable basis"></canvas>
+    <div class="readout" id="r123"></div>
+    <ul class="try">
+      <li>The faint grid is drawn along b₁ and b₂. Follow the thick blue arrow, then the thick orange one. Count the steps along each. Do the counts match the coordinates in the readout?</li>
+      <li>Leave v where it is and move b₁. Does the point v move? Do its coordinates change?</li>
+      <li>Set b₁ = (1, 0) and b₂ = (0, 1). What are the coordinates of v now?</li>
+    </ul>
+  </div>
+
+  <h3>The idea, in steps</h3>
+  <ol class="steps">
+    <li><b>The usual coordinates are a recipe.</b> Writing \(v = (3, 3)\) means "3 of (1, 0) plus 3 of (0, 1)". The numbers 3 and 3 are coefficients of a linear combination of the standard basis vectors (Lesson 1.7).</li>
+    <li><b>You can use other building blocks.</b> Any two vectors that are not on the same line can reach every point of the plane (Lesson 1.7). Such a pair is called a <b>basis</b> of \(\mathbb{R}^2\).</li>
+    <li><b>The coordinates of v in a basis</b> \(b_1, b_2\) are the coefficients \(c_1, c_2\) that build v from them: \(v = c_1 b_1 + c_2 b_2\). We write them as \([v]_B = (c_1, c_2)\).</li>
+    <li><b>The vector itself does not change.</b> Only its description does, as the lab's second experiment shows. It is like giving a location as "3 km east, 3 km north" or as "2 blocks along Main Street, 1 block along the diagonal avenue".</li>
+  </ol>
+  <p>A basis of \(\mathbb{R}^2\) always has exactly 2 vectors, and a basis of \(\mathbb{R}^n\) has exactly n. They must be linearly independent.</p>
+
+  <h3>Finding coordinates in a new basis, step by step</h3>
+  <p>Basis: \(b_1 = (2, 1)\), \(b_2 = (-1, 1)\). Find the coordinates of \(v = (3, 3)\).</p>
+  <ol class="steps">
+    <li><b>Write the requirement:</b> \(c_1 (2, 1) + c_2 (-1, 1) = (3, 3)\).</li>
+    <li><b>Split into components:</b> \(2c_1 - c_2 = 3\) and \(c_1 + c_2 = 3\).</li>
+    <li><b>Add the two equations</b> to remove \(c_2\): \(3c_1 = 6\), so \(c_1 = 2\).</li>
+    <li><b>Substitute back:</b> \(2 + c_2 = 3\), so \(c_2 = 1\).</li>
+    <li><b>Check:</b> \(2\,(2, 1) + 1\,(-1, 1) = (4, 2) + (-1, 1) = (3, 3)\).</li>
+  </ol>
+  <p>So \([v]_B = (2, 1)\). The same point is (3, 3) in the usual system and (2, 1) in this basis.</p>
+
+  <h3>The same thing with a matrix</h3>
+  <p>Put the basis vectors side by side as the columns of a matrix: \(B = \begin{pmatrix} 2 & -1 \\ 1 & 1 \end{pmatrix}\). By the column view (Lesson 1.9), \(B\,(c_1, c_2) = c_1 b_1 + c_2 b_2\). So:</p>
+  <div class="two">
+    <div><b>From new coordinates to usual:</b> $$v = B\,[v]_B$$ Multiply by B.</div>
+    <div><b>From usual coordinates to new:</b> $$[v]_B = B^{-1}\,v$$ Multiply by the inverse of B.</div>
+  </div>
+  <p>Check the second with the shortcut from Lesson 1.17. \(\det B = 2 \times 1 - (-1) \times 1 = 3\). \(B^{-1} = \tfrac13 \begin{pmatrix} 1 & 1 \\ -1 & 2 \end{pmatrix}\). Then \(B^{-1}(3, 3) = \tfrac13 (3 + 3,\ -3 + 6) = \tfrac13 (6, 3) = (2, 1)\). Same answer as the step-by-step method.</p>
+  <p>B is called the <b>change-of-basis matrix</b>. It exists and is invertible exactly when the two vectors really are a basis, which is when \(\det B \ne 0\).</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>In the basis \(b_1 = (1, 1)\), \(b_2 = (1, -1)\), a vector has coordinates (3, 1). What is it in the usual coordinates?</li>
+    <li>In the same basis, find the coordinates of \(v = (5, 1)\).</li>
+    <li>Are (1, 2) and (2, 4) a basis of \(\mathbb{R}^2\)?</li>
+    <li>In the basis (2, 0), (0, 5), find the coordinates of (6, 10). What does this basis amount to?</li>
+    <li>For \(b_1 = (1, 0)\), \(b_2 = (1, 1)\), write B, find \(B^{-1}\), and use it to get the coordinates of (4, 3).</li>
+    <li>How many vectors are in a basis of \(\mathbb{R}^3\)? Of \(\mathbb{R}^{50}\)?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(3\,(1, 1) + 1\,(1, -1) = (3, 3) + (1, -1) = (4, 2)\).</p>
+    <p>2. \(c_1 + c_2 = 5\) and \(c_1 - c_2 = 1\). Adding: \(2c_1 = 6\), so \(c_1 = 3\) and \(c_2 = 2\). Check: \((3, 3) + (2, -2) = (5, 1)\).</p>
+    <p>3. No. (2, 4) is twice (1, 2), so they lie on one line and cannot reach the rest of the plane.</p>
+    <p>4. \(2c_1 = 6\) and \(5c_2 = 10\), so (3, 2). This basis keeps the usual directions and only changes the units, like switching from metres to another unit on each axis.</p>
+    <p>5. \(B = \begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix}\). \(\det B = 1\). \(B^{-1} = \begin{pmatrix} 1 & -1 \\ 0 & 1 \end{pmatrix}\). \(B^{-1}(4, 3) = (4 - 3,\ 3) = (1, 3)\). Check: \(1\,(1, 0) + 3\,(1, 1) = (4, 3)\).</p>
+    <p>6. 3, and 50. A basis of \(\mathbb{R}^n\) has exactly n vectors.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+B = np.array([[2, -1],
+              [1,  1]])              # columns are the basis vectors
+v = np.array([3, 3])
+
+c = np.linalg.solve(B, v)            # coordinates of v in the basis
+print(c)                             # [2. 1.]
+print(B @ c)                         # [3. 3.]  back to the usual coordinates</code></pre>
+
+  <div class="quiz" data-answer="a">
+    <p class="q">You change to a different basis. What happens to a vector v?</p>
+    <div class="opts">
+      <button data-o="a">Only its coordinates change</button>
+      <button data-o="b">It moves to a new position</button>
+      <button data-o="c">Its length is rescaled by B</button>
+    </div>
+    <p class="fb" data-ok="Right. The vector stays where it is. A new basis only gives it a new description." data-no="Not this one. Changing basis changes the numbers used to describe v, not v itself. The arrow stays exactly where it was."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l3" id="done-l3">Mark lesson 1.23 done</label>
+</section>
+
+<!-- ================= 1.24 ================= -->
+<section class="lesson" id="l4">
+  <div class="eyebrow">Lesson 1.24 <span class="new">New</span></div>
+  <h2>The same move in another basis</h2>
+  <p class="win">Goal: rewrite a matrix in a new basis with \(B^{-1}AB\), and see that a good basis can make a matrix simple.</p>
+  <p class="why">This lesson is the bridge to eigenvectors. A matrix that looks complicated in the usual coordinates may be a plain stretch when described in the right basis. Finding that basis is what the rest of Part C is about, and using it is what Part D is about.</p>
+
+  <h3>The question</h3>
+  <p>A matrix A describes a move using the usual coordinates: usual coordinates in, usual coordinates out. Suppose you prefer to work in a basis B. What matrix describes the <b>same move</b>, taking B-coordinates in and giving B-coordinates out?</p>
+
+  <h3>The answer, built in three steps</h3>
+  <p>Start with a vector given in B-coordinates, call it c.</p>
+  <ol class="steps">
+    <li><b>Translate to the usual coordinates.</b> From Lesson 1.23, multiply by B: the vector is \(Bc\).</li>
+    <li><b>Apply the move.</b> A works in the usual coordinates: the result is \(A(Bc)\).</li>
+    <li><b>Translate the result back to B-coordinates.</b> From Lesson 1.23, multiply by \(B^{-1}\): the result is \(B^{-1}A B c\).</li>
+  </ol>
+  <p>So in the basis B the move is described by the matrix $$D = B^{-1}AB$$ Read it right to left, like every matrix product: translate in, act, translate out. Two matrices related this way are called <b>similar</b>: they are one move seen from two viewpoints.</p>
+
+  <h3>Worked example</h3>
+  <p>Take \(A = \begin{pmatrix} 3 & 1 \\ 1 & 3 \end{pmatrix}\) and the basis \(b_1 = (1, 1)\), \(b_2 = (1, -1)\), so \(B = \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}\).</p>
+  <ol class="steps">
+    <li><b>Find \(B^{-1}\).</b> \(\det B = 1 \times (-1) - 1 \times 1 = -2\). Swap the diagonal, negate the others: \(\begin{pmatrix} -1 & -1 \\ -1 & 1 \end{pmatrix}\). Divide by −2: \(B^{-1} = \begin{pmatrix} 0.5 & 0.5 \\ 0.5 & -0.5 \end{pmatrix}\).</li>
+    <li><b>Compute \(AB\), column by column</b> (each column of AB is A times a column of B, Lesson 1.13). \(A\,(1, 1) = (3 + 1,\ 1 + 3) = (4, 4)\). \(A\,(1, -1) = (3 - 1,\ 1 - 3) = (2, -2)\). So \(AB = \begin{pmatrix} 4 & 2 \\ 4 & -2 \end{pmatrix}\).</li>
+    <li><b>Compute \(B^{-1}(AB)\), slot by slot.</b> Row 1, column 1: \(0.5 \times 4 + 0.5 \times 4 = 4\). Row 1, column 2: \(0.5 \times 2 + 0.5 \times (-2) = 0\). Row 2, column 1: \(0.5 \times 4 - 0.5 \times 4 = 0\). Row 2, column 2: \(0.5 \times 2 - 0.5 \times (-2) = 2\).</li>
+  </ol>
+  <p>$$B^{-1}AB = \begin{pmatrix} 4 & 0 \\ 0 & 2 \end{pmatrix}$$</p>
+
+  <h3>What just happened</h3>
+  <p>In the usual coordinates, A mixes the two components. In the basis B it is a <b>diagonal matrix</b>: it stretches by 4 along \(b_1\) and by 2 along \(b_2\), and does nothing else (Lesson 1.12). The move was simple all along; the usual coordinate system was hiding it.</p>
+  <p>Look at step 2 again, because the reason is there. \(A\,(1, 1) = (4, 4) = 4\,(1, 1)\) and \(A\,(1, -1) = (2, -2) = 2\,(1, -1)\). The matrix sends each basis vector to a multiple of itself. A basis made of such vectors is what makes the matrix diagonal. Vectors with that property are called <b>eigenvectors</b>, and the next lesson is about them.</p>
+  <p class="slip"><b>Order.</b> It is \(B^{-1}AB\), with B on the right, because the vector must be translated <i>into</i> the usual coordinates before A can act on it. \(BAB^{-1}\) is a different matrix.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>In \(B^{-1}AB\), which of the three matrices acts on a vector first?</li>
+    <li>For \(A = \begin{pmatrix} 2 & 0 \\ 0 & 3 \end{pmatrix}\) and \(B = \begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix}\), compute \(B^{-1}AB\). (\(B^{-1}\) was found in Lesson 1.23, practice problem 5.)</li>
+    <li>For \(A = \begin{pmatrix} 5 & -2 \\ 4 & -1 \end{pmatrix}\) and the basis \(b_1 = (1, 2)\), \(b_2 = (1, 1)\), compute \(B^{-1}AB\).</li>
+    <li>In problem 3, what do \(A\,b_1\) and \(A\,b_2\) equal, as multiples of \(b_1\) and \(b_2\)?</li>
+    <li>Use the rules of Lesson 1.22 to show that \(\det(B^{-1}AB) = \det A\). Why does that make sense?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. B, the one on the right. Then A, then \(B^{-1}\).</p>
+    <p>2. \(B^{-1} = \begin{pmatrix} 1 & -1 \\ 0 & 1 \end{pmatrix}\). \(AB\): \(A\,(1, 0) = (2, 0)\) and \(A\,(1, 1) = (2, 3)\), so \(AB = \begin{pmatrix} 2 & 2 \\ 0 & 3 \end{pmatrix}\). Then \(B^{-1}(AB)\): slots \(2 - 0 = 2\); \(2 - 3 = -1\); \(0\); \(3\). Answer \(\begin{pmatrix} 2 & -1 \\ 0 & 3 \end{pmatrix}\). Here the usual basis was the good one, and changing basis made the matrix less simple.</p>
+    <p>3. \(B = \begin{pmatrix} 1 & 1 \\ 2 & 1 \end{pmatrix}\), \(\det B = 1 - 2 = -1\), so \(B^{-1} = \tfrac{1}{-1}\begin{pmatrix} 1 & -1 \\ -2 & 1 \end{pmatrix} = \begin{pmatrix} -1 & 1 \\ 2 & -1 \end{pmatrix}\). \(AB\): \(A\,(1, 2) = (5 - 4,\ 4 - 2) = (1, 2)\) and \(A\,(1, 1) = (3, 3)\), so \(AB = \begin{pmatrix} 1 & 3 \\ 2 & 3 \end{pmatrix}\). \(B^{-1}(AB)\): slots \(-1 + 2 = 1\); \(-3 + 3 = 0\); \(2 - 2 = 0\); \(6 - 3 = 3\). Answer \(\begin{pmatrix} 1 & 0 \\ 0 & 3 \end{pmatrix}\).</p>
+    <p>4. \(A\,b_1 = (1, 2) = 1 \times b_1\) and \(A\,b_2 = (3, 3) = 3 \times b_2\). The multipliers 1 and 3 are the diagonal entries of the answer to problem 3.</p>
+    <p>5. \(\det(B^{-1}AB) = \det(B^{-1}) \times \det A \times \det B = \tfrac{1}{\det B} \times \det A \times \det B = \det A\). It makes sense because the area factor belongs to the move, not to the coordinates used to describe it.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+A = np.array([[3, 1], [1, 3]])
+B = np.array([[1, 1], [1, -1]])
+D = np.linalg.inv(B) @ A @ B
+print(np.round(D, 10))            # [[4. 0.] [0. 2.]]</code></pre>
+
+  <div class="quiz" data-answer="c">
+    <p class="q">\(B^{-1}AB\) came out diagonal. What does that tell you about the columns of B?</p>
+    <div class="opts">
+      <button data-o="a">They are all at right angles</button>
+      <button data-o="b">They all have a length of one</button>
+      <button data-o="c">A only scales each one of them</button>
+    </div>
+    <p class="fb" data-ok="Right. A diagonal result means A sends each basis vector to a multiple of itself." data-no="Not this one. A diagonal matrix only stretches along its basis directions, so A must send each column of B to a multiple of itself."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l4" id="done-l4">Mark lesson 1.24 done</label>
+</section>
+
+<!-- ================= 1.25 ================= -->
+<section class="lesson" id="l5">
+  <div class="eyebrow">Lesson 1.25 <span class="new">New</span></div>
+  <h2>Eigenvectors: directions that do not turn</h2>
+  <p class="win">Goal: say what an eigenvector and an eigenvalue are, and test whether a given vector is one.</p>
+  <p class="why">Eigenvectors are the natural axes of a matrix. PCA finds the eigenvectors of a dataset's covariance matrix to locate the directions in which the data varies most. Google's original PageRank is an eigenvector. Whether gradient descent converges depends on eigenvalues. This lesson is the definition all of those rest on.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.25 · drag x; the orange arrow is Ax. Hunt for positions where the two arrows line up</div>
+    <canvas id="c125" aria-label="A vector and its image, for hunting eigenvectors"></canvas>
+    <div class="controls">
+      <label for="s125">matrix <select id="s125"></select></label>
+      <label for="show125"><input type="checkbox" id="show125"> show the eigen-directions</label>
+    </div>
+    <div class="readout" id="r125"></div>
+    <ul class="try">
+      <li>With the first matrix, drag x slowly in a full circle around the origin. For most positions Ax points somewhere else. Find the positions where Ax lies exactly along x. How many separate lines do you find?</li>
+      <li>On such a line, move x closer to and further from the origin. Does it stay an eigenvector? Does λ change?</li>
+      <li>Only then tick the box to check your lines. Repeat for each matrix in the list. Which one has no such direction at all? Which has only one?</li>
+    </ul>
+  </div>
+
+  <h3>The definition</h3>
+  <p>A matrix usually turns a vector: \(Ax\) points in a different direction from x. For some special vectors it does not. It only stretches, shrinks or flips them along their own line.</p>
+  <p>A non-zero vector v is an <b>eigenvector</b> of A if $$A\,v = \lambda\,v$$ for some number \(\lambda\) (the Greek letter lambda). That number is the <b>eigenvalue</b> belonging to v. Read the equation as: "moving v with A gives the same result as simply multiplying v by the number λ".</p>
+  <p>The word comes from German: <i>eigen</i> means "own". These are the matrix's own directions.</p>
+
+  <h3>Testing a vector, step by step</h3>
+  <p>Is \(v = (1, 1)\) an eigenvector of \(A = \begin{pmatrix} 3 & 1 \\ 1 & 3 \end{pmatrix}\)?</p>
+  <ol class="steps">
+    <li><b>Compute \(Av\)</b> with the row routine: row 1 gives \(3 + 1 = 4\), row 2 gives \(1 + 3 = 4\). So \(Av = (4, 4)\).</li>
+    <li><b>Ask: is the result a multiple of v?</b> Divide matching components: \(4 / 1 = 4\) and \(4 / 1 = 4\). Both ratios are the same number.</li>
+    <li><b>Conclude:</b> \(Av = 4v\). Yes, v is an eigenvector, with eigenvalue \(\lambda = 4\).</li>
+  </ol>
+  <p>Is \(u = (1, 0)\) an eigenvector of the same A?</p>
+  <ol class="steps">
+    <li>\(Au = (3, 1)\).</li>
+    <li>Ratios: \(3 / 1 = 3\), but the second component went from 0 to 1, which no multiplication can do.</li>
+    <li>Not a multiple of u, so u is not an eigenvector. A turns it.</li>
+  </ol>
+  <p>You met both eigenvectors of this A already: Lesson 1.24 found \(A\,(1, 1) = 4\,(1, 1)\) and \(A\,(1, -1) = 2\,(1, -1)\).</p>
+
+  <h3>What the eigenvalue tells you</h3>
+  <div class="tablewrap"><table>
+    <tr><th>λ</th><th>What A does along that direction</th></tr>
+    <tr><td>greater than 1</td><td>stretches</td></tr>
+    <tr><td>between 0 and 1</td><td>shrinks</td></tr>
+    <tr><td>exactly 1</td><td>leaves it unchanged</td></tr>
+    <tr><td>exactly 0</td><td>squashes it onto the origin: \(Av = 0\), so v is in the null space (Lesson 1.18) and A is singular</td></tr>
+    <tr><td>negative</td><td>flips it to the opposite side of the origin, and scales by the size of λ</td></tr>
+  </table></div>
+
+  <h3>Two facts to hold on to</h3>
+  <ul>
+    <li><b>Eigenvectors come as whole lines.</b> If v is an eigenvector with eigenvalue λ, so is any non-zero multiple of v, with the same λ. Reason: \(A(c\,v) = c\,(Av) = c\,\lambda v = \lambda\,(c\,v)\). So what matters is the direction, and you may pick any convenient vector on the line, such as (1, 1) instead of (7, 7).</li>
+    <li><b>The zero vector does not count.</b> \(A\,0 = \lambda\,0\) is true for every λ and tells you nothing, so eigenvectors are required to be non-zero. The eigen<i>value</i> is allowed to be 0.</li>
+  </ul>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Is (1, 2) an eigenvector of \(\begin{pmatrix} 2 & 0 \\ 0 & 3 \end{pmatrix}\)?</li>
+    <li>Is (1, 1) an eigenvector of \(\begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}\)? If so, with which eigenvalue?</li>
+    <li>Same matrix: is (1, −1) an eigenvector?</li>
+    <li>You know \(Av = 5v\). What is \(A(2v)\)? Is \(2v\) an eigenvector?</li>
+    <li>Find the eigenvectors and eigenvalues of \(\begin{pmatrix} 4 & 0 \\ 0 & -1 \end{pmatrix}\) by thinking about what the matrix does.</li>
+    <li>A non-zero vector v satisfies \(Av = (0, 0)\). What is its eigenvalue, and what does that say about A?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(A\,(1, 2) = (2, 6)\). Ratios: \(2 / 1 = 2\) and \(6 / 2 = 3\). Different, so no.</p>
+    <p>2. \(A\,(1, 1) = (3, 3) = 3\,(1, 1)\). Yes, \(\lambda = 3\).</p>
+    <p>3. \(A\,(1, -1) = (2 - 1,\ 1 - 2) = (1, -1) = 1 \times (1, -1)\). Yes, \(\lambda = 1\): this direction is left unchanged.</p>
+    <p>4. \(A(2v) = 2\,(Av) = 2 \times 5v = 5\,(2v)\). Yes, with the same eigenvalue 5.</p>
+    <p>5. A diagonal matrix stretches each axis separately. \(A\,(1, 0) = (4, 0)\), so (1, 0) is an eigenvector with \(\lambda = 4\). \(A\,(0, 1) = (0, -1)\), so (0, 1) is an eigenvector with \(\lambda = -1\).</p>
+    <p>6. \(Av = 0 = 0 \times v\), so \(\lambda = 0\). A sends a non-zero vector to zero, so it collapses a direction: A is singular and \(\det A = 0\).</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+A = np.array([[3, 1], [1, 3]])
+v = np.array([1, 1])
+print(A @ v, 4 * v)          # [4 4] [4 4]   Av equals 4v
+
+u = np.array([1, 0])
+print(A @ u)                 # [3 1]   not a multiple of u</code></pre>
+
+  <div class="quiz" data-answer="b">
+    <p class="q">A matrix sends the vector (2, 1) to (−6, −3). What can you say?</p>
+    <div class="opts">
+      <button data-o="a">Not an eigenvector, as it flipped</button>
+      <button data-o="b">An eigenvector with eigenvalue −3</button>
+      <button data-o="c">An eigenvector with eigenvalue 3</button>
+    </div>
+    <p class="fb" data-ok="Right. (−6, −3) = −3·(2, 1). Flipping to the opposite side still keeps the vector on its own line." data-no="Not this one. (−6, −3) is −3 times (2, 1). It stays on the same line through the origin, so it is an eigenvector, and the multiplier −3 is the eigenvalue."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l5" id="done-l5">Mark lesson 1.25 done</label>
+</section>
+
+<!-- ================= 1.26 ================= -->
+<section class="lesson" id="l6">
+  <div class="eyebrow">Lesson 1.26 <span class="new">New</span></div>
+  <h2>Finding eigenvalues</h2>
+  <p class="win">Goal: find the eigenvalues of any 2 × 2 matrix by solving one quadratic equation.</p>
+  <p class="why">Hunting by dragging works for a lab. For a real matrix you need a method. It comes from combining three things you already have: the definition, the null space, and the determinant.</p>
+
+  <h3>From the definition to an equation for λ</h3>
+  <p>We want numbers λ for which \(Av = \lambda v\) has a non-zero solution v. Both v and λ are unknown, so first get rid of v.</p>
+  <ol class="steps">
+    <li><b>Start:</b> \(Av = \lambda v\).</li>
+    <li><b>Write the right side with a matrix.</b> Multiplying by the identity changes nothing, so \(\lambda v = \lambda I v\). Now both sides are "a matrix times v": \(Av = \lambda I v\).</li>
+    <li><b>Move everything to one side:</b> \(Av - \lambda I v = 0\).</li>
+    <li><b>Factor out v:</b> \((A - \lambda I)\,v = 0\).</li>
+    <li><b>Read what that says.</b> The matrix \(A - \lambda I\) sends a non-zero vector v to zero. From Lesson 1.18, a matrix that sends a non-zero vector to zero is singular.</li>
+    <li><b>Use the test for singular.</b> From Lesson 1.21, a matrix is singular exactly when its determinant is 0. So: $$\det(A - \lambda I) = 0$$</li>
+  </ol>
+  <p>This is called the <b>characteristic equation</b>. It contains only λ, and its solutions are the eigenvalues.</p>
+  <p><b>What \(A - \lambda I\) looks like.</b> \(\lambda I = \begin{pmatrix} \lambda & 0 \\ 0 & \lambda \end{pmatrix}\), so subtracting it takes λ off each diagonal entry and leaves the others alone: $$A - \lambda I = \begin{pmatrix} a - \lambda & b \\ c & d - \lambda \end{pmatrix}$$</p>
+
+  <h3>Worked example, step by step</h3>
+  <p>Find the eigenvalues of \(A = \begin{pmatrix} 3 & 1 \\ 1 & 3 \end{pmatrix}\).</p>
+  <ol class="steps">
+    <li><b>Subtract λ from the diagonal:</b> \(A - \lambda I = \begin{pmatrix} 3 - \lambda & 1 \\ 1 & 3 - \lambda \end{pmatrix}\).</li>
+    <li><b>Take the determinant</b> (main diagonal minus other diagonal): \((3 - \lambda)(3 - \lambda) - 1 \times 1\).</li>
+    <li><b>Expand:</b> \((3 - \lambda)^2 = 9 - 6\lambda + \lambda^2\). So the determinant is \(\lambda^2 - 6\lambda + 9 - 1 = \lambda^2 - 6\lambda + 8\).</li>
+    <li><b>Set it to zero:</b> \(\lambda^2 - 6\lambda + 8 = 0\).</li>
+    <li><b>Solve the quadratic</b> (Module 0, Lesson 0.5). Factoring: two numbers that multiply to 8 and add to 6 are 2 and 4, so \((\lambda - 2)(\lambda - 4) = 0\).</li>
+    <li><b>Eigenvalues:</b> \(\lambda = 2\) and \(\lambda = 4\).</li>
+  </ol>
+  <p>These are the two stretch factors found in Lesson 1.24.</p>
+
+  <h3>The shortcut: trace and determinant</h3>
+  <p>Do the same steps with letters. \(\det \begin{pmatrix} a - \lambda & b \\ c & d - \lambda \end{pmatrix} = (a - \lambda)(d - \lambda) - bc\). Expand the product: \(ad - a\lambda - d\lambda + \lambda^2 - bc\). Group: $$\lambda^2 - (a + d)\,\lambda + (ad - bc) = 0$$ The number \(a + d\), the sum of the diagonal entries, is called the <b>trace</b> of A. The last bracket is \(\det A\). So for every 2 × 2 matrix: $$\lambda^2 - (\text{trace})\,\lambda + \det = 0$$</p>
+  <ol class="steps">
+    <li>Compute the trace: add the two diagonal entries.</li>
+    <li>Compute the determinant: \(ad - bc\).</li>
+    <li>Write \(\lambda^2 - (\text{trace})\lambda + \det = 0\).</li>
+    <li>Solve by factoring, or with the quadratic formula \(\lambda = \dfrac{\text{trace} \pm \sqrt{\text{trace}^2 - 4\det}}{2}\).</li>
+  </ol>
+  <p><b>Example.</b> \(A = \begin{pmatrix} 4 & 1 \\ 2 & 3 \end{pmatrix}\). Trace \(= 4 + 3 = 7\). Determinant \(= 12 - 2 = 10\). Equation: \(\lambda^2 - 7\lambda + 10 = 0\), which factors as \((\lambda - 2)(\lambda - 5) = 0\). Eigenvalues 2 and 5.</p>
+
+  <h3>A check that costs nothing</h3>
+  <p>For any 2 × 2 matrix with eigenvalues \(\lambda_1\) and \(\lambda_2\): $$\lambda_1 + \lambda_2 = \text{trace}, \qquad \lambda_1 \times \lambda_2 = \det$$ In the example: \(2 + 5 = 7\) and \(2 \times 5 = 10\). If your eigenvalues fail either test, there is an arithmetic slip. (The reason is the factored form: \((\lambda - \lambda_1)(\lambda - \lambda_2) = \lambda^2 - (\lambda_1 + \lambda_2)\lambda + \lambda_1\lambda_2\), compared term by term with the shortcut.)</p>
+  <p>The product rule also re-explains Lesson 1.25: A is singular (det = 0) exactly when one of its eigenvalues is 0.</p>
+
+  <div class="lab">
+    <div class="cap">LAB 1.26 · eigen-calculator for checking your paper work: type any 2 × 2 matrix</div>
+    <div class="controls">
+      <label for="ea">a <input type="number" id="ea" value="4" step="any"></label>
+      <label for="eb">b <input type="number" id="eb" value="1" step="any"></label>
+      <label for="ec">c <input type="number" id="ec" value="2" step="any"></label>
+      <label for="ed">d <input type="number" id="ed" value="3" step="any"></label>
+    </div>
+    <div class="readout" id="reig"></div>
+    <ul class="try">
+      <li>Do each practice problem on paper first, then type the matrix in to compare every step, not only the answer.</li>
+      <li>Steps 1 to 5 belong to this lesson. Step 6 (the eigenvectors) is the next lesson.</li>
+    </ul>
+  </div>
+
+  <h3>Practice on paper</h3>
+  <p>Find the eigenvalues. Check each with trace and determinant.</p>
+  <ol class="ex">
+    <li>\(\begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}\)</li>
+    <li>\(\begin{pmatrix} 5 & -2 \\ 4 & -1 \end{pmatrix}\)</li>
+    <li>\(\begin{pmatrix} 1 & 2 \\ 2 & 1 \end{pmatrix}\)</li>
+    <li>\(\begin{pmatrix} 7 & 0 \\ 0 & -2 \end{pmatrix}\). What do you notice?</li>
+    <li>\(\begin{pmatrix} 3 & 5 \\ 0 & 4 \end{pmatrix}\). What do you notice?</li>
+    <li>\(\begin{pmatrix} 2 & 1 \\ 0 & 2 \end{pmatrix}\)</li>
+    <li>\(\begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}\), the rotate-90° matrix. What goes wrong, and why does that fit the picture?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. Trace 4, determinant \(4 - 1 = 3\). \(\lambda^2 - 4\lambda + 3 = (\lambda - 1)(\lambda - 3)\). Eigenvalues 1 and 3. Check: \(1 + 3 = 4\), \(1 \times 3 = 3\).</p>
+    <p>2. Trace \(5 + (-1) = 4\), determinant \(-5 - (-8) = 3\). Same equation as problem 1: eigenvalues 1 and 3.</p>
+    <p>3. Trace 2, determinant \(1 - 4 = -3\). \(\lambda^2 - 2\lambda - 3 = (\lambda - 3)(\lambda + 1)\). Eigenvalues 3 and −1. Check: \(3 + (-1) = 2\), \(3 \times (-1) = -3\).</p>
+    <p>4. Trace 5, determinant −14. \(\lambda^2 - 5\lambda - 14 = (\lambda - 7)(\lambda + 2)\). Eigenvalues 7 and −2: for a diagonal matrix, the eigenvalues are the diagonal entries.</p>
+    <p>5. Trace 7, determinant 12. \(\lambda^2 - 7\lambda + 12 = (\lambda - 3)(\lambda - 4)\). Eigenvalues 3 and 4: for a triangular matrix too, the eigenvalues are the diagonal entries.</p>
+    <p>6. Trace 4, determinant 4. \(\lambda^2 - 4\lambda + 4 = (\lambda - 2)^2\). One repeated eigenvalue, 2.</p>
+    <p>7. Trace 0, determinant \(0 - (-1) = 1\). \(\lambda^2 + 1 = 0\), so \(\lambda^2 = -1\), which no real number satisfies. No real eigenvalues. That fits: a quarter turn changes the direction of every vector, so no vector stays on its own line.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+A = np.array([[4, 1], [2, 3]])
+print(np.trace(A), np.linalg.det(A))     # 7  10.0
+print(np.roots([1, -7, 10]))             # [5. 2.]  roots of λ² − 7λ + 10
+print(np.linalg.eigvals(A))              # [5. 2.]  the library routine</code></pre>
+
+  <div class="quiz" data-answer="a">
+    <p class="q">A 2 × 2 matrix has trace 6 and determinant 8. What are its eigenvalues?</p>
+    <div class="opts">
+      <button data-o="a">2 and 4</button>
+      <button data-o="b">6 and 8</button>
+      <button data-o="c">1 and 8</button>
+    </div>
+    <p class="fb" data-ok="Right. They must add to the trace, 6, and multiply to the determinant, 8." data-no="Not this one. The eigenvalues add up to the trace and multiply to the determinant. 2 + 4 = 6 and 2 × 4 = 8."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l6" id="done-l6">Mark lesson 1.26 done</label>
+</section>
+
+<!-- ================= 1.27 ================= -->
+<section class="lesson" id="l7">
+  <div class="eyebrow">Lesson 1.27 <span class="new">New</span></div>
+  <h2>Finding eigenvectors</h2>
+  <p class="win">Goal: for each eigenvalue, find its eigenvector by solving one small system, and check it.</p>
+  <p class="why">Eigenvalues say how much; eigenvectors say in which direction. In PCA the eigenvectors are the new axes and the eigenvalues say how important each axis is. You need both.</p>
+
+  <h3>The routine</h3>
+  <p>From Lesson 1.26, an eigenvector for λ is a non-zero solution of \((A - \lambda I)\,v = 0\). So for each eigenvalue in turn:</p>
+  <ol class="steps">
+    <li><b>Build \(A - \lambda I\)</b> by subtracting that λ from the two diagonal entries.</li>
+    <li><b>Write out \((A - \lambda I)\,v = 0\)</b> as two equations in \(v_1\) and \(v_2\).</li>
+    <li><b>Notice the two equations say the same thing.</b> One is a multiple of the other. This always happens, because λ was chosen to make this matrix singular. If they are not multiples, the eigenvalue is wrong.</li>
+    <li><b>Use one equation to relate \(v_1\) and \(v_2\).</b> There is a whole line of solutions, as Lesson 1.25 said.</li>
+    <li><b>Pick a convenient value</b> for one component, usually \(v_1 = 1\), and read off the other.</li>
+    <li><b>Check</b> by computing \(Av\) and confirming it equals \(\lambda v\).</li>
+  </ol>
+
+  <h3>Worked example 1</h3>
+  <p>\(A = \begin{pmatrix} 3 & 1 \\ 1 & 3 \end{pmatrix}\), eigenvalues 4 and 2 (Lesson 1.26).</p>
+  <p><b>For λ = 4:</b></p>
+  <ol class="steps">
+    <li>\(A - 4I = \begin{pmatrix} 3 - 4 & 1 \\ 1 & 3 - 4 \end{pmatrix} = \begin{pmatrix} -1 & 1 \\ 1 & -1 \end{pmatrix}\).</li>
+    <li>Equations: \(-v_1 + v_2 = 0\) and \(v_1 - v_2 = 0\).</li>
+    <li>The second is the first multiplied by −1. Same information.</li>
+    <li>From the first: \(v_2 = v_1\).</li>
+    <li>Choose \(v_1 = 1\). Then \(v_2 = 1\). Eigenvector (1, 1).</li>
+    <li>Check: \(A\,(1, 1) = (4, 4) = 4\,(1, 1)\).</li>
+  </ol>
+  <p><b>For λ = 2:</b></p>
+  <ol class="steps">
+    <li>\(A - 2I = \begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix}\).</li>
+    <li>Equations: \(v_1 + v_2 = 0\), twice.</li>
+    <li>So \(v_2 = -v_1\).</li>
+    <li>Choose \(v_1 = 1\). Then \(v_2 = -1\). Eigenvector (1, −1).</li>
+    <li>Check: \(A\,(1, -1) = (3 - 1,\ 1 - 3) = (2, -2) = 2\,(1, -1)\).</li>
+  </ol>
+
+  <h3>Worked example 2, from the start</h3>
+  <p>\(A = \begin{pmatrix} 4 & 1 \\ 2 & 3 \end{pmatrix}\). Lesson 1.26 gave eigenvalues 2 and 5.</p>
+  <p><b>For λ = 5:</b> \(A - 5I = \begin{pmatrix} -1 & 1 \\ 2 & -2 \end{pmatrix}\). Equations: \(-v_1 + v_2 = 0\) and \(2v_1 - 2v_2 = 0\) (the second is −2 times the first). So \(v_2 = v_1\): eigenvector (1, 1). Check: \(A\,(1, 1) = (5, 5) = 5\,(1, 1)\).</p>
+  <p><b>For λ = 2:</b> \(A - 2I = \begin{pmatrix} 2 & 1 \\ 2 & 1 \end{pmatrix}\). Equation: \(2v_1 + v_2 = 0\), so \(v_2 = -2v_1\). With \(v_1 = 1\): eigenvector (1, −2). Check: \(A\,(1, -2) = (4 - 2,\ 2 - 6) = (2, -4) = 2\,(1, -2)\).</p>
+
+  <h3>Which vector on the line should I report?</h3>
+  <p>Any non-zero one. (1, −2), (2, −4) and (−0.5, 1) are the same eigen-direction. Two common conventions:</p>
+  <ul>
+    <li><b>Small whole numbers,</b> for hand work.</li>
+    <li><b>Unit length</b> (Lesson 1.3), which software uses. For (1, 1): length \(\sqrt2\), so the unit eigenvector is \((0.707, 0.707)\). NumPy may also return the opposite sign, \((-0.707, -0.707)\). It is the same direction.</li>
+  </ul>
+  <p>Together, an eigenvalue and its eigenvector are called an <b>eigenpair</b>.</p>
+
+  <h3>Practice on paper</h3>
+  <p>Eigenvalues were found in Lesson 1.26. Find an eigenvector for each, and check it. Use Lab 1.26 to compare.</p>
+  <ol class="ex">
+    <li>\(\begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}\), eigenvalues 3 and 1.</li>
+    <li>\(\begin{pmatrix} 5 & -2 \\ 4 & -1 \end{pmatrix}\), eigenvalues 1 and 3.</li>
+    <li>\(\begin{pmatrix} 1 & 2 \\ 2 & 1 \end{pmatrix}\), eigenvalues 3 and −1.</li>
+    <li>\(\begin{pmatrix} 2 & 0 \\ 0 & 5 \end{pmatrix}\), eigenvalues 2 and 5.</li>
+    <li>\(\begin{pmatrix} 2 & 1 \\ 0 & 2 \end{pmatrix}\), repeated eigenvalue 2. How many eigen-directions are there?</li>
+    <li>From scratch: find both eigenvalues and both eigenvectors of \(\begin{pmatrix} 6 & -1 \\ 2 & 3 \end{pmatrix}\).</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. λ = 3: \(A - 3I = \begin{pmatrix} -1 & 1 \\ 1 & -1 \end{pmatrix}\), so \(v_2 = v_1\): (1, 1). Check: \(A\,(1, 1) = (3, 3)\). λ = 1: \(A - I = \begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix}\), so \(v_2 = -v_1\): (1, −1). Check: \(A\,(1, -1) = (1, -1)\).</p>
+    <p>2. λ = 1: \(A - I = \begin{pmatrix} 4 & -2 \\ 4 & -2 \end{pmatrix}\), so \(4v_1 - 2v_2 = 0\), \(v_2 = 2v_1\): (1, 2). Check: \(A\,(1, 2) = (5 - 4,\ 4 - 2) = (1, 2)\). λ = 3: \(A - 3I = \begin{pmatrix} 2 & -2 \\ 4 & -4 \end{pmatrix}\), so \(v_2 = v_1\): (1, 1). Check: \(A\,(1, 1) = (3, 3)\).</p>
+    <p>3. λ = 3: \(A - 3I = \begin{pmatrix} -2 & 2 \\ 2 & -2 \end{pmatrix}\), so \(v_2 = v_1\): (1, 1). Check: \((3, 3)\). λ = −1: \(A + I = \begin{pmatrix} 2 & 2 \\ 2 & 2 \end{pmatrix}\), so \(v_2 = -v_1\): (1, −1). Check: \(A\,(1, -1) = (1 - 2,\ 2 - 1) = (-1, 1) = -1 \times (1, -1)\). Note that subtracting −1 means adding 1.</p>
+    <p>4. λ = 2: \(A - 2I = \begin{pmatrix} 0 & 0 \\ 0 & 3 \end{pmatrix}\), so \(3v_2 = 0\), \(v_2 = 0\), and \(v_1\) is free: (1, 0). λ = 5: \(A - 5I = \begin{pmatrix} -3 & 0 \\ 0 & 0 \end{pmatrix}\), so \(v_1 = 0\): (0, 1). The axes, as expected for a diagonal matrix.</p>
+    <p>5. \(A - 2I = \begin{pmatrix} 0 & 1 \\ 0 & 0 \end{pmatrix}\). The only equation is \(v_2 = 0\), so the eigenvectors are the multiples of (1, 0). Only one eigen-direction. This matrix is a shear with a scale; Lesson 1.28 returns to it.</p>
+    <p>6. Trace 9, determinant \(18 + 2 = 20\). \(\lambda^2 - 9\lambda + 20 = (\lambda - 4)(\lambda - 5)\): eigenvalues 4 and 5. λ = 4: \(A - 4I = \begin{pmatrix} 2 & -1 \\ 2 & -1 \end{pmatrix}\), so \(v_2 = 2v_1\): (1, 2). Check: \(A\,(1, 2) = (6 - 2,\ 2 + 6) = (4, 8) = 4\,(1, 2)\). λ = 5: \(A - 5I = \begin{pmatrix} 1 & -1 \\ 2 & -2 \end{pmatrix}\), so \(v_2 = v_1\): (1, 1). Check: \(A\,(1, 1) = (5, 5)\).</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+A = np.array([[4, 1], [2, 3]])
+vals, vecs = np.linalg.eig(A)
+print(vals)            # [5. 2.]
+print(vecs)            # each COLUMN is a unit eigenvector, in the same order as vals
+
+for lam, v in zip(vals, vecs.T):
+    print(lam, v, A @ v, lam * v)     # A @ v equals lam * v
+
+print(vecs[:, 1] / vecs[0, 1])        # rescale the second one so its first entry is 1: [ 1. -2.]</code></pre>
+
+  <div class="quiz" data-answer="c">
+    <p class="q">While finding an eigenvector you get the equations \(2v_1 - v_2 = 0\) and \(4v_1 - 2v_2 = 0\). Which vector is an eigenvector?</p>
+    <div class="opts">
+      <button data-o="a">(2, 1)</button>
+      <button data-o="b">(1, −2)</button>
+      <button data-o="c">(1, 2)</button>
+    </div>
+    <p class="fb" data-ok="Right. Both equations say v₂ = 2v₁, so with v₁ = 1 we get (1, 2)." data-no="Not this one. Both equations say v₂ = 2v₁. Choose v₁ = 1 to get v₂ = 2, the vector (1, 2). Test your choice: 2·1 − 2 = 0."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l7" id="done-l7">Mark lesson 1.27 done</label>
+</section>
+
+<!-- ================= 1.28 ================= -->
+<section class="lesson" id="l8">
+  <div class="eyebrow">Lesson 1.28 <span class="new">New</span></div>
+  <h2>What can happen</h2>
+  <p class="win">Goal: predict from the kind of matrix how many eigen-directions to expect, and know the special case that matters most for data.</p>
+  <p class="why">Not every matrix has two tidy eigenvectors. Knowing the possibilities stops you being surprised by a calculation, and it explains why data science leans so heavily on one kind of matrix, the symmetric kind, where everything works out.</p>
+
+  <h3>The four cases for a 2 × 2 matrix</h3>
+  <p>Everything depends on the quantity under the square root in the quadratic formula of Lesson 1.26: \(\text{trace}^2 - 4\det\).</p>
+  <div class="tablewrap"><table>
+    <tr><th>Case</th><th>Example</th><th>Eigenvalues</th><th>Eigen-directions</th></tr>
+    <tr><td>Two different real eigenvalues<br>(\(\text{trace}^2 - 4\det \gt 0\))</td><td>\(\begin{pmatrix} 4 & 1 \\ 2 & 3 \end{pmatrix}\)</td><td>2 and 5</td><td>two, on different lines; together they form a basis</td></tr>
+    <tr><td>Repeated eigenvalue, every direction</td><td>\(\begin{pmatrix} 2 & 0 \\ 0 & 2 \end{pmatrix}\)</td><td>2, twice</td><td>every non-zero vector (the matrix scales everything equally)</td></tr>
+    <tr><td>Repeated eigenvalue, one direction</td><td>\(\begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix}\) (shear)</td><td>1, twice</td><td>only one line; not enough for a basis</td></tr>
+    <tr><td>No real eigenvalues<br>(\(\text{trace}^2 - 4\det \lt 0\))</td><td>\(\begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}\) (rotation)</td><td>none that are real</td><td>none; every vector is turned</td></tr>
+  </table></div>
+  <p>Each row is a matrix in Lab 1.25. Go back and look at the shear and the rotation with the eigen-directions switched on.</p>
+  <p><b>About the last row.</b> The equation \(\lambda^2 + 1 = 0\) does have solutions among the <i>complex numbers</i>, an extension of the real numbers that you do not need for this course. When you see NumPy print eigenvalues such as <code>0.+1.j</code>, it means the matrix involves a rotation and has no real eigen-direction there.</p>
+
+  <h3>Reading matrices from the gallery</h3>
+  <ul>
+    <li><b>Diagonal matrix.</b> Eigenvalues are the diagonal entries; eigenvectors are the axes. (Lesson 1.27, problem 4.)</li>
+    <li><b>Triangular matrix.</b> Eigenvalues are still the diagonal entries (Lesson 1.26, problem 5), though the eigenvectors are no longer the axes.</li>
+    <li><b>Flatten onto a line</b> (a projection). Vectors already on the line are unchanged: \(\lambda = 1\). Vectors perpendicular to it are squashed to zero: \(\lambda = 0\).</li>
+    <li><b>Reflection.</b> Vectors along the mirror line are unchanged: \(\lambda = 1\). Vectors perpendicular to it are flipped: \(\lambda = -1\).</li>
+  </ul>
+
+  <h3>The case that matters most: symmetric matrices</h3>
+  <p>A matrix is symmetric when it equals its transpose (Lesson 1.14). For a 2 × 2 matrix that means the two off-diagonal entries are equal: \(\begin{pmatrix} a & b \\ b & d \end{pmatrix}\). Symmetric matrices have two guarantees.</p>
+  <ol class="steps">
+    <li><b>The eigenvalues are always real.</b> Check the quantity under the root: \(\text{trace}^2 - 4\det = (a + d)^2 - 4(ad - b^2)\). Expand: \(a^2 + 2ad + d^2 - 4ad + 4b^2 = a^2 - 2ad + d^2 + 4b^2 = (a - d)^2 + 4b^2\). A square plus a square is never negative, so the square root always exists.</li>
+    <li><b>Eigenvectors for different eigenvalues are perpendicular.</b> Check with the examples you have done: \(\begin{pmatrix} 3 & 1 \\ 1 & 3 \end{pmatrix}\) has eigenvectors (1, 1) and (1, −1), and \((1, 1) \cdot (1, -1) = 1 - 1 = 0\). \(\begin{pmatrix} 1 & 2 \\ 2 & 1 \end{pmatrix}\) has the same pair.</li>
+  </ol>
+  <p>Compare with a matrix that is not symmetric: \(\begin{pmatrix} 4 & 1 \\ 2 & 3 \end{pmatrix}\) has eigenvectors (1, 1) and (1, −2), and \((1, 1) \cdot (1, -2) = 1 - 2 = -1\). Not perpendicular.</p>
+  <p><b>Why this matters for data.</b> The matrices at the centre of statistics and machine learning are symmetric: \(X^{\mathsf T}X\) from Lesson 1.14, and the covariance matrix you will meet in Part D. They have real eigenvalues and admit an orthonormal eigenvector basis, which gives a set of perpendicular unit axes for the data. That is what PCA uses. Part D proves the second guarantee and builds on it.</p>
+
+  <h3>Bigger matrices</h3>
+  <p>An n × n matrix has a characteristic equation of degree n, so it has at most n eigenvalues. For n = 3 the equation is a cubic; beyond that nobody solves it by hand. Software finds eigenvalues by a different, iterative method. Everything about what eigenvalues and eigenvectors <i>mean</i> carries over unchanged, including: the sum of the eigenvalues is the trace, and the product is the determinant.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Without solving, decide the case for \(\begin{pmatrix} 1 & 3 \\ 1 & 1 \end{pmatrix}\) by computing \(\text{trace}^2 - 4\det\).</li>
+    <li>Same for \(\begin{pmatrix} 1 & -2 \\ 2 & 1 \end{pmatrix}\).</li>
+    <li>The matrix \(\begin{pmatrix} 0.5 & 0.5 \\ 0.5 & 0.5 \end{pmatrix}\) flattens the plane onto the diagonal line through (1, 1). Predict its eigenvalues and eigenvectors, then verify with trace and determinant.</li>
+    <li>\(\begin{pmatrix} 2 & 2 \\ 2 & 5 \end{pmatrix}\) is symmetric. Find its eigenvalues and eigenvectors, and confirm the eigenvectors are perpendicular.</li>
+    <li>A 3 × 3 matrix has eigenvalues 2, 3 and 5. What are its trace and determinant?</li>
+    <li>A covariance matrix is always symmetric. What does that guarantee about its eigenvectors?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. Trace 2, determinant \(1 - 3 = -2\). \(4 - 4 \times (-2) = 12 \gt 0\): two different real eigenvalues.</p>
+    <p>2. Trace 2, determinant \(1 + 4 = 5\). \(4 - 20 = -16 \lt 0\): no real eigenvalues. (This matrix rotates and scales.)</p>
+    <p>3. Along the line, vectors are unchanged: \(\lambda = 1\) with eigenvector (1, 1). Perpendicular to it, vectors are squashed to zero: \(\lambda = 0\) with eigenvector (1, −1). Verify: trace \(= 1 = 1 + 0\); determinant \(= 0.25 - 0.25 = 0 = 1 \times 0\). And \(A\,(1, 1) = (1, 1)\), \(A\,(1, -1) = (0, 0)\).</p>
+    <p>4. Trace 7, determinant \(10 - 4 = 6\). \(\lambda^2 - 7\lambda + 6 = (\lambda - 1)(\lambda - 6)\): eigenvalues 1 and 6. λ = 6: \(A - 6I = \begin{pmatrix} -4 & 2 \\ 2 & -1 \end{pmatrix}\), so \(v_2 = 2v_1\): (1, 2). λ = 1: \(A - I = \begin{pmatrix} 1 & 2 \\ 2 & 4 \end{pmatrix}\), so \(v_1 = -2v_2\): (−2, 1). Dot product: \(1 \times (-2) + 2 \times 1 = 0\). Perpendicular.</p>
+    <p>5. Trace \(= 2 + 3 + 5 = 10\). Determinant \(= 2 \times 3 \times 5 = 30\).</p>
+    <p>6. They are real, and eigenvectors belonging to different eigenvalues are perpendicular to each other, so they can serve as a set of perpendicular axes.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+print(np.linalg.eig(np.array([[1, 1], [0, 1]])))    # shear: eigenvalue 1 twice, one direction
+print(np.linalg.eigvals(np.array([[0, -1], [1, 0]])))  # rotation: [0.+1.j 0.-1.j]  complex
+
+S = np.array([[2, 2], [2, 5]])
+vals, vecs = np.linalg.eigh(S)        # eigh is the routine for symmetric matrices
+print(vals)                           # [1. 6.]  always real, sorted smallest first
+print(np.round(vecs.T @ vecs, 10))    # identity: the eigenvectors are perpendicular unit vectors</code></pre>
+
+  <div class="quiz" data-answer="a">
+    <p class="q">Which of these matrices is guaranteed to have perpendicular eigenvectors?</p>
+    <div class="opts">
+      <button data-o="a">One that is equal to its transpose</button>
+      <button data-o="b">One with zeros below the diagonal</button>
+      <button data-o="c">One whose determinant equals one</button>
+    </div>
+    <p class="fb" data-ok="Right. Equal to its transpose means symmetric, and symmetric matrices have real eigenvalues and perpendicular eigenvectors." data-no="Not this one. The guarantee belongs to symmetric matrices, the ones equal to their own transpose."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l8" id="done-l8">Mark lesson 1.28 done</label>
+</section>
+
+<!-- ================= 1.29 ================= -->
+<section class="lesson" id="l9">
+  <div class="eyebrow">Lesson 1.29 <span class="new">New</span></div>
+  <h2>Why eigenvectors matter</h2>
+  <p class="win">Goal: use eigenvectors to predict what happens when a matrix is applied again and again, and name three places this appears in data science.</p>
+  <p class="why">Many processes apply the same rule repeatedly: customers switching brands each month, a web surfer clicking links, a weight being updated at each step of gradient descent. Applying a matrix a hundred times by hand is hopeless. In the eigenvector basis it is one line of arithmetic.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.29 · the dots are x₀, Ax₀, A²x₀, … ; the green dashed lines are the eigen-directions</div>
+    <canvas id="c129" aria-label="Repeated application of a matrix to a starting vector"></canvas>
+    <div class="controls">
+      <label for="s129">matrix <select id="s129"></select></label>
+      <label for="k129">number of steps <input type="range" id="k129" min="0" max="25" step="1" value="12"><output id="k129o"></output></label>
+    </div>
+    <div class="readout" id="r129"></div>
+    <ul class="try">
+      <li>With the first matrix, drag the start point anywhere. Onto which line do the dots always settle? What is that line's eigenvalue?</li>
+      <li>Put the start exactly on an eigen-direction. What path do the dots follow?</li>
+      <li>Switch to "Growing" and "Shrinking". Which eigen-direction wins in the long run, the one with the larger or the smaller eigenvalue?</li>
+      <li>Try "Spiral". Why is there no line to settle on?</li>
+    </ul>
+  </div>
+
+  <h3>The key fact: powers are easy on an eigenvector</h3>
+  <p>Suppose \(Av = \lambda v\). Apply A again:</p>
+  <ol class="steps">
+    <li>\(A^2 v\) means \(A(Av)\).</li>
+    <li>Replace \(Av\) by \(\lambda v\): \(A(\lambda v)\).</li>
+    <li>A number can be pulled out of a linear move (Lesson 1.11): \(\lambda\,(Av)\).</li>
+    <li>Replace \(Av\) by \(\lambda v\) again: \(\lambda \cdot \lambda v = \lambda^2 v\).</li>
+  </ol>
+  <p>Repeating the argument: $$A^k v = \lambda^k v$$ Applying the matrix k times to an eigenvector just multiplies it by the eigenvalue k times. No matrix arithmetic is needed.</p>
+
+  <h3>The method for any starting vector</h3>
+  <ol class="steps">
+    <li><b>Find the eigenpairs</b> \((\lambda_1, v_1)\) and \((\lambda_2, v_2)\).</li>
+    <li><b>Write the starting vector in the eigenvector basis:</b> find \(c_1, c_2\) with \(x_0 = c_1 v_1 + c_2 v_2\). This is Lesson 1.23.</li>
+    <li><b>Apply \(A^k\) to each piece separately</b> (the move is linear, so pieces can be handled one at a time): $$A^k x_0 = c_1 \lambda_1^k\, v_1 + c_2 \lambda_2^k\, v_2$$</li>
+  </ol>
+
+  <h3>Worked example: brand switching</h3>
+  <p>Two brands share 300 customers. Each month, brand 1 keeps 90% of its customers and loses 10% to brand 2. Brand 2 keeps 80% and loses 20% to brand 1. If \(x = (\text{brand 1 customers},\ \text{brand 2 customers})\), next month's numbers are \(Ax\) with $$A = \begin{pmatrix} 0.9 & 0.2 \\ 0.1 & 0.8 \end{pmatrix}$$ Row 1 says: new brand 1 = 90% of old brand 1 + 20% of old brand 2. Start with \(x_0 = (100, 200)\). Where does this end up?</p>
+  <ol class="steps">
+    <li><b>Eigenvalues.</b> Trace \(= 1.7\). Determinant \(= 0.72 - 0.02 = 0.7\). Equation \(\lambda^2 - 1.7\lambda + 0.7 = 0\), which factors as \((\lambda - 1)(\lambda - 0.7) = 0\). Eigenvalues 1 and 0.7. (Check: \(1 + 0.7 = 1.7\), \(1 \times 0.7 = 0.7\).)</li>
+    <li><b>Eigenvector for λ = 1.</b> \(A - I = \begin{pmatrix} -0.1 & 0.2 \\ 0.1 & -0.2 \end{pmatrix}\). Equation \(-0.1v_1 + 0.2v_2 = 0\), so \(v_1 = 2v_2\): take \(v_1 = (2, 1)\).</li>
+    <li><b>Eigenvector for λ = 0.7.</b> \(A - 0.7I = \begin{pmatrix} 0.2 & 0.2 \\ 0.1 & 0.1 \end{pmatrix}\). Equation \(v_1 + v_2 = 0\): take \(v_2 = (1, -1)\).</li>
+    <li><b>Write the start in this basis.</b> \(c_1 (2, 1) + c_2 (1, -1) = (100, 200)\) gives \(2c_1 + c_2 = 100\) and \(c_1 - c_2 = 200\). Adding: \(3c_1 = 300\), so \(c_1 = 100\) and \(c_2 = -100\). Check: \(100\,(2, 1) - 100\,(1, -1) = (200 - 100,\ 100 + 100) = (100, 200)\).</li>
+    <li><b>After k months:</b> \(x_k = 100 \times 1^k\,(2, 1) - 100 \times 0.7^k\,(1, -1)\).</li>
+  </ol>
+  <p>Since \(1^k = 1\) always, the first piece never changes. Since \(0.7^k\) shrinks toward 0, the second piece dies away.</p>
+  <div class="tablewrap"><table>
+    <tr><th>Month k</th><th>\(0.7^k\)</th><th>\(x_k\)</th></tr>
+    <tr><td>0</td><td>1</td><td>(200 − 100, 100 + 100) = (100, 200)</td></tr>
+    <tr><td>1</td><td>0.7</td><td>(200 − 70, 100 + 70) = (130, 170)</td></tr>
+    <tr><td>2</td><td>0.49</td><td>(200 − 49, 100 + 49) = (151, 149)</td></tr>
+    <tr><td>10</td><td>0.028</td><td>about (197.2, 102.8)</td></tr>
+    <tr><td>long run</td><td>→ 0</td><td>(200, 100)</td></tr>
+  </table></div>
+  <p>Check month 1 directly: \(A\,(100, 200) = (90 + 40,\ 10 + 160) = (130, 170)\). The market settles at 200 and 100 customers whatever the starting split, because every start has some amount of the \(\lambda = 1\) eigenvector and a part that fades. The settled state is the eigenvector with eigenvalue 1, scaled to the total of 300. It is called the <b>steady state</b>.</p>
+
+  <h3>The general lesson: the largest eigenvalue wins</h3>
+  <p>In \(c_1 \lambda_1^k v_1 + c_2 \lambda_2^k v_2\), the term with the eigenvalue of larger size grows faster (or shrinks slower) and eventually dominates. So repeated application pulls almost every starting vector toward the direction of the eigenvector with the largest eigenvalue, called the <b>dominant</b> eigenvector. If every eigenvalue has size below 1, everything shrinks to zero. If one has size above 1, things grow without limit.</p>
+
+  <h3>Where this appears</h3>
+  <ul>
+    <li><b>PCA (Part D).</b> The eigenvectors of a dataset's covariance matrix are the directions along which the data varies; the eigenvalues say how much variance lies along each. Keeping the eigenvectors with the largest eigenvalues keeps most of the information in fewer dimensions.</li>
+    <li><b>PageRank.</b> A web surfer clicking links at random is the brand-switching example with billions of pages. The long-run share of time on each page is the steady-state eigenvector, with eigenvalue 1. That vector is the ranking.</li>
+    <li><b>Gradient descent.</b> In Module 0, Lesson 0.9, each step on \((w - 2)^2 + 1\) multiplied the distance to the minimum by \((1 - 2\eta)\), and it converged only when that factor had size below 1. With many weights, the same thing happens along each eigenvector of a matrix describing the curvature of the loss, and the eigenvalues decide which learning rates work. Module 3 covers this.</li>
+  </ul>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>\(Av = 3v\). What is \(A^3 v\)?</li>
+    <li>In the brand example, compute \(x_3\) from the formula. Then compute it directly as \(A\,x_2\) to check.</li>
+    <li>In the brand example, start from \(x_0 = (300, 0)\) instead. Find \(c_1, c_2\) and the long-run state.</li>
+    <li>A matrix has eigenvalues 1.4 and 1.0. After 10 applications, by what factor has the part of a vector along the first eigen-direction grown? (\(1.4^{10} \approx 28.9\).) And the part along the second?</li>
+    <li>Every eigenvalue of A has size less than 1. What happens to \(A^k x\) as k grows?</li>
+    <li>A has eigenvalues 2 and 4 with eigenvectors \(v_1\) and \(v_2\). What are the eigenvalues and eigenvectors of \(A^2\)?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(3^3 v = 27v\).</p>
+    <p>2. \(0.7^3 = 0.343\). \(x_3 = 100\,(2, 1) - 34.3\,(1, -1) = (165.7,\ 134.3)\). Directly: \(A\,(151, 149) = (0.9 \times 151 + 0.2 \times 149,\ 0.1 \times 151 + 0.8 \times 149) = (135.9 + 29.8,\ 15.1 + 119.2) = (165.7,\ 134.3)\).</p>
+    <p>3. \(2c_1 + c_2 = 300\) and \(c_1 - c_2 = 0\). So \(c_1 = c_2 = 100\). Long run: \(100\,(2, 1) = (200, 100)\), the same steady state.</p>
+    <p>4. By about 28.9. The second part is multiplied by \(1.0^{10} = 1\): unchanged. So the vector ends up pointing almost entirely along the first eigen-direction.</p>
+    <p>5. Each piece is multiplied by \(\lambda^k\), which goes to 0. So \(A^k x\) shrinks to the zero vector.</p>
+    <p>6. \(A^2 v_1 = 2^2 v_1 = 4v_1\) and \(A^2 v_2 = 16v_2\). Same eigenvectors, eigenvalues squared: 4 and 16.</p>
+  </div></details>
+
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+A = np.array([[0.9, 0.2], [0.1, 0.8]])
+x = np.array([100., 200.])
+for month in range(1, 4):
+    x = A @ x
+    print(month, x)                       # [130. 170.] [151. 149.] [165.7 134.3]
+
+print(np.linalg.matrix_power(A, 50) @ np.array([100., 200.]))   # about [200. 100.]
+
+vals, vecs = np.linalg.eig(A)
+steady = vecs[:, np.argmax(vals)]         # eigenvector for the largest eigenvalue (1)
+print(steady / steady.sum() * 300)        # [200. 100.]  scaled to 300 customers</code></pre>
+
+  <p class="watch">Watch for the picture: 3Blue1Brown, <a href="https://www.3blue1brown.com/topics/linear-algebra">Essence of Linear Algebra</a>, the chapters on the determinant, change of basis, and eigenvectors and eigenvalues. Read for a second explanation with interactive figures: <a href="https://textbooks.math.gatech.edu/ila/">Interactive Linear Algebra</a>, the chapters on determinants and on eigenvalues and eigenvectors. For a rigorous, proof-based treatment later on: Axler, <a href="https://linear.axler.net/">Linear Algebra Done Right</a>, chapter 5.</p>
+
+  <div class="quiz" data-answer="b">
+    <p class="q">A matrix has eigenvalues 0.5 and 1.2. You apply it many times to a typical vector. What happens?</p>
+    <div class="opts">
+      <button data-o="a">It shrinks down to the zero vector</button>
+      <button data-o="b">It grows along the 1.2 eigen-direction</button>
+      <button data-o="c">It settles at a fixed non-zero point</button>
+    </div>
+    <p class="fb" data-ok="Right. The 0.5 part fades away, and the 1.2 part keeps growing and takes over." data-no="Not this one. The part along the 0.5 direction fades, but the part along the 1.2 direction is multiplied by 1.2 each time and keeps growing."></p>
+  </div>
+  <label class="donebox"><input type="checkbox" data-done="l9" id="done-l9">Mark lesson 1.29 done</label>
+</section>
+
+<!-- ================= 1.30 ================= -->
+<section class="lesson" id="l10">
+  <div class="eyebrow">Lesson 1.30</div>
+  <h2>Checkpoint and cheat sheet</h2>
+  <p class="win">Goal: confirm Part C holds without help, or find the one lesson to revisit.</p>
+  <p>Twelve mixed problems. Do them on paper without looking back. Each solution names the lesson to revisit.</p>
+
+  <ol class="ex">
+    <li>\(\det \begin{pmatrix} 5 & 2 \\ 3 & 4 \end{pmatrix}\). What happens to a shape of area 2?</li>
+    <li>\(\det \begin{pmatrix} 1 & 2 & 0 \\ 0 & 1 & 3 \\ 2 & 0 & 1 \end{pmatrix}\)</li>
+    <li>\(\det A = 4\) and \(\det B = 0.5\). Find \(\det(AB)\) and \(\det(A^{-1})\).</li>
+    <li>Find the coordinates of (5, 1) in the basis \(b_1 = (2, 1)\), \(b_2 = (1, -1)\).</li>
+    <li>Is (2, 1) an eigenvector of \(\begin{pmatrix} 1 & 2 \\ 2 & -2 \end{pmatrix}\)? If so, with which eigenvalue?</li>
+    <li>Find the eigenvalues of \(\begin{pmatrix} 4 & 2 \\ 1 & 3 \end{pmatrix}\).</li>
+    <li>Find an eigenvector for each eigenvalue in problem 6, and check both.</li>
+    <li>Verify problem 6 with the trace and the determinant.</li>
+    <li>Write down the eigenvalues of \(\begin{pmatrix} 3 & 0 \\ 0 & -1 \end{pmatrix}\) and of \(\begin{pmatrix} 2 & 7 \\ 0 & 6 \end{pmatrix}\) without calculating.</li>
+    <li>A matrix has an eigenvalue equal to 0. Is it invertible? What is its determinant?</li>
+    <li>Does the rotate-90° matrix have real eigenvectors? Explain with a picture, not a calculation.</li>
+    <li>\(Av = 0.5v\). What is \(A^4 v\)? What happens in the long run?</li>
+  </ol>
+  <details><summary>Solutions and where to look</summary><div>
+    <p>1. \(20 - 6 = 14\). The area becomes 28, and orientation is kept. <i>Lesson 1.21</i></p>
+    <p>2. First entry 1: minor \(\begin{pmatrix} 1 & 3 \\ 0 & 1 \end{pmatrix}\), determinant 1, term \(+1\). Second entry 2: minor \(\begin{pmatrix} 0 & 3 \\ 2 & 1 \end{pmatrix}\), determinant \(-6\), term \(-2 \times (-6) = +12\). Third entry 0: term 0. Total 13. <i>1.22</i></p>
+    <p>3. \(\det(AB) = 2\). \(\det(A^{-1}) = 0.25\). <i>1.22</i></p>
+    <p>4. \(2c_1 + c_2 = 5\) and \(c_1 - c_2 = 1\). Adding: \(3c_1 = 6\), so \(c_1 = 2\), \(c_2 = 1\). Check: \((4, 2) + (1, -1) = (5, 1)\). <i>1.23</i></p>
+    <p>5. \(A\,(2, 1) = (2 + 2,\ 4 - 2) = (4, 2) = 2\,(2, 1)\). Yes, \(\lambda = 2\). <i>1.25</i></p>
+    <p>6. Trace 7, determinant \(12 - 2 = 10\). \(\lambda^2 - 7\lambda + 10 = (\lambda - 2)(\lambda - 5)\). Eigenvalues 2 and 5. <i>1.26</i></p>
+    <p>7. λ = 5: \(A - 5I = \begin{pmatrix} -1 & 2 \\ 1 & -2 \end{pmatrix}\), so \(v_1 = 2v_2\): (2, 1). Check: \(A\,(2, 1) = (10, 5)\). λ = 2: \(A - 2I = \begin{pmatrix} 2 & 2 \\ 1 & 1 \end{pmatrix}\), so \(v_2 = -v_1\): (1, −1). Check: \(A\,(1, -1) = (2, -2)\). <i>1.27</i></p>
+    <p>8. \(2 + 5 = 7\), the trace. \(2 \times 5 = 10\), the determinant. <i>1.26</i></p>
+    <p>9. 3 and −1 (diagonal). 2 and 6 (triangular). <i>1.26, 1.28</i></p>
+    <p>10. Not invertible. The determinant is the product of the eigenvalues, so it is 0. <i>1.25, 1.26</i></p>
+    <p>11. No. A quarter turn changes the direction of every non-zero vector, so none stays on its own line. <i>1.28</i></p>
+    <p>12. \(0.5^4 v = 0.0625v\). In the long run it shrinks to the zero vector. <i>1.29</i></p>
+    <p><b>Reading your score.</b> 10 or more: ready for Part D. 7 to 9: redo the practice sets of the lessons you missed. Fewer: work those lessons again with the labs, and ask about the steps that do not follow.</p>
+  </div></details>
+
+  <h3>Cheat sheet</h3>
+  <div class="sheet">
+    <div><h4>Determinant</h4>\(\det \begin{pmatrix} a & b \\ c & d \end{pmatrix} = ad - bc\)<br>\(|\det A|\) = area factor<br>negative: plane flipped<br>zero: singular, space flattened<br>3 × 3: expand along row 1, signs + − +</div>
+    <div><h4>Determinant rules</h4>\(\det(AB) = \det A \det B\)<br>\(\det(A^{-1}) = 1/\det A\)<br>\(\det(A^{\mathsf T}) = \det A\)<br>triangular: product of the diagonal</div>
+    <div><h4>Basis and coordinates</h4>basis of \(\mathbb{R}^n\): n independent vectors<br>\(v = B\,[v]_B\)<br>\([v]_B = B^{-1}v\)<br>same move in basis B: \(B^{-1}AB\)</div>
+    <div><h4>Eigen definition</h4>\(Av = \lambda v\), with \(v \ne 0\)<br>v: direction that is not turned<br>λ: the stretch factor along it<br>any multiple of v also works</div>
+    <div><h4>Finding them (2 × 2)</h4>\(\det(A - \lambda I) = 0\)<br>\(\lambda^2 - (\text{trace})\lambda + \det = 0\)<br>then solve \((A - \lambda I)v = 0\)<br>check: \(\lambda_1 + \lambda_2 = \text{trace}\), \(\lambda_1\lambda_2 = \det\)</div>
+    <div><h4>Cases</h4>diagonal or triangular: λ on the diagonal<br>shear: one direction only<br>rotation: no real eigenvectors<br>real symmetric: real λ, orthonormal eigenvector basis</div>
+    <div><h4>Powers</h4>\(A^k v = \lambda^k v\)<br>\(x_0 = c_1v_1 + c_2v_2\)<br>\(A^k x_0 = c_1\lambda_1^k v_1 + c_2\lambda_2^k v_2\)<br>largest \(|\lambda|\) dominates<br>λ = 1: steady state</div>
+  </div>
+
+  <h3>What comes next</h3>
+  <p><a href="01d-diagonalization-svd-and-pca.html">Part D</a>, the last part of Linear Algebra. Diagonalization: writing \(A = PDP^{-1}\), which is Lesson 1.24 run with the eigenvector basis. Symmetric matrices and their perpendicular eigenvectors. The singular value decomposition, which extends these ideas to matrices of any shape. And PCA, where all of Module 1 is used at once on a small dataset.</p>
+  <p class="watch">All terms from this part are in the <a href="../reference/glossary.html">glossary</a> in your course folder.</p>
+  <label class="donebox"><input type="checkbox" data-done="l10" id="done-l10">Mark lesson 1.30 done</label>
+</section>
+</main>
+</div>
+
+<script src="../assets/course.js"></script>
+<script>
+(function(){
+"use strict";
+var M=window.MDS,Plot=M.Plot,css=M.css,$=M.$,num=M.num,vec=M.vec,fmt=M.fmt;
+function sq(id,r){var p=new Plot(id,-r,r,0,0,1);p.sq=true;p.yc=0;return p;}
+function ap(A,v){return {x:A.a*v.x+A.b*v.y,y:A.c*v.x+A.d*v.y};}
+function det(A){return A.a*A.d-A.b*A.c;}
+function n3(v){var r=Math.round(v*1000)/1000;return String(r===0?0:r).replace("-","−");}
+function mstr(name,A){var pad="          ".slice(0,name.length+3);return name+" = [ "+n3(A.a)+"  "+n3(A.b)+" ]\n"+pad+"[ "+n3(A.c)+"  "+n3(A.d)+" ]";}
+function grid(p,A,color){
+  var g=p.g,k;g.globalAlpha=0.3;
+  for(k=-14;k<=14;k++){
+    p.seg(k*A.a-14*A.b,k*A.c-14*A.d,k*A.a+14*A.b,k*A.c+14*A.d,color,1);
+    p.seg(k*A.b-14*A.a,k*A.d-14*A.c,k*A.b+14*A.a,k*A.d+14*A.c,color,1);
+  }
+  g.globalAlpha=1;
+}
+function line(p,v,color){var L=Math.hypot(v.x,v.y);if(L<1e-9)return;var k=30/L;p.seg(-k*v.x,-k*v.y,k*v.x,k*v.y,color,1.6,[6,5]);}
+/* real eigen-analysis of a 2x2 matrix */
+function eig(A){
+  var tr=A.a+A.d,D=det(A),disc=tr*tr-4*D,out={tr:tr,det:D,disc:disc,vals:[],vecs:[]};
+  if(disc<-1e-12)return out;
+  var s=Math.sqrt(Math.max(0,disc)),ls=disc<1e-12?[tr/2]:[(tr+s)/2,(tr-s)/2];
+  ls.forEach(function(l){
+    var v;
+    if(Math.abs(A.b)>1e-9||Math.abs(A.a-l)>1e-9)v={x:A.b,y:l-A.a};
+    else if(Math.abs(A.c)>1e-9||Math.abs(A.d-l)>1e-9)v={x:l-A.d,y:A.c};
+    else v=null;
+    if(v&&Math.hypot(v.x,v.y)<1e-9)v={x:l-A.d,y:A.c};
+    if(v){var m=Math.abs(v.x)>1e-9?v.x:v.y;v={x:v.x/m,y:v.y/m};
+      [2,3,4,5].some(function(q){var x=v.x*q,y=v.y*q;if(Math.abs(x-Math.round(x))<1e-9&&Math.abs(y-Math.round(y))<1e-9&&(Math.abs(v.x-Math.round(v.x))>1e-9||Math.abs(v.y-Math.round(v.y))>1e-9)){v={x:x,y:y};return true;}return false;});}
+    out.vals.push(l);out.vecs.push(v);
+  });
+  return out;
+}
+var PRE={
+  sym:["Symmetric: [3 1; 1 3]",{a:3,b:1,c:1,d:3}],
+  diag:["Diagonal: [2 0; 0 0.5]",{a:2,b:0,c:0,d:0.5}],
+  gen:["General: [4 1; 2 3]",{a:4,b:1,c:2,d:3}],
+  neg:["One negative eigenvalue: [1 2; 2 1]",{a:1,b:2,c:2,d:1}],
+  shear:["Shear: [1 1; 0 1]",{a:1,b:1,c:0,d:1}],
+  flat:["Flatten onto the diagonal: [0.5 0.5; 0.5 0.5]",{a:0.5,b:0.5,c:0.5,d:0.5}],
+  rot:["Rotate 90°: [0 −1; 1 0]",{a:0,b:-1,c:1,d:0}]
+};
+var POW={
+  market:["Brand switching: [0.9 0.2; 0.1 0.8]",{a:0.9,b:0.2,c:0.1,d:0.8}],
+  grow:["Growing: [1.2 0.2; 0.2 1.2]",{a:1.2,b:0.2,c:0.2,d:1.2}],
+  shrink:["Shrinking: [0.5 0.2; 0.2 0.5]",{a:0.5,b:0.2,c:0.2,d:0.5}],
+  flip:["Flipping: [0.2 0.9; 0.9 0.2]",{a:0.2,b:0.9,c:0.9,d:0.2}],
+  spiral:["Spiral, no real eigenvectors: [0.6 −0.6; 0.6 0.6]",{a:0.6,b:-0.6,c:0.6,d:0.6}]
+};
+function fill(sel,T,val){Object.keys(T).forEach(function(k){var o=document.createElement("option");o.value=k;o.textContent=T[k][0];sel.appendChild(o);});sel.value=val;}
+
+/* 1.21 determinant as area */
+(function(){
+  var p=sq("c121",5),e1={x:3,y:1},e2={x:1,y:2};
+  function draw(){
+    var A={a:e1.x,b:e2.x,c:e1.y,d:e2.y},D=det(A);
+    p.clear();grid(p,A,css("--accent"));
+    p.poly([{x:0,y:0},{x:1,y:0},{x:1,y:1},{x:0,y:1}],css("--muted"),0.18);
+    p.poly([{x:0,y:0},e1,{x:e1.x+e2.x,y:e1.y+e2.y},e2],D<0?css("--bad"):css("--good"),0.3);
+    p.arrow(0,0,e1.x,e1.y,css("--accent"),3);p.arrow(0,0,e2.x,e2.y,css("--warm"),3);
+    p.handle(e1,css("--accent"));p.handle(e2,css("--warm"));
+    p.label(e1.x,e1.y,"column 1",css("--accent"),12,14);p.label(e2.x,e2.y,"column 2",css("--warm"),12,-14);
+    var t=mstr("A",A)+"\ndet A = ad − bc = "+num(A.a)+"·"+num(A.d)+" − "+num(A.b)+"·"+num(A.c)+" = "+num(D)+"\n";
+    if(Math.abs(D)<1e-9)t+="area of the image = 0: the square has been squashed flat. A is singular.";
+    else t+="the grey unit square (area 1) becomes a parallelogram of area "+num(Math.abs(D))+"\n"+(D>0?"positive: orientation kept (column 2 is still anticlockwise from column 1)":"negative: the plane has been flipped over, like a page turned (shown in red)");
+    $("r121").textContent=t;
+  }
+  M.drag(p,[e1,e2],draw);M.reg(draw);
+})();
+
+/* 1.23 coordinates in a basis */
+(function(){
+  var p=sq("c123",6),b1={x:2,y:1},b2={x:-1,y:1},v={x:3,y:3};
+  function draw(){
+    var B={a:b1.x,b:b2.x,c:b1.y,d:b2.y},D=det(B);
+    p.clear();
+    if(Math.abs(D)>1e-9){
+      grid(p,B,css("--accent"));
+      var c1=(v.x*b2.y-b2.x*v.y)/D,c2=(b1.x*v.y-v.x*b1.y)/D,m={x:c1*b1.x,y:c1*b1.y};
+      p.arrow(0,0,m.x,m.y,css("--accent"),4);p.arrow(m.x,m.y,v.x,v.y,css("--warm"),4);
+      $("r123").textContent="basis:  b₁ = "+vec(b1)+"    b₂ = "+vec(b2)+"\nv = "+vec(v)+" in the usual coordinates\nsolve c₁·b₁ + c₂·b₂ = v:   c₁ = "+n3(c1)+"    c₂ = "+n3(c2)+"\nso in this basis the coordinates of v are ("+n3(c1)+", "+n3(c2)+")\ncheck: "+n3(c1)+"·"+vec(b1)+" + "+n3(c2)+"·"+vec(b2)+" = "+vec({x:c1*b1.x+c2*b2.x,y:c1*b1.y+c2*b2.y});
+    }else $("r123").textContent="b₁ = "+vec(b1)+" and b₂ = "+vec(b2)+" lie on one line.\nThey are not a basis: most vectors cannot be reached, so they have no coordinates.";
+    p.arrow(0,0,b1.x,b1.y,css("--accent"),2);p.arrow(0,0,b2.x,b2.y,css("--warm"),2);
+    p.dot(v.x,v.y,css("--ink"),6);
+    p.handle(b1,css("--accent"));p.handle(b2,css("--warm"));p.handle(v,css("--ink"));
+    p.label(b1.x,b1.y,"b₁",css("--accent"),12,14);p.label(b2.x,b2.y,"b₂",css("--warm"),12,-14);p.label(v.x,v.y,"v",css("--ink"),12,-14);
+  }
+  M.drag(p,[v,b1,b2],draw);M.reg(draw);
+})();
+
+/* 1.25 eigenvector hunt */
+(function(){
+  var p=sq("c125",6),x={x:2,y:0.5},sel=$("s125"),show=$("show125");fill(sel,PRE,"sym");
+  function draw(){
+    var A=PRE[sel.value][1],y=ap(A,x),E=eig(A);
+    p.clear();
+    if(show.checked)E.vecs.forEach(function(v){if(v)line(p,v,css("--good"));});
+    p.arrow(0,0,y.x,y.y,css("--warm"),3.5);p.arrow(0,0,x.x,x.y,css("--accent"),2.5);
+    p.handle(x,css("--accent"));
+    p.label(x.x,x.y,"x",css("--accent"),12,-12);p.label(y.x,y.y,"Ax",css("--warm"),12,12);
+    var t=mstr("A",A)+"\nx = "+vec(x)+"     Ax = "+vec(y)+"\n",lx=Math.hypot(x.x,x.y),ly=Math.hypot(y.x,y.y);
+    if(lx<1e-9)t+="x is the zero vector, which is never counted as an eigenvector.";
+    else{
+      var cr=x.x*y.y-x.y*y.x;
+      if(Math.abs(cr)<1e-9){var lam=Math.abs(x.x)>1e-9?y.x/x.x:y.y/x.y;
+        t+="Ax lies on the same line as x: x is an eigenvector.\nAx = "+n3(lam)+"·x, so the eigenvalue is λ = "+n3(lam)+(lam<0?" (negative: flipped to the opposite side)":(lam===0?" (zero: squashed onto the origin)":""));}
+      else{var th=Math.acos(Math.max(-1,Math.min(1,(x.x*y.x+x.y*y.y)/(lx*ly))))*180/Math.PI;
+        t+=(ly<1e-9?"Ax is the zero vector.":"Ax has been turned "+fmt(th,1)+"° away from x: not an eigenvector.");}
+    }
+    if(show.checked){
+      if(!E.vals.length)t+="\neigen-directions: none (this matrix turns every vector)";
+      else t+="\neigen-directions (green dashed): "+E.vals.map(function(l,i){return "λ = "+n3(l)+(E.vecs[i]?" along "+vec(E.vecs[i]):" in every direction");}).join(";  ");
+    }
+    $("r125").textContent=t;
+  }
+  M.drag(p,[x],draw,0.25);sel.addEventListener("input",draw);show.addEventListener("change",draw);M.reg(draw);
+})();
+
+/* 1.26 / 1.27 eigen calculator */
+(function(){
+  function g(id){var v=parseFloat($(id).value);return isFinite(v)?v:0;}
+  function run(){
+    var A={a:g("ea"),b:g("eb"),c:g("ec"),d:g("ed")},E=eig(A),t=mstr("A",A)+"\n";
+    t+="step 1   trace = a + d = "+n3(A.a)+" + "+n3(A.d)+" = "+n3(E.tr)+"\n";
+    t+="step 2   det = ad − bc = "+n3(A.a*A.d)+" − "+(A.b*A.c<0?"("+n3(A.b*A.c)+")":n3(A.b*A.c))+" = "+n3(E.det)+"\n";
+    t+="step 3   characteristic equation:  λ² − ("+n3(E.tr)+")λ + ("+n3(E.det)+") = 0\n";
+    t+="step 4   discriminant = trace² − 4·det = "+n3(E.tr*E.tr)+" − "+n3(4*E.det)+" = "+n3(E.disc)+"\n";
+    if(!E.vals.length)t+="         negative: no real eigenvalues. This matrix turns every vector.";
+    else{
+      t+="step 5   λ = (trace ± √discriminant) / 2  →  "+E.vals.map(n3).join("  and  ")+(E.vals.length===1?"  (repeated)":"")+"\n";
+      E.vals.forEach(function(l,i){
+        t+="step 6   for λ = "+n3(l)+":  A − λI = [ "+n3(A.a-l)+"  "+n3(A.b)+" ; "+n3(A.c)+"  "+n3(A.d-l)+" ]";
+        if(E.vecs[i]){var v=E.vecs[i],w=ap(A,v);t+="   →  eigenvector "+vec(v)+"\n         check: A·"+vec(v)+" = "+vec(w)+" = "+n3(l)+"·"+vec(v)+"\n";}
+        else t+="   is all zeros → every vector is an eigenvector\n";
+      });
+      t+="check    sum of eigenvalues = "+n3(E.vals.length===1?2*E.vals[0]:E.vals[0]+E.vals[1])+" (trace)     product = "+n3(E.vals.length===1?E.vals[0]*E.vals[0]:E.vals[0]*E.vals[1])+" (det)";
+    }
+    $("reig").textContent=t;
+  }
+  ["ea","eb","ec","ed"].forEach(function(id){$(id).addEventListener("input",run);});run();
+})();
+
+/* 1.29 repeated application */
+(function(){
+  var p=sq("c129",6),x={x:1,y:5},sel=$("s129");fill(sel,POW,"market");
+  function draw(){
+    var A=POW[sel.value][1],E=eig(A),pts=[{x:x.x,y:x.y}],i,q=x,steps=Math.round(M.out("k129",0));
+    for(i=0;i<steps;i++){q=ap(A,q);pts.push(q);}
+    p.clear();
+    E.vecs.forEach(function(v){if(v)line(p,v,css("--good"));});
+    for(i=1;i<pts.length;i++)p.seg(pts[i-1].x,pts[i-1].y,pts[i].x,pts[i].y,css("--warm"),1.4);
+    for(i=1;i<pts.length;i++)p.dot(pts[i].x,pts[i].y,i===pts.length-1?css("--warm"):css("--muted"),i===pts.length-1?6:3.5);
+    p.dot(x.x,x.y,css("--accent"),6);p.handle(x,css("--accent"));p.label(x.x,x.y,"start",css("--accent"),12,-12);
+    var last=pts[pts.length-1],t=mstr("A",A)+"\nstart x₀ = "+vec(x)+"     after "+steps+" steps: ("+n3(last.x)+", "+n3(last.y)+")\n";
+    if(E.vals.length)t+="eigenvalues: "+E.vals.map(function(l,i){return n3(l)+(E.vecs[i]?" along "+vec(E.vecs[i]):"");}).join("   and   ")+"\neach step multiplies the part of x along an eigen-direction by its eigenvalue";
+    else t+="no real eigenvalues: the points turn around the origin on every step";
+    $("r129").textContent=t;
+  }
+  M.drag(p,[x],draw);sel.addEventListener("input",draw);M.bind(["k129"],draw);
+})();
+
+M.initPage("mds-m1c-done");
+})();
+</script>
+</body>
+</html>

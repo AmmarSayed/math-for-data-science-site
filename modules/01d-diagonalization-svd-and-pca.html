@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linear Algebra Part D · Diagonalization, SVD and PCA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/course.css">
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" defer></script>
+</head>
+<body>
+<div class="shell">
+<nav class="rail" aria-label="Lessons">
+  <a class="course" href="../index.html">Math for Data Science</a>
+  <div class="mod">Module 1 · Part D<br>Diagonalization, SVD and PCA</div>
+  <ol id="toc">
+    <li><a href="#l1"><span class="num">1.31</span>Diagonalization</a></li>
+    <li><a href="#l2"><span class="num">1.32</span>Perpendicular eigenvector axes</a></li>
+    <li><a href="#l3"><span class="num">1.33</span>See the SVD</a></li>
+    <li><a href="#l4"><span class="num">1.34</span>Compute a rectangular SVD</a></li>
+    <li><a href="#l5"><span class="num">1.35</span>Keep the largest pieces</a></li>
+    <li><a href="#l6"><span class="num">1.36</span>Center data and measure spread</a></li>
+    <li><a href="#l7"><span class="num">1.37</span>Do PCA by hand</a></li>
+    <li><a href="#l8"><span class="num">1.38</span>Checkpoint and cheat sheet</a></li>
+  </ol>
+  <div class="progress"><span id="ptext">0 of 8 lessons done</span><div class="bar"><i id="pbar"></i></div></div>
+</nav>
+<main>
+<header class="top">
+  <h1>Diagonalization, SVD and PCA</h1>
+  <p>In Part C you found directions that a matrix stretches or flips along their own lines. Here you will use those directions to simplify a matrix, then find directions that capture how a dataset varies.</p>
+  <p>Each lesson starts with one goal. Try the graph or example first, then work through the arithmetic. Use the paper exercises before opening the solutions. If a step feels too fast, bring that exact line to the chat.</p>
+  <p><a href="01c-determinants-and-eigenvectors.html">Part C</a> · <a href="../reference/diagonalization-svd-pca.html">Printable reference</a> · <a href="../reference/glossary.html">Glossary</a></p>
+</header>
+
+<section class="lesson" id="l1">
+  <div class="eyebrow">Lesson 1.31 <span class="new">New</span></div>
+  <h2>Diagonalization</h2>
+  <p class="win"><b>Goal.</b> Use an eigenvector basis to apply a matrix as two separate stretches.</p>
+
+  <h3>Warm-up from earlier lessons</h3>
+  <p>Multiply \(\begin{pmatrix}2&1\\0&3\\4&-1\end{pmatrix}\) by \(\begin{pmatrix}2\\1\end{pmatrix}\). Write down the number of entries you expect before you calculate.</p>
+  <details><summary>Warm-up solution</summary><div>
+    <p>Three rows give three entries. Cover the other rows while you work on a row: \(2(2)+1(1)=5\), \(0(2)+3(1)=3\), and \(4(2)-1(1)=7\). The result is \((5,3,7)\) written as a column. Review <a href="../reference/matrix-vector-product.html">the row-by-row rule</a> if a row went missing.</p>
+  </div></details>
+
+  <p class="why">Suppose a vector is one step along one eigenvector and two steps along another. If the matrix doubles the first direction and triples the second, the new coordinates are two steps and six steps. The lab shows the two pieces before and after the move.</p>
+  <div class="lab sq">
+    <div class="cap">LAB 1.31 · Build a vector from the eigenvectors</div>
+    <canvas id="diagonal-plot" aria-label="A vector and its image, each split into steps along the same two eigenvector directions"></canvas>
+    <div class="controls">
+      <label>Steps along (1, 0) <input id="first-step" type="range" min="-1" max="2" value="1" step="0.5"><output id="first-stepo" for="first-step"></output></label>
+      <label>Steps along (1, 1) <input id="second-step" type="range" min="-1" max="2" value="2" step="0.5"><output id="second-stepo" for="second-step"></output></label>
+    </div>
+    <div class="readout" id="diagonal-readout"></div>
+    <ul class="try"><li>Set the second slider to 0. Predict the output from the first slider alone.</li><li>Set both sliders to 1. Compare the two coordinates in the eigenvector basis with the ordinary coordinates on the graph.</li></ul>
+  </div>
+
+  <h3>Build the factorization</h3>
+  <ol class="steps">
+    <li><b>Verify the directions.</b> Let \(A=\begin{pmatrix}2&1\\0&3\end{pmatrix}\). Its triangular form gives eigenvalues 2 and 3 (Part C). Row-by-row multiplication gives \(A(1,0)^{\mathsf T}=(2,0)^{\mathsf T}\) and \(A(1,1)^{\mathsf T}=(3,3)^{\mathsf T}\). So \(p_1=(1,0)^{\mathsf T}\) belongs to 2 and \(p_2=(1,1)^{\mathsf T}\) belongs to 3.</li>
+    <li><b>Put the directions in columns, and the matching factors on the diagonal.</b> $$P=\begin{pmatrix}1&1\\0&1\end{pmatrix},\qquad D=\begin{pmatrix}2&0\\0&3\end{pmatrix}$$ \(P(c_1,c_2)^{\mathsf T}=(c_1+c_2,c_2)^{\mathsf T}\). To recover the coefficients from \((x,y)\), read \(c_2=y\), then subtract \(y\) from \(x\) to get \(c_1=x-y\). Thus \(P^{-1}=\begin{pmatrix}1&-1\\0&1\end{pmatrix}\).</li>
+    <li><b>Read the product from right to left.</b> \(P^{-1}\) converts ordinary coordinates to eigenvector coordinates. \(D\) multiplies those two coordinates by 2 and 3. \(P\) rebuilds the vector in ordinary coordinates. This gives \(A=PDP^{-1}\), called a <b>diagonalization</b>. Equivalently, \(D=P^{-1}AP\) represents the same move in the eigenvector basis.</li>
+    <li><b>Check an input both ways.</b> For \((3,2)\), the three steps give \((1,2)\), then \((2,6)\), then \((8,6)\). Directly, the two rows of \(A\) give \(2(3)+1(2)=8\) and \(0(3)+3(2)=6\).</li>
+  </ol>
+  <p>Why does the recipe work for every input? Multiplying \(A\) by \(P\) gives the columns \(Ap_1=2p_1\) and \(Ap_2=3p_2\). Multiplying \(P\) by \(D\) gives those same columns. From \(AP=PD\), multiply on the right by \(P^{-1}\) to get the factorization.</p>
+  <p class="slip"><b>Check that the basis exists.</b> For an \(n\times n\) matrix you need \(n\) independent eigenvectors in the number system you are working in. The shear \(\begin{pmatrix}1&1\\0&1\end{pmatrix}\) only has the horizontal eigenvector direction: \(Av=v\) forces \(y=0\). Two vectors on that same line cannot form an invertible \(P\).</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Use the same \(P,D\) to transform \((0,1)\). Verify by multiplying directly by \(A\).</li>
+    <li>Compute \(A^3(3,2)^{\mathsf T}\) using the eigenvector basis. Start from \((1,2)\) in that basis.</li>
+    <li>If you switch the two columns of \(P\), where do 2 and 3 go in \(D\)?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(P^{-1}(0,1)\) gives \((-1,1)\). Stretching gives \((-2,3)\). Rebuilding gives \((-2+3,3)=(1,3)\). The direct product reads the second column of \(A\), also \((1,3)\).</p>
+    <p>2. Each round separately doubles the first coordinate and triples the second. Three rounds give \((2^3\cdot1,3^3\cdot2)=(8,54)\). Rebuild to get \((62,54)\). In matrix form the middle factors \(P^{-1}P=I\) cancel between rounds, yielding \(A^3=PD^3P^{-1}\).</p>
+    <p>3. Put 3 in the first diagonal slot and 2 in the second. Each slot belongs to the eigenvector in the same column of \(P\).</p>
+  </div></details>
+  <h3>Python</h3>
+  <p>NumPy uses <code>@</code> for matrix multiplication. In the composed map, the factor nearest the input determines its first transformation. <code>np.diag</code> builds the diagonal matrix from a list.</p>
+<pre><code>import numpy as np
+
+A = np.array([[2, 1], [0, 3]])
+P = np.array([[1, 1], [0, 1]])
+D = np.diag([2, 3])
+x = np.array([3, 2])
+print(A @ x)                         # [8 6]
+print(P @ D @ np.linalg.inv(P) @ x)   # [8. 6.]</code></pre>
+  <div class="quiz" data-answer="b">
+    <p class="q">Which operation acts first on the input in \(PDP^{-1}x\)?</p>
+    <div class="opts">
+      <button data-o="a">Stretch using the diagonal</button>
+      <button data-o="b">Find coordinates using the inverse</button>
+      <button data-o="c">Rebuild using the eigenvectors</button>
+    </div>
+    <p class="fb" aria-live="polite" data-ok="Exactly. The inverse touches x first and finds the coefficients in the eigenvector basis." data-no="Start next to x. P⁻¹ acts first, D acts second, then P rebuilds the vector."></p>
+  </div>
+  <p class="watch">Source <a href="https://textbooks.math.gatech.edu/ila/diagonalization.html">Interactive Linear Algebra · Diagonalization</a></p>
+  <label class="donebox"><input type="checkbox" data-done="l1">Mark lesson 1.31 done</label>
+</section>
+
+<section class="lesson" id="l2">
+  <div class="eyebrow">Lesson 1.32 <span class="new">New</span></div>
+  <h2>Perpendicular eigenvector axes</h2>
+  <p class="win"><b>Goal.</b> Use dot products to change coordinates for a symmetric matrix.</p>
+  <p class="why">The two eigenvectors in Lesson 1.31 were tilted toward each other. With perpendicular axes of length 1, each coordinate is just a dot product. Symmetric matrices let us choose a full set of axes like this.</p>
+  <h3>From perpendicular axes to \(Q^{\mathsf T}\)</h3>
+  <p><b>Orthonormal</b> means perpendicular to one another and each of length 1. If \(q_1,q_2\) are such vectors, write \(x=c_1q_1+c_2q_2\). Dot with \(q_1\). Its dot product with itself is 1 and with \(q_2\) is 0, so \(q_1^{\mathsf T}x=c_1\). Dot with \(q_2\) to get \(c_2\). Putting those dot products in two rows gives \(Q^{\mathsf T}x\), where the columns of \(Q\) are \(q_1,q_2\). For a square \(Q\), these rows undo \(Q\), so \(Q^{-1}=Q^{\mathsf T}\).</p>
+
+  <h3>Why symmetry gives these axes</h3>
+  <p>A real <b>symmetric matrix</b> satisfies \(S^{\mathsf T}=S\). For example, both off-diagonal entries of \(\begin{pmatrix}2&1\\1&2\end{pmatrix}\) are 1.</p>
+  <ol class="steps">
+    <li>Take two eigenvectors \(v,w\) with eigenvalues \(\lambda,\mu\). Dot \(v\) with \(Sw\). Since \(Sw=\mu w\), the result is \(\mu(v^{\mathsf T}w)\).</li>
+    <li>Symmetry lets us write the same dot product as \((Sv)^{\mathsf T}w\), because \((Sv)^{\mathsf T}=v^{\mathsf T}S^{\mathsf T}=v^{\mathsf T}S\). Now \(Sv=\lambda v\), so the same number is \(\lambda(v^{\mathsf T}w)\).</li>
+    <li>Subtract to get \((\mu-\lambda)(v^{\mathsf T}w)=0\). If the eigenvalues differ, their difference is nonzero, so the dot product is 0. The vectors are perpendicular.</li>
+  </ol>
+  <p>The <b>spectral theorem</b> gives the full guarantee: every real symmetric matrix has real eigenvalues and an orthonormal eigenvector basis. With a repeated eigenvalue, we can choose perpendicular directions inside its set of eigenvectors. For example, \(2I\) sends every direction to twice itself, so the ordinary perpendicular axes work.</p>
+  <p>For our \(S\), multiplying \((1,1)\) gives \((3,3)\) and multiplying \((1,-1)\) gives \((1,-1)\). Both input vectors have length \(\sqrt2\), so divide each by \(\sqrt2\). This gives columns \(q_1=(1,1)^{\mathsf T}/\sqrt2\) and \(q_2=(1,-1)^{\mathsf T}/\sqrt2\). With \(D=\operatorname{diag}(3,1)\), meaning 3 and 1 on the diagonal, the recipe becomes \(S=QDQ^{\mathsf T}\).</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>For \(x=(2,0)^{\mathsf T}\), dot with each \(q_i\), scale each coordinate by its matching eigenvalue, then add the two pieces. Check against \(Sx\).</li>
+    <li>For \(T=\begin{pmatrix}1&2\\2&1\end{pmatrix}\), verify that the same vectors are eigenvectors. What does the negative eigenvalue do?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. Both dot products give \(2/\sqrt2=\sqrt2\). After scaling they are \(3\sqrt2\) and \(\sqrt2\). Rebuild to get \(3(1,1)+(1,-1)=(4,2)\), the first column of \(S\) doubled.</p>
+    <p>2. On \((1,1)\) the output is \((3,3)\), so the eigenvalue is 3. On \((1,-1)\) the output is \((-1,1)\), so the eigenvalue is −1. That component flips to the opposite side with the same length.</p>
+  </div></details>
+  <h3>Python</h3>
+<pre><code>import numpy as np
+
+Q = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
+D = np.diag([3, 1])
+print(np.round(Q.T @ Q, 6))   # identity, up to floating-point rounding
+print(Q @ D @ Q.T)            # [[2. 1.], [1. 2.]]</code></pre>
+  <div class="quiz" data-answer="a">
+    <p class="q">What does a row of \(Q^{\mathsf T}\) do to the input?</p>
+    <div class="opts">
+      <button data-o="a">Dots it with a unit axis</button>
+      <button data-o="b">Scales it by an eigenvalue</button>
+      <button data-o="c">Adds the two axis vectors</button>
+    </div>
+    <p class="fb" aria-live="polite" data-ok="Yes. Each row is one unit axis transposed, so the row product gives one coordinate." data-no="Start with Qᵀ, whose rows are the unit axes. Each row gives a coordinate by a dot product. D scales those coordinates later."></p>
+  </div>
+  <p class="watch">Source <a href="https://ocw.mit.edu/courses/18-065-matrix-methods-in-data-analysis-signal-processing-and-machine-learning-spring-2018/resources/lecture-4-eigenvalues-and-eigenvectors/">MIT OpenCourseWare · Eigenvalues and Eigenvectors</a></p>
+  <label class="donebox"><input type="checkbox" data-done="l2">Mark lesson 1.32 done</label>
+</section>
+
+<section class="lesson" id="l3">
+  <div class="eyebrow">Lesson 1.33 <span class="new">New</span></div>
+  <h2>See the singular value decomposition</h2>
+  <p class="win"><b>Goal.</b> Follow a matrix as a change of input axes, a stretch, and a rebuild on output axes.</p>
+  <p class="why">An ordinary eigenvector uses the same direction before and after a move. A rectangular matrix can even send two input numbers to three output numbers. To describe stretches for a matrix of any shape, give the input and output their own sets of axes.</p>
+
+  <div class="lab sq">
+    <div class="cap">LAB 1.33 · Follow one point on the unit circle</div>
+    <canvas id="svd-plot" aria-label="A circle becomes an ellipse as a selected vector passes through the three SVD factors"></canvas>
+    <div class="controls">
+      <label>Input angle <input id="circle-angle" type="range" min="0" max="360" value="45" step="5"><output id="circle-angleo" for="circle-angle"></output>°</label>
+      <label>Show <select id="svd-stage">
+        <option value="0">Original input</option>
+        <option value="1">1 · Input coordinates</option>
+        <option value="2">2 · Stretch</option>
+        <option value="3" selected>3 · Output axes</option>
+      </select></label>
+    </div>
+    <div class="readout" id="svd-readout"></div>
+    <ul class="try"><li>At 45°, step through the stages. The highlighted input points along the first input axis and ends up on the vertical output axis.</li><li>Try 315°. Compare the two output lengths. The two lengths you found are the ellipse's two semiaxes, measured from the center to the edge.</li></ul>
+  </div>
+  <h3>What the three factors do</h3>
+  <p>The <b>singular value decomposition</b> (<b>SVD</b>) writes \(A=U\Sigma V^{\mathsf T}\). A <b>singular value</b> \(\sigma_i\) is a nonnegative stretch factor. Capital sigma \(\Sigma\) names the matrix of these factors. Lowercase sigma \(\sigma_i\) names one factor.</p>
+  <ol class="steps">
+    <li><b>Read input coordinates with \(V^{\mathsf T}\).</b> The columns \(v_i\) of \(V\) are perpendicular unit directions in the input space. Each row of \(V^{\mathsf T}\) dots the input with one direction.</li>
+    <li><b>Stretch with \(\Sigma\).</b> Multiply coordinate \(i\) by \(\sigma_i\). A zero factor erases that coordinate. In the full SVD of an \(m\times n\) matrix, \(\Sigma\) is \(m\times n\) with \(\min(m,n)\) diagonal slots and zeros everywhere else. Extra output slots, if any, start at zero.</li>
+    <li><b>Rebuild with \(U\).</b> The columns \(u_i\) of \(U\) are perpendicular unit directions in the output space. Rebuild the output by adding the stretched coordinates times those directions.</li>
+  </ol>
+  <p>Try a single input axis \(v_i\). The first step gives 1 in slot \(i\) and zeros elsewhere. The second gives \(\sigma_i\) in that slot. The third gives \(Av_i=\sigma_i u_i\) for each paired input and output axis. In the lab, the directions \((1,1)/\sqrt2\) and \((1,-1)/\sqrt2\) map along \((0,1)\) and \((-1,0)\) with lengths \(2\sqrt2\) and \(\sqrt2\), respectively.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>A matrix takes three input numbers and returns two. What are the shapes of \(V^{\mathsf T}\), \(\Sigma\), and \(U\) in the full SVD?</li>
+    <li>For an input with coordinates \((2,-3)\) in the \(V\) basis, use singular values \(4,0\) and \(u_1=(0,1)^{\mathsf T}\) to give the output.</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(V^{\mathsf T}\) reads three coordinates, so it is \(3\times3\). \(\Sigma\) turns three slots into two, so it is \(2\times3\). \(U\) rebuilds in two dimensions, so it is \(2\times2\).</p>
+    <p>2. The stretched coordinates are \((4(2),0(-3))=(8,0)\). Rebuild to get \(8u_1=(0,8)^{\mathsf T}\).</p>
+  </div></details>
+  <h3>Python</h3>
+  <p><code>np.linalg.svd</code> returns the left matrix, the singular values as a list, and the transpose of the right matrix.</p>
+<pre><code>import numpy as np
+
+A = np.array([[-1, 1], [2, 2]])
+U, s, Vt = np.linalg.svd(A)
+print(np.round(s, 3))                  # [2.828 1.414]
+print(np.allclose(U @ np.diag(s) @ Vt, A))   # True</code></pre>
+  <div class="quiz" data-answer="c">
+    <p class="q">If \(\sigma_i=0\), where does the corresponding input axis \(v_i\) go?</p>
+    <div class="opts">
+      <button data-o="a">To its original direction</button>
+      <button data-o="b">To a unit output direction</button>
+      <button data-o="c">To the zero output vector</button>
+    </div>
+    <p class="fb" aria-live="polite" data-ok="Yes. The coordinate becomes zero during the stretch, so the output is zero." data-no="In the input-axis coordinates, only slot i starts nonzero. The zero singular value erases it."></p>
+  </div>
+  <p class="watch">Source <a href="https://ocw.mit.edu/courses/18-06sc-linear-algebra-fall-2011/pages/positive-definite-matrices-and-applications/singular-value-decomposition/">MIT OpenCourseWare · Singular Value Decomposition</a></p>
+  <label class="donebox"><input type="checkbox" data-done="l3">Mark lesson 1.33 done</label>
+</section>
+
+<section class="lesson" id="l4">
+  <div class="eyebrow">Lesson 1.34 <span class="new">New</span></div>
+  <h2>Compute a rectangular SVD</h2>
+  <p class="win"><b>Goal.</b> Find both sets of paired directions and their stretch factors for a \(3\times2\) matrix.</p>
+  <p class="why">The rectangular matrix \(A\) sends input directions into a space with a different number of coordinates. The square matrix \(A^{\mathsf T}A\) brings the result back to the input space, where the eigenvector methods from Part C apply.</p>
+  <h3>Why the stretch is a square root</h3>
+  <p>For a unit input direction \(v\), the squared length of its output is \((Av)^{\mathsf T}(Av)=v^{\mathsf T}(A^{\mathsf T}A)v\). Suppose \(v\) is an eigenvector of \(A^{\mathsf T}A\) with eigenvalue \(\lambda\). Replace \((A^{\mathsf T}A)v\) with \(\lambda v\). The squared length becomes \(\lambda(v^{\mathsf T}v)=\lambda\), since \(v\) has length 1. Squared lengths are nonnegative. Taking the square root gives the stretch \(\sigma=\sqrt\lambda\). When \(\sigma\) is positive, divide \(Av\) by \(\sigma\) to get the output unit direction \(u\).</p>
+
+  <h3>Work through the numbers</h3>
+  <ol class="steps">
+    <li><b>Form the products of the columns.</b> Let \(A=\begin{pmatrix}2&2\\1&-1\\0&0\end{pmatrix}\). Each column dotted with itself gives \(4+1+0=5\). Dot the two columns together to get \(4-1+0=3\). Thus \(A^{\mathsf T}A=\begin{pmatrix}5&3\\3&5\end{pmatrix}\).</li>
+    <li><b>Find and normalize the input directions.</b> The characteristic equation is \((5-\lambda)^2-9=0\). So \(5-\lambda=3\) or \(5-\lambda=-3\), giving 2 and 8. For 8, the first row of \((A^{\mathsf T}A-8I)v=0\) gives \(-3x+3y=0\), so \(y=x\). For 2 it gives \(3x+3y=0\), so \(y=-x\). Normalize each direction and put the larger eigenvalue first: \(v_1=(1,1)^{\mathsf T}/\sqrt2\), \(v_2=(1,-1)^{\mathsf T}/\sqrt2\).</li>
+    <li><b>Take square roots.</b> \(\sigma_1=\sqrt8=2\sqrt2\) and \(\sigma_2=\sqrt2\).</li>
+    <li><b>Multiply then divide, one direction at a time.</b> The rows give \(Av_1=(4,0,0)^{\mathsf T}/\sqrt2\) and \(Av_2=(0,2,0)^{\mathsf T}/\sqrt2\). Divide by the matching stretch to get \(u_1=(1,0,0)^{\mathsf T}\) and \(u_2=(0,1,0)^{\mathsf T}\). These are perpendicular. In general, images of distinct orthonormal input eigenvectors are perpendicular because for \(i\ne j\), the input dot product is zero. Substituting \((A^{\mathsf T}A)v_j=\lambda_j v_j\) gives $$\begin{aligned}(Av_i)^{\mathsf T}(Av_j) &= v_i^{\mathsf T}(A^{\mathsf T}A)v_j\\ &= \lambda_j v_i^{\mathsf T}v_j = 0.\end{aligned}$$</li>
+    <li><b>Assemble and check.</b> For the full SVD, add \(u_3=(0,0,1)^{\mathsf T}\) to complete the output axes. Here \(U=I_3\), and $$\Sigma=\begin{pmatrix}2\sqrt2&0\\0&\sqrt2\\0&0\end{pmatrix},\quad V^{\mathsf T}=\frac{1}{\sqrt2}\begin{pmatrix}1&1\\1&-1\end{pmatrix}.$$ Multiplying \(\Sigma V^{\mathsf T}\) doubles the first row of the matrix with 1s, copies the second row, and adds the zero row. That gives \(A\), since multiplying by \(U=I_3\) leaves it as is.</li>
+  </ol>
+  <p class="slip"><b>If a stretch is zero.</b> \(Av=0\), so dividing by \(\sigma\) is undefined. To write the full SVD, complete the output axes with perpendicular unit vectors. Their zero-stretch coordinates make no contribution.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Use the factors for \(A\) to transform \((1,0)^{\mathsf T}\). Check against the first column of \(A\).</li>
+    <li>Let \(B=\begin{pmatrix}0&2\\3&0\\0&0\end{pmatrix}\). Find \(B^{\mathsf T}B\), both singular values in descending order, and the associated input and output unit directions.</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. \(V^{\mathsf T}\) gives \((1,1)^{\mathsf T}/\sqrt2\). \(\Sigma\) gives \((2,1,0)^{\mathsf T}\). \(U\) leaves this alone. It is exactly the first column.</p>
+    <p>2. The columns have squared lengths 9 and 4 and dot product 0. Hence \(B^{\mathsf T}B=\operatorname{diag}(9,4)\), with axes \(v_1=(1,0)^{\mathsf T}\) and \(v_2=(0,1)^{\mathsf T}\). Take the square roots to get 3 and 2. \(Bv_1=(0,3,0)^{\mathsf T}\) gives \(u_1=(0,1,0)^{\mathsf T}\). \(Bv_2=(2,0,0)^{\mathsf T}\) gives \(u_2=(1,0,0)^{\mathsf T}\).</p>
+  </div></details>
+  <h3>Python</h3>
+  <p><code>full_matrices=False</code> asks for the <b>reduced SVD</b>. Here the third output column and matching all-zero row are dropped, so the three factors have shapes \(3\times2\), \(2\times2\), \(2\times2\). A solver can flip both vectors in a pair together, since the two sign flips cancel in their product.</p>
+<pre><code>import numpy as np
+
+A = np.array([[2, 2], [1, -1], [0, 0]])
+U, s, Vt = np.linalg.svd(A, full_matrices=False)
+print(U.shape, np.diag(s).shape, Vt.shape)   # (3, 2) (2, 2) (2, 2)
+print(np.allclose(U @ np.diag(s) @ Vt, A))  # True</code></pre>
+  <div class="quiz" data-answer="a">
+    <p class="q">An eigenvalue of \(A^{\mathsf T}A\) is 16. What is the matching singular value of \(A\)?</p>
+    <div class="opts"><button data-o="a">4</button><button data-o="b">16</button><button data-o="c">256</button></div>
+    <p class="fb" aria-live="polite" data-ok="Right. 16 is the squared stretch, so the stretch is √16 = 4." data-no="The eigenvalue measures squared output length for a unit input. Take its square root to get the stretch."></p>
+  </div>
+  <p class="watch">Source <a href="https://ocw.mit.edu/courses/18-065-matrix-methods-in-data-analysis-signal-processing-and-machine-learning-spring-2018/resources/lecture-6-singular-value-decomposition-svd/">MIT OpenCourseWare · SVD and its factors</a></p>
+  <label class="donebox"><input type="checkbox" data-done="l4">Mark lesson 1.34 done</label>
+</section>
+
+<section class="lesson" id="l5">
+  <div class="eyebrow">Lesson 1.35 <span class="new">New</span></div>
+  <h2>Keep the largest pieces</h2>
+  <p class="win"><b>Goal.</b> Build a rank-one approximation and measure what was lost.</p>
+  <p class="why">The SVD describes a matrix as a sum of pieces. Keeping the strongest pieces can give a simpler matrix that still gives similar outputs.</p>
+  <h3>Make one piece at a time</h3>
+  <p>One path through the SVD takes \(x\), reads the single coordinate \(v_i^{\mathsf T}x\), multiplies by \(\sigma_i\), and sends it along \(u_i\). That path is itself a matrix, \(\sigma_i u_i v_i^{\mathsf T}\). The product of a column \(u_i\) and a row \(v_i^{\mathsf T}\) is called an <b>outer product</b>. Each row is the same row \(v_i^{\mathsf T}\) scaled by one entry of \(u_i\). Each output lies along one line, so a nonzero piece has rank 1.</p>
+  <ol class="steps">
+    <li>Use \(A\) from 1.34. The first piece uses \(u_1=(1,0,0)^{\mathsf T}\) and \(\sigma_1v_1^{\mathsf T}=(2,2)\). Scale that row by 1, then 0, then 0. This yields \(A_1=\begin{pmatrix}2&2\\0&0\\0&0\end{pmatrix}\).</li>
+    <li>The second piece uses \(u_2=(0,1,0)^{\mathsf T}\) and \(\sigma_2v_2^{\mathsf T}=(1,-1)\). It has \((1,-1)\) in row 2 and zeros elsewhere. Add both pieces to recover \(A\).</li>
+    <li>To compare \(A_1\) and \(A\), subtract them, square each entry of the difference, and add. The only nonzero entries are 1 and −1, so the <b>squared Frobenius error</b> is \(1^2+(-1)^2=2\). Taking the square root gives the Frobenius error \(\sqrt2\).</li>
+  </ol>
+  <p>Keeping the first \(k\) pieces gives the <b>truncated SVD</b>. Because the singular values are sorted, these are the \(k\) largest stretches. The resulting matrix has rank at most \(k\). The Eckart–Young theorem says this choice minimizes the Frobenius error among matrices of rank at most \(k\). Its squared error is the sum of the squared singular values you drop. In the example, that is \((\sqrt2)^2=2\).</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>For \(\operatorname{diag}(5,2,1)\), write the rank-one approximation and compute its squared error and its error.</li>
+    <li>How would the squared error change if you kept two pieces? What exactly was restored?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. The axis directions stay in place and their stretches are 5, 2 and 1. Keep only 5 to get \(\operatorname{diag}(5,0,0)\). Squared error is \(2^2+1^2=5\). Error is \(\sqrt5\).</p>
+    <p>2. The second diagonal entry, 2, is restored in \(\operatorname{diag}(5,2,0)\). Only 1 is dropped, giving squared error 1.</p>
+  </div></details>
+  <h3>Python</h3>
+  <p><code>np.outer</code> builds the column-times-row matrix. <code>np.sum</code> adds all the squared entries.</p>
+<pre><code>import numpy as np
+
+A = np.array([[2, 2], [1, -1], [0, 0]])
+U, s, Vt = np.linalg.svd(A, full_matrices=False)
+A1 = s[0] * np.outer(U[:, 0], Vt[0, :])
+print(np.round(A1, 6))
+print(np.sum((A - A1) ** 2))   # 2.0, up to rounding</code></pre>
+  <div class="quiz" data-answer="b">
+    <p class="q">The singular values are 6, 3, and 2. If you keep only the first piece, what is the squared error?</p>
+    <div class="opts"><button data-o="a">5</button><button data-o="b">13</button><button data-o="c">36</button></div>
+    <p class="fb" aria-live="polite" data-ok="Yes. Dropping 3 and 2 gives 3² + 2² = 13." data-no="Square each discarded stretch before adding. Here the discarded values are 3 and 2."></p>
+  </div>
+  <p class="watch">Source <a href="https://ocw.mit.edu/courses/18-065-matrix-methods-in-data-analysis-signal-processing-and-machine-learning-spring-2018/resources/lecture-7-eckart-young-the-closest-rank-k-matrix-to-a/">MIT OpenCourseWare · The Closest Rank k Matrix to A</a></p>
+  <label class="donebox"><input type="checkbox" data-done="l5">Mark lesson 1.35 done</label>
+</section>
+
+<section class="lesson" id="l6">
+  <div class="eyebrow">Lesson 1.36 <span class="new">New</span></div>
+  <h2>Center data and measure spread</h2>
+  <p class="win"><b>Goal.</b> Compute the covariance matrix for a dataset with two features.</p>
+  <p class="why">Imagine four teams rated on two skills, both on the same scale. To compare how the ratings vary, start at the typical rating on each skill. Then measure how far the teams move from that center and whether the two ratings move together.</p>
+  <div class="lab sq">
+    <div class="cap">LAB 1.36 · Move the data cloud to its mean</div>
+    <canvas id="center-plot" aria-label="Four points shown as raw ratings or deviations from their column means"></canvas>
+    <div class="controls"><label><input id="center-data" type="checkbox"> Show centered data</label></div>
+    <div class="readout" id="center-readout"></div>
+    <ul class="try"><li>Notice where team A and the mean sit. Toggle centering. By how much did the coordinates shift?</li><li>Did the distance between any pair of teams change?</li></ul>
+  </div>
+
+  <h3>From the ratings to a covariance matrix</h3>
+  <ol class="steps">
+    <li><b>Arrange the data.</b> Each row holds one team and each column holds one feature. Here \(n=4\) teams and \(p=2\) features. Both column means are \((8+2+6+4)/4=5\), with the last two ratings reversed in the second column.</li>
+    <li><b>Center each column.</b> To <b>center</b> a column, subtract its mean from each entry. A rating of 8 becomes \(8-5=3\), and 2 becomes \(2-5=-3\). The centered columns now sum to 0. Call the centered matrix \(X_c\).</li>
+  </ol>
+  <div class="tablewrap"><table>
+    <thead><tr><th scope="col">Team</th><th scope="col">Skill 1</th><th scope="col">Skill 2</th><th scope="col">Centered skill 1</th><th scope="col">Centered skill 2</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">A</th><td>8</td><td>8</td><td>3</td><td>3</td></tr>
+      <tr><th scope="row">B</th><td>2</td><td>2</td><td>−3</td><td>−3</td></tr>
+      <tr><th scope="row">C</th><td>6</td><td>4</td><td>1</td><td>−1</td></tr>
+      <tr><th scope="row">D</th><td>4</td><td>6</td><td>−1</td><td>1</td></tr>
+    </tbody>
+  </table></div>
+  <ol class="steps" style="counter-reset:st 2">
+    <li><b>Compute the variance of one feature.</b> <b>Sample variance</b> measures spread around the mean. Square the centered values, add, and divide by \(n-1\). We use the sample convention here because the mean was estimated from these observations. For skill 1, the squared deviations sum to \(9+9+1+1=20\). Divide by 3 to get \(20/3\). Skill 2 has the same four squared deviations and the same variance.</li>
+    <li><b>Compute the covariance of the two features.</b> <b>Sample covariance</b> replaces squares with paired products. Multiply the two deviations in each row, add, and divide by the same \(n-1\). Here that is \((9+9-1-1)/3=16/3\). Positive products come from teams above both means or below both means. Negative products come from teams on opposite sides of the two means.</li>
+    <li><b>Assemble the matrix.</b> \(X_c^{\mathsf T}X_c\) holds the dot products of feature columns. Divide every cell by \(n-1\) to get $$C=\frac{X_c^{\mathsf T}X_c}{n-1}=\frac13\begin{pmatrix}20&16\\16&20\end{pmatrix}.$$ The diagonal contains the variances. The off-diagonal contains the same covariance twice because either order of the dot product gives the same value. With \(p\) features, \(C\) has shape \(p\times p\).</li>
+  </ol>
+  <p>A positive covariance indicates that above-mean values tend to occur together, as do below-mean values. A negative one indicates that above-mean values on one feature tend to go with below-mean values on the other. Covariance is expressed in the product of the two features' units. If you use \(n\) for population variance and covariance, the numerical values scale by the same factor. Here and in 1.37 we use \(n-1\), with at least two rows.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>Add 10 to every value in skill 1. What happens to its mean, the centered column and the covariance?</li>
+    <li>For the three teams \((1,5),(2,4),(3,3)\), find the means and the sample covariance matrix.</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. The mean increases from 5 to 15. Subtracting 15 from the shifted values gives the same centered column, so the covariance stays \(16/3\).</p>
+    <p>2. The means are 2 and 4. Centered rows are \((-1,1),(0,0),(1,-1)\). The sum of squared entries in each column is 2, and the paired products total \(-1+0-1=-2\). Divide by \(3-1=2\) to get \(C=\begin{pmatrix}1&-1\\-1&1\end{pmatrix}\).</p>
+  </div></details>
+  <h3>Python</h3>
+  <p><code>axis=0</code> takes the mean down the rows, giving one mean per feature. NumPy subtracts that same pair of means from each row.</p>
+<pre><code>import numpy as np
+
+X = np.array([[8, 8], [2, 2], [6, 4], [4, 6]])
+mean = X.mean(axis=0)
+Xc = X - mean
+C = Xc.T @ Xc / (X.shape[0] - 1)
+print(mean)                  # [5. 5.]
+print(np.round(C, 3))        # [[6.667 5.333], [5.333 6.667]]</code></pre>
+  <div class="quiz" data-answer="c">
+    <p class="q">Your table contains 100 rows and 3 features. What shape is its feature covariance matrix?</p>
+    <div class="opts"><button data-o="a">100 × 100</button><button data-o="b">100 × 3</button><button data-o="c">3 × 3</button></div>
+    <p class="fb" aria-live="polite" data-ok="Right. Each cell compares a pair of features, including each feature with itself." data-no="The rows and columns of the covariance matrix both name features. There are three features."></p>
+  </div>
+  <p class="watch">Source <a href="https://mml-book.github.io/">Mathematics for Machine Learning · Chapter 6, Summary Statistics and Independence</a></p>
+  <label class="donebox"><input type="checkbox" data-done="l6">Mark lesson 1.36 done</label>
+</section>
+
+<section class="lesson" id="l7">
+  <div class="eyebrow">Lesson 1.37 <span class="new">New</span></div>
+  <h2>Do principal component analysis by hand</h2>
+  <p class="win"><b>Goal.</b> Replace two feature values with one score, then calculate how much variance that score preserves.</p>
+  <p class="why">If four teams form a long, narrow cloud, a line through the center can retain most of the differences between teams. <b>Principal component analysis</b> (<b>PCA</b>) chooses the line on which the centered points have the greatest spread.</p>
+  <div class="lab sq">
+    <div class="cap">LAB 1.37 · Turn the projection axis</div>
+    <canvas id="pca-plot" aria-label="Four centered points and their perpendicular projections onto the selected line"></canvas>
+    <div class="controls"><label>Axis angle <input id="pca-angle" type="range" min="-90" max="90" value="0" step="5"><output id="pca-angleo" for="pca-angle"></output>°</label></div>
+    <div class="readout" id="pca-readout"></div>
+    <ul class="try"><li>Start at 0°. Turn to 45°. What happens to the spread along the line and to the lengths of the dashed segments?</li><li>Turn to −45°. Which two teams now project to the center? Compare the variance with the 45° result.</li></ul>
+  </div>
+
+  <h3>Why the covariance eigenvectors solve it</h3>
+  <p>Pick a unit vector \(v\). The <b>score</b> of a centered row is its dot product with \(v\). The scores column is \(z=X_cv\). Its mean is zero because both input columns have mean zero. Squaring and summing the scores gives \(z^{\mathsf T}z\). So the sample variance of the scores is $$\frac{z^{\mathsf T}z}{n-1}=v^{\mathsf T}\frac{X_c^{\mathsf T}X_c}{n-1}v=v^{\mathsf T}Cv.$$</p>
+  <p>Use the perpendicular unit eigenvectors \(q_1,q_2\) of \(C\), ordered with \(\lambda_1\ge\lambda_2\). Write \(v=a q_1+b q_2\). Because \(v\) is unit and the axes are orthonormal, \(a^2+b^2=1\). Dot \(v\) with \(Cv=a\lambda_1q_1+b\lambda_2q_2\). The cross terms vanish, leaving \(\lambda_1a^2+\lambda_2b^2\). This weighted average is largest at \(\lambda_1\), attained by taking \(v=q_1\). This axis is the <b>first principal direction</b>. The next direction uses the greatest variance available in the perpendicular space.</p>
+
+  <h3>Compute the scores and reconstruct a rating</h3>
+  <ol class="steps">
+    <li><b>Find the axes and their variances.</b> In the covariance matrix from 1.36, multiply by \((1,1)\) to get \((36,36)/3\). So the eigenvalue along \(q_1=(1,1)^{\mathsf T}/\sqrt2\) is \(36/3=12\). Multiply by \((1,-1)\) to get \((4,-4)/3\). The eigenvalue along \(q_2=(1,-1)^{\mathsf T}/\sqrt2\) is \(4/3\). The directions span the plane, so these give both eigenvalues.</li>
+    <li><b>Project onto the first axis.</b> For team A the centered row is \((3,3)\). Its score is \(3/\sqrt2+3/\sqrt2=3\sqrt2\). B has \(-3\sqrt2\), and C and D each have 0 because their two deviations cancel in the dot product. The four rows now need only one score each.</li>
+    <li><b>Calculate the share of variance retained.</b> Add the two eigenvalues to get total variance, \(12+4/3=40/3\). The first axis holds \(12/(40/3)=0.9\), or 90%. This is the <b>explained variance ratio</b> of the first component. The ratio is defined when the total variance is positive.</li>
+    <li><b>Reconstruct from a score.</b> A score is a signed distance along the unit direction. Multiply it by \(q_1\) and add the original mean to return to rating coordinates. For A, \(3\sqrt2\,q_1=(3,3)\); add \((5,5)\) to recover \((8,8)\). C and D both reconstruct as \((5,5)\). Their differences lie along the dropped second axis.</li>
+  </ol>
+  <p class="slip"><b>Read the percentage as variance.</b> The 90% describes the share of squared spread captured by the line. Teams C and D still lose their distinction in the one-score representation. Feature scales matter too. Converting the units of only one feature changes its contribution to the variance. For features on very different scales, you may choose to <b>standardize</b> each feature by dividing its centered values by its standard deviation, the square root of the variance, when that deviation is positive.</p>
+
+  <h3>Where SVD fits</h3>
+  <p>Apply an SVD to \(X_c\), the centered data matrix. We found in 1.34 that its right singular vectors are eigenvectors of \(X_c^{\mathsf T}X_c\) and that its singular values squared are the eigenvalues of that product. Dividing the product by \(n-1\) keeps the directions and divides each eigenvalue by \(n-1\). So the rows of \(V^{\mathsf T}\) are the PCA directions, and the variance along direction \(i\) is \(\sigma_i^2/(n-1)\). Here \(\sigma_1=6\) and \(\sigma_2=2\), yielding 12 and \(4/3\).</p>
+  <p>For the same centered data, keeping the first \(k\) PCA scores and rebuilding gives the rank-\(k\) truncated SVD of \(X_c\). To get back to original feature coordinates, add the feature means to each reconstructed row.</p>
+
+  <h3>Practice on paper</h3>
+  <ol class="ex">
+    <li>What fraction of total variance does the second axis capture? Which teams have nonzero scores on it, and what are their scores?</li>
+    <li>A fifth team, \((7,5)\), arrives after you have chosen your mean and axis. Using the same mean and axis, find its first score and reconstruct its two ratings.</li>
+    <li>If you reverse the sign of \(q_1\), how do the scores, reconstructed points and explained variance ratio change?</li>
+  </ol>
+  <details><summary>Solutions</summary><div>
+    <p>1. The share is \((4/3)/(40/3)=10\%\). C's row \((1,-1)\) gives \(\sqrt2\) and D gives \(-\sqrt2\). A and B have equal deviations on the two skills and score zero on this axis.</p>
+    <p>2. Center using the original mean: \((7,5)-(5,5)=(2,0)\). Dot with \(q_1\) to get \(\sqrt2\). Multiply by \(q_1\) to get \((1,1)\), then add the mean to get \((6,6)\).</p>
+    <p>3. All scores change sign. When you multiply each score by the reversed axis, the signs cancel, so the reconstructed points stay where they were. The ratio also stays the same because variance uses squares.</p>
+  </div></details>
+  <h3>Python</h3>
+  <p><code>Vt[:1]</code> takes the first row, keeping it as a matrix so one projection per team fits in a single column. The axis from NumPy can have the opposite sign from the hand example, with the corresponding scores also reversed.</p>
+<pre><code>import numpy as np
+
+X = np.array([[8, 8], [2, 2], [6, 4], [4, 6]])
+mean = X.mean(axis=0)
+Xc = X - mean
+U, s, Vt = np.linalg.svd(Xc, full_matrices=False)
+axes = Vt[:1]
+scores = Xc @ axes.T
+rebuilt = scores @ axes + mean
+variance = s ** 2 / (X.shape[0] - 1)
+print(np.round(variance, 3))              # [12.     1.333]
+print(variance[0] / variance.sum())       # about 0.9
+print(np.round(rebuilt, 3))               # rows (8,8), (2,2), (5,5), (5,5)</code></pre>
+  <div class="quiz" data-answer="b">
+    <p class="q">Which number gives the explained variance ratio for the first axis?</p>
+    <div class="opts">
+      <button data-o="a">The first variance divided by the second variance</button>
+      <button data-o="b">The first variance divided by the total variance</button>
+      <button data-o="c">The second variance divided by the total variance</button>
+    </div>
+    <p class="fb" aria-live="polite" data-ok="Right. The denominator includes the variance from every direction, even the dropped directions." data-no="A share compares the first direction's variance with the total across all directions."></p>
+  </div>
+  <p class="watch">Source <a href="https://mml-book.github.io/">Mathematics for Machine Learning · Chapter 10, Dimensionality Reduction with PCA</a></p>
+  <label class="donebox"><input type="checkbox" data-done="l7">Mark lesson 1.37 done</label>
+</section>
+
+<section class="lesson" id="l8">
+  <div class="eyebrow">Lesson 1.38</div>
+  <h2>Checkpoint and cheat sheet</h2>
+  <p class="win"><b>Goal.</b> Choose the right tool and carry out each step without referring to the worked examples.</p>
+  <p>Use paper first. If any step stalls, use the corresponding lesson and retry a similar question later.</p>
+  <ol class="ex">
+    <li>\(A\) has independent eigenvectors \((1,0)^{\mathsf T}\) and \((1,2)^{\mathsf T}\), with eigenvalues 2 and 4. Compute \(A(2,2)^{\mathsf T}\) in the eigenvector basis.</li>
+    <li>A real symmetric matrix has eigenvectors \(v,w\) with eigenvalues −1 and 5. What is their dot product? What extra step makes them orthonormal?</li>
+    <li>An input axis \(v\) has unit length and \(A^{\mathsf T}Av=25v\). If \(Av=(0,3,4)^{\mathsf T}\), find the singular value and the associated unit output direction.</li>
+    <li>A matrix has singular values 7, 4, 2 and 1. What is the squared Frobenius error when the first two pieces are kept?</li>
+    <li>Use rows \((1,6),(3,4),(5,2)\). Center them and compute the sample covariance matrix.</li>
+    <li>For that covariance matrix, verify that \((1,-1)/\sqrt2\) is the first PCA direction. Find the first score of \((5,2)\) and the explained variance ratio.</li>
+  </ol>
+  <details><summary>Checkpoint solutions</summary><div>
+    <p>1. Express the input as one step along each eigenvector. Multiply those coordinates by the eigenvalues to get \((2,4)\) in the eigenvector basis. In ordinary coordinates the output is \(2(1,0)+4(1,2)=(6,8)\). <a href="#l1">Review 1.31</a></p>
+    <p>2. The eigenvalues differ, so \(v^{\mathsf T}w=0\). Divide each by its own length. <a href="#l2">Review 1.32</a></p>
+    <p>3. \(\sigma=\sqrt{25}=5\). Divide \(Av\) by 5 to get \(u=(0,3/5,4/5)^{\mathsf T}\). <a href="#l4">Review 1.34</a></p>
+    <p>4. The discarded values are 2 and 1. Square and add to get \(4+1=5\). <a href="#l5">Review 1.35</a></p>
+    <p>5. The mean is \((3,4)\), so the centered rows are \((-2,2),(0,0),(2,-2)\). In \(X_c^{\mathsf T}X_c\) both diagonals are 8 and both off-diagonals are −8. Divide by \(3-1=2\) to get \(\begin{pmatrix}4&-4\\-4&4\end{pmatrix}\). <a href="#l6">Review 1.36</a></p>
+    <p>6. Multiply the covariance by \((1,-1)\) to get \((8,-8)\), so its eigenvalue is 8. On \((1,1)\) the output is zero, so the second eigenvalue is 0. The score for the centered row \((2,-2)\) is \(4/\sqrt2=2\sqrt2\). The first direction explains \(8/(8+0)=100\%\) of this sample's variance. <a href="#l7">Review 1.37</a></p>
+  </div></details>
+  <div class="quiz" data-answer="a">
+    <p class="q">You want one feature score per row of a data matrix. What is the first step in the PCA procedure you just learned?</p>
+    <div class="opts">
+      <button data-o="a">Subtract each feature’s own mean</button>
+      <button data-o="b">Subtract each row’s own mean</button>
+      <button data-o="c">Keep each feature’s largest value</button>
+    </div>
+    <p class="fb" aria-live="polite" data-ok="Yes. Center each feature column before looking for the directions of variation." data-no="The mean is computed separately from the observations in each feature column."></p>
+  </div>
+  <h3>Cheat sheet</h3>
+  <div class="sheet">
+    <div><h4>One eigenvector basis</h4>\(A=PDP^{-1}\)<br>Eigenvector columns in \(P\), matching eigenvalues in \(D\). For a real symmetric matrix use an orthonormal \(Q\) and \(Q^{\mathsf T}\).</div>
+    <div><h4>Two sets of axes</h4>\(A=U\Sigma V^{\mathsf T}\)<br>\(v_i\) comes from \(A^{\mathsf T}A\), \(\sigma_i=\sqrt{\lambda_i}\), and \(u_i=Av_i/\sigma_i\) for \(\sigma_i&gt;0\).</div>
+    <div><h4>Keep the largest stretches</h4>Keep the first \(k\) terms \(\sigma_i u_i v_i^{\mathsf T}\). Squared Frobenius error is the sum of the squares of the omitted stretches.</div>
+    <div><h4>PCA</h4>Center columns, then use \(C=X_c^{\mathsf T}X_c/(n-1)\). Project onto the leading unit eigenvectors. Each variance share is its eigenvalue divided by their total across all directions.</div>
+  </div>
+  <p class="watch"><a href="../reference/diagonalization-svd-pca.html">Printable reference</a> · <a href="../reference/glossary.html#part-d">Glossary for Part D</a> · <a href="../index.html">Course home</a></p>
+  <p>Module 2 moves from linear transformations to how functions change, starting with calculus.</p>
+  <label class="donebox"><input type="checkbox" data-done="l8">Mark lesson 1.38 done</label>
+</section>
+</main>
+</div>
+<script src="../assets/course.js"></script>
+<script src="../assets/module-01d.js"></script>
+</body>
+</html>

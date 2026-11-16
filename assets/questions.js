@@ -1,0 +1,474 @@
+window.ASSESSMENT_DATA = {
+  "domains": [
+    {
+      "id": "numbers",
+      "label": "Number sense & ratios",
+      "course": "Pre-algebra",
+      "url": "https://www.khanacademy.org/math/pre-algebra",
+      "description": "Fractions, percentages, ratios and change over time"
+    },
+    {
+      "id": "algebra",
+      "label": "Algebra & equations",
+      "course": "Algebra basics → Algebra 1",
+      "url": "https://www.khanacademy.org/math/algebra-basics",
+      "description": "Solve equations, inequalities and rearrange expressions"
+    },
+    {
+      "id": "functions",
+      "label": "Functions & graphs",
+      "course": "Algebra 1",
+      "url": "https://www.khanacademy.org/math/algebra",
+      "description": "Graphs, linear models, composition and function evaluation"
+    },
+    {
+      "id": "exponents",
+      "label": "Exponents & logarithms",
+      "course": "Algebra 2",
+      "url": "https://www.khanacademy.org/math/algebra2",
+      "description": "Exponential expressions, growth and logarithms"
+    },
+    {
+      "id": "geometry",
+      "label": "Geometry & trigonometry",
+      "course": "Precalculus",
+      "url": "https://www.khanacademy.org/math/precalculus",
+      "description": "Coordinates, triangle properties and trigonometric ratios"
+    },
+    {
+      "id": "probability",
+      "label": "Probability",
+      "course": "Statistics and probability, units 7–9",
+      "url": "https://www.khanacademy.org/math/statistics-probability",
+      "description": "Independent events, conditional probability and distributions"
+    },
+    {
+      "id": "statistics",
+      "label": "Statistics & inference",
+      "course": "Statistics and probability, units 1–6 and 10–16",
+      "url": "https://www.khanacademy.org/math/statistics-probability",
+      "description": "Summaries, study design, significance testing and inference"
+    },
+    {
+      "id": "linear",
+      "label": "Vectors & linear algebra",
+      "course": "Precalculus units 6–7 → Linear algebra",
+      "url": "https://www.khanacademy.org/math/linear-algebra",
+      "description": "Vector operations, matrix dimensions and matrix products"
+    },
+    {
+      "id": "calculus",
+      "label": "Calculus & optimization",
+      "course": "Calculus 1",
+      "url": "https://www.khanacademy.org/math/calculus-1",
+      "description": "Limits, derivatives and optimization"
+    }
+  ],
+  "questions": [
+    {
+      "id": "N1",
+      "domain": "numbers",
+      "tier": "core",
+      "stem": "What is 15% of 240?",
+      "options": [
+        "24",
+        "32",
+        "36",
+        "40"
+      ],
+      "correct": "36",
+      "explain": "15% = 0.15, and 0.15 × 240 = 36.",
+      "probe": "percent as multiplier"
+    },
+    {
+      "id": "N2",
+      "domain": "numbers",
+      "tier": "core",
+      "stem": "Evaluate (3/4) ÷ (1/2).",
+      "options": [
+        "3/8",
+        "2/3",
+        "3/2",
+        "4/3"
+      ],
+      "correct": "3/2",
+      "explain": "Dividing by 1/2 is multiplying by 2: (3/4) × 2 = 3/2.",
+      "probe": "fraction division"
+    },
+    {
+      "id": "N3",
+      "domain": "numbers",
+      "tier": "stretch",
+      "stem": "A KPI rises by 20% and then falls by 20%. If it started at 120, what is the final value?",
+      "options": [
+        "96",
+        "115.2",
+        "120",
+        "124.8"
+      ],
+      "correct": "115.2",
+      "explain": "120 × 1.20 × 0.80 = 115.2. Equal percentage changes do not cancel because their bases differ.",
+      "probe": "compounding percentage changes"
+    },
+    {
+      "id": "A1",
+      "domain": "algebra",
+      "tier": "core",
+      "stem": "Solve 3(2x − 1) = 15 for x.",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "6"
+      ],
+      "correct": "3",
+      "explain": "6x − 3 = 15, hence 6x = 18 and x = 3.",
+      "probe": "equation manipulation"
+    },
+    {
+      "id": "A2",
+      "domain": "algebra",
+      "tier": "core",
+      "stem": "Solve 2(x − 1) = x + 7 for x.",
+      "options": [
+        "5",
+        "7",
+        "9",
+        "11"
+      ],
+      "correct": "9",
+      "explain": "2x − 2 = x + 7. Subtract x and add 2: x = 9.",
+      "probe": "variables both sides"
+    },
+    {
+      "id": "A3",
+      "domain": "algebra",
+      "tier": "stretch",
+      "stem": "Solve 2x − 5 < 7.",
+      "options": [
+        "x < 1",
+        "x > 1",
+        "x < 6",
+        "x > 6"
+      ],
+      "correct": "x < 6",
+      "explain": "Add 5 to both sides, then divide by positive 2: 2x < 12 gives x < 6.",
+      "probe": "inequalities"
+    },
+    {
+      "id": "F1",
+      "domain": "functions",
+      "tier": "core",
+      "stem": "For f(x) = 2x² − 3, what is f(−2)?",
+      "options": [
+        "−11",
+        "−5",
+        "1",
+        "5"
+      ],
+      "correct": "5",
+      "explain": "f(−2) = 2 × (−2)² − 3 = 8 − 3 = 5.",
+      "probe": "evaluation and negative squares"
+    },
+    {
+      "id": "F2",
+      "domain": "functions",
+      "tier": "core",
+      "stem": "In y = 3 − 2x, what is the slope of the line?",
+      "options": [
+        "−3",
+        "−2",
+        "2",
+        "3"
+      ],
+      "correct": "−2",
+      "explain": "Rewriting as y = −2x + 3 shows that the coefficient of x, −2, is the slope.",
+      "probe": "linear slope"
+    },
+    {
+      "id": "F3",
+      "domain": "functions",
+      "tier": "stretch",
+      "stem": "Given f(x) = x² + 1 and g(x) = 3x − 1, calculate f(g(2)).",
+      "options": [
+        "14",
+        "26",
+        "37",
+        "50"
+      ],
+      "correct": "26",
+      "explain": "First g(2) = 5, then f(5) = 25 + 1 = 26.",
+      "probe": "function composition"
+    },
+    {
+      "id": "E1",
+      "domain": "exponents",
+      "tier": "core",
+      "stem": "Evaluate 2³ × 2⁴.",
+      "options": [
+        "32",
+        "64",
+        "128",
+        "256"
+      ],
+      "correct": "128",
+      "explain": "With a common base, add exponents: 2³ × 2⁴ = 2⁷ = 128.",
+      "probe": "exponent laws"
+    },
+    {
+      "id": "E2",
+      "domain": "exponents",
+      "tier": "core",
+      "stem": "Solve 3ˣ = 81 for x.",
+      "options": [
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "correct": "4",
+      "explain": "81 = 3⁴, so x = 4.",
+      "probe": "exponential inverse"
+    },
+    {
+      "id": "E3",
+      "domain": "exponents",
+      "tier": "stretch",
+      "stem": "Evaluate log₂(1/8).",
+      "options": [
+        "−3",
+        "−2",
+        "1/3",
+        "3"
+      ],
+      "correct": "−3",
+      "explain": "Because 2⁻³ = 1/8, the base-2 logarithm of 1/8 is −3.",
+      "probe": "negative logarithms"
+    },
+    {
+      "id": "G1",
+      "domain": "geometry",
+      "tier": "core",
+      "stem": "What is the distance between points (1,2) and (4,6) in the coordinate plane?",
+      "options": [
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "correct": "5",
+      "explain": "Horizontal change is 3 and vertical change is 4, so distance = √(3² + 4²) = 5.",
+      "probe": "coordinate distance"
+    },
+    {
+      "id": "G2",
+      "domain": "geometry",
+      "tier": "core",
+      "stem": "A right triangle has legs of lengths 6 and 8. What is the hypotenuse?",
+      "options": [
+        "9",
+        "10",
+        "12",
+        "14"
+      ],
+      "correct": "10",
+      "explain": "Pythagoras: c² = 6² + 8² = 100, hence c = 10.",
+      "probe": "Pythagorean theorem"
+    },
+    {
+      "id": "G3",
+      "domain": "geometry",
+      "tier": "stretch",
+      "stem": "What is sin(30°)?",
+      "options": [
+        "0",
+        "1/2",
+        "√3/2",
+        "1"
+      ],
+      "correct": "1/2",
+      "explain": "A standard 30°–60°–90° triangle has opposite-to-hypotenuse ratio 1:2 for the 30° angle.",
+      "probe": "trigonometric ratio"
+    },
+    {
+      "id": "P1",
+      "domain": "probability",
+      "tier": "core",
+      "stem": "A fair coin is tossed twice independently. What is the probability of two heads?",
+      "options": [
+        "1/8",
+        "1/4",
+        "1/2",
+        "3/4"
+      ],
+      "correct": "1/4",
+      "explain": "Each head has probability 1/2. Independent events multiply: (1/2) × (1/2) = 1/4.",
+      "probe": "independence"
+    },
+    {
+      "id": "P2",
+      "domain": "probability",
+      "tier": "core",
+      "stem": "A survey includes 60 women and 40 men. Of the women, 30 completed a course. What is P(completed | woman)?",
+      "options": [
+        "30%",
+        "40%",
+        "50%",
+        "75%"
+      ],
+      "correct": "50%",
+      "explain": "The condition fixes the denominator at the 60 women: 30/60 = 50%.",
+      "probe": "conditional denominator"
+    },
+    {
+      "id": "P3",
+      "domain": "probability",
+      "tier": "stretch",
+      "stem": "An independent trial succeeds with probability 0.2. Over 3 trials, what is P(at least one success)?",
+      "options": [
+        "0.096",
+        "0.200",
+        "0.488",
+        "0.512"
+      ],
+      "correct": "0.488",
+      "explain": "P(no successes) = 0.8³ = 0.512; complement gives 1 − 0.512 = 0.488.",
+      "probe": "complement rule"
+    },
+    {
+      "id": "S1",
+      "domain": "statistics",
+      "tier": "core",
+      "stem": "For the values 2, 3, 3, 4, 18, which measure is less affected by the extreme value 18?",
+      "options": [
+        "Mean",
+        "Median",
+        "Range",
+        "Standard deviation"
+      ],
+      "correct": "Median",
+      "explain": "The median is 3 and stays near the typical observations; the mean is pulled up to 6.",
+      "probe": "robust location"
+    },
+    {
+      "id": "S2",
+      "domain": "statistics",
+      "tier": "core",
+      "stem": "Which survey approach is most likely to produce selection bias when estimating satisfaction among all customers?",
+      "options": [
+        "Random sample of all customers",
+        "Survey only customers who complained",
+        "Stratified random sample by branch",
+        "Random sample from complete customer list"
+      ],
+      "correct": "Survey only customers who complained",
+      "explain": "Selecting only complainants systematically overrepresents dissatisfied customers and cannot represent the full customer base.",
+      "probe": "sampling bias"
+    },
+    {
+      "id": "S3",
+      "domain": "statistics",
+      "tier": "stretch",
+      "stem": "A valid significance test yields p = 0.03 and uses α = 0.05. Which conclusion follows from these numbers?",
+      "options": [
+        "Reject the null hypothesis",
+        "The null has 3% probability of being true",
+        "The alternative has 97% probability of being true",
+        "The result proves a large practical effect"
+      ],
+      "correct": "Reject the null hypothesis",
+      "explain": "Since p < α, reject H₀ at 5%; the p-value is not the probability H₀ is true, and does not quantify effect size.",
+      "probe": "p-value interpretation"
+    },
+    {
+      "id": "L1",
+      "domain": "linear",
+      "tier": "core",
+      "stem": "Add the vectors (2, 3) and (4, −1).",
+      "options": [
+        "(6, −2)",
+        "(2, 4)",
+        "(6, 2)",
+        "(8, −3)"
+      ],
+      "correct": "(6, 2)",
+      "explain": "Add component by component: (2 + 4, 3 + (−1)) = (6, 2).",
+      "probe": "vector addition"
+    },
+    {
+      "id": "L2",
+      "domain": "linear",
+      "tier": "core",
+      "stem": "Find the dot product (1, 2) · (3, 4).",
+      "options": [
+        "7",
+        "10",
+        "11",
+        "14"
+      ],
+      "correct": "11",
+      "explain": "The dot product is 1×3 + 2×4 = 3 + 8 = 11.",
+      "probe": "dot product"
+    },
+    {
+      "id": "L3",
+      "domain": "linear",
+      "tier": "stretch",
+      "stem": "If matrix A is 3×2 and matrix B is 2×4, what is the size of AB?",
+      "options": [
+        "2×3",
+        "2×4",
+        "3×2",
+        "3×4"
+      ],
+      "correct": "3×4",
+      "explain": "Inner dimensions 2 and 2 match. The product keeps the outer dimensions: 3×4.",
+      "probe": "matrix dimensions"
+    },
+    {
+      "id": "C1",
+      "domain": "calculus",
+      "tier": "core",
+      "stem": "Find the derivative of f(x) = x³.",
+      "options": [
+        "x²",
+        "3x",
+        "3x²",
+        "x⁴/4"
+      ],
+      "correct": "3x²",
+      "explain": "The power rule gives d(x³)/dx = 3x².",
+      "probe": "derivative rule"
+    },
+    {
+      "id": "C2",
+      "domain": "calculus",
+      "tier": "core",
+      "stem": "For f(x) = x², what is the slope of its tangent at x = 3?",
+      "options": [
+        "3",
+        "6",
+        "9",
+        "12"
+      ],
+      "correct": "6",
+      "explain": "f′(x) = 2x, so f′(3) = 6.",
+      "probe": "rate of change"
+    },
+    {
+      "id": "C3",
+      "domain": "calculus",
+      "tier": "stretch",
+      "stem": "At which x does f(x) = x² − 4x + 7 reach its minimum?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "correct": "2",
+      "explain": "f′(x) = 2x − 4, which is zero at x = 2; the positive quadratic coefficient makes this a minimum.",
+      "probe": "optimization"
+    }
+  ]
+};
